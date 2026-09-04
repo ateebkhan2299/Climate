@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Big Data & Large Datasets (> 100MB)
+*.csv
+!tableau/earthscape_tableau_dataset.csv
+data/
+*.parquet
+*.joblib
+!models/saved_models/*.joblib
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# Environment & IDE
+.venv/
+venv/
+ENV/
+.idea/
+.vscode/
+
+# Logs & temporary files
+*.log
+app.log
