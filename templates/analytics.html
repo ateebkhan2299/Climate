@@ -2,27 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GEOSPATIAL TELEMETRY // EARTHSCAPE HQ</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+        :root {
+            --bg-dark: #070B14;
+            --bg-panel: #0B132B;
+            --border-cyan: rgba(0, 242, 254, 0.2);
+            --border-dim: rgba(255, 255, 255, 0.08);
+            --cyan: #00F2FE;
+            --green: #10B981;
+            --crimson: #EF4444;
+            --yellow: #FACC15;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #0D1933 0%, #070B14 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+        .hud-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #0B1120; border-bottom: 1px solid var(--border-cyan); padding: 10px 24px;
+        }
+        .hud-title { font-size: 1.3rem; font-weight: 800; letter-spacing: 2px; color: var(--cyan); }
+        .hud-chip {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 4px 10px;
+            border-radius: 4px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-dim);
+        }
+        .chip-cyan { border-color: var(--border-cyan); color: var(--cyan); }
+        .app-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 60px); }
+        .nav-rail { background: #050811; border-right: 1px solid var(--border-cyan); padding: 20px 14px; }
+        .rail-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; color: var(--cyan); }
+        .rail-menu { display: flex; flex-direction: column; gap: 8px; }
+        .nav-item {
+            padding: 10px 14px; border-radius: 4px; color: var(--text-muted); text-decoration: none; font-weight: 600;
+        }
+        .nav-item:hover, .nav-item.active { background: rgba(0, 242, 254, 0.1); color: var(--cyan); }
+        .main-viewport { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+        .cyber-card {
+            background: var(--bg-panel); border: 1px solid var(--border-cyan); border-radius: 8px; padding: 16px;
+        }
+        .box-title { font-weight: 800; font-size: 1.05rem; color: var(--cyan); letter-spacing: 1px; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .card-label { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-muted); }
+        .card-value { font-family: 'JetBrains Mono', monospace; font-size: 1.85rem; font-weight: 800; }
+    </style>
 </head>
 <body>
     <header class="hud-header">
-        <div class="hud-title">
-            <span class="hud-icon">🌐</span> EARTHSCAPE <span class="sub-title">GEOSPATIAL TELEMETRY</span>
-        </div>
-        <div class="hud-chips-container">
-            <div class="hud-chip chip-cyan"><a href="/" style="color:#00F2FE; text-decoration:none;">⬅ BACK TO COMMAND CENTER</a></div>
-        </div>
+        <div class="hud-title">🌐 EARTHSCAPE // GEOSPATIAL TELEMETRY</div>
+        <div class="hud-chip chip-cyan"><a href="/" style="color:#00F2FE; text-decoration:none;">⬅ BACK TO COMMAND CENTER</a></div>
     </header>
 
     <div class="app-layout">
         <aside class="nav-rail">
-            <div class="rail-header">
-                <span class="rail-label">NAVIGATION</span>
-                <span class="badge badge-cyan">SYS-V4</span>
-            </div>
+            <div class="rail-header"><span>NAVIGATION</span><span style="color:#00F2FE;">SYS-V4</span></div>
             <nav class="rail-menu">
                 <a href="/" class="nav-item">🎛️ Command Center</a>
                 <a href="/analytics" class="nav-item active">📊 Geospatial Telemetry</a>
@@ -41,19 +82,19 @@
             <div class="kpi-grid">
                 <div class="cyber-card">
                     <div class="card-label">TOTAL WEATHER EVENTS</div>
-                    <div class="card-value text-cyan" id="tot-events">8,627,181</div>
+                    <div class="card-value" style="color:#00F2FE;">8,627,181</div>
                 </div>
                 <div class="cyber-card">
                     <div class="card-label">ACTIVE SENSORS (GLOBAL)</div>
-                    <div class="card-value text-green">14,820</div>
+                    <div class="card-value" style="color:#10B981;">14,820</div>
                 </div>
                 <div class="cyber-card">
                     <div class="card-label">PRECIPITATION MEAN</div>
-                    <div class="card-value text-yellow">0.42 <span class="val-unit">in/hr</span></div>
+                    <div class="card-value" style="color:#FACC15;">0.42 in/hr</div>
                 </div>
                 <div class="cyber-card">
                     <div class="card-label">SEVERITY INDEX</div>
-                    <div class="card-value text-crimson">TIER 2.4</div>
+                    <div class="card-value" style="color:#EF4444;">TIER 2.4</div>
                 </div>
             </div>
         </main>
