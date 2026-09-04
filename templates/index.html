@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EARTHSCAPE // SURVEILLANCE HQ</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Plotly.js for Dynamic Holographic Charts -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- TOP HUD BAR -->
+    <header class="hud-header">
+        <div class="hud-title">
+            <span class="hud-icon">🌐</span> EARTHSCAPE <span class="sub-title">SURVEILLANCE HQ</span>
+        </div>
+        <div class="hud-chips-container">
+            <div class="hud-chip chip-live"><span class="pulse-dot"></span> LIVE OPEN-METEO API</div>
+            <div class="hud-chip chip-green">● HADOOP: OPERATIONAL</div>
+            <div class="hud-chip chip-cyan">🗄️ HDFS: 1.4PB / 2.0PB</div>
+            <div class="hud-chip">📡 SENSORS: 14,820</div>
+            <div class="hud-chip chip-green">⚡ INGESTION: 48.2 MB/s</div>
+            <div class="hud-chip" id="live-utc-clock">2026-09-04 10:20:00 UTC</div>
+            <div class="hud-chip chip-cyan">👤 ANALYST [SYSADMIN]</div>
+        </div>
+    </header>
+
+    <!-- MAIN APP LAYOUT -->
+    <div class="app-layout">
+
+        <!-- LEFT NAVIGATION RAIL -->
+        <aside class="nav-rail">
+            <div class="rail-header">
+                <span class="rail-label">NAVIGATION RAIL</span>
+                <span class="badge badge-cyan">SYS-V4</span>
+            </div>
+            <nav class="rail-menu">
+                <a href="/" class="nav-item active">
+                    <span class="nav-icon">🎛️</span> Command Center
+                </a>
+                <a href="/analytics" class="nav-item">
+                    <span class="nav-icon">📊</span> Geospatial Telemetry
+                </a>
+                <a href="/anomalies" class="nav-item">
+                    <span class="nav-icon">🚨</span> ML Anomaly Detection
+                </a>
+                <a href="/predictions" class="nav-item">
+                    <span class="nav-icon">🔮</span> Predictive Forecasting
+                </a>
+                <a href="/admin" class="nav-item">
+                    <span class="nav-icon">⚙️</span> Hadoop & Cluster Health
+                </a>
+            </nav>
+
+            <div class="rail-footer">
+                <div class="hud-chip chip-green sync-chip">
+                    ● DATA SYNC 99.98%
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN COMMAND CENTER CONTENT -->
+        <main class="main-viewport">
+
+            <!-- CRITICAL ANOMALY BANNER -->
+            <section class="anomaly-banner">
+                <div class="anomaly-info">
+                    <div class="anomaly-meta">
+                        <span class="badge badge-crimson">CRITICAL ANOMALY VECTOR #809</span>
+                        <span class="geo-hash">GEO-HASH: 18.243°N, 9.421°E</span>
+                    </div>
+                    <h2 class="anomaly-title" id="banner-title">
+                        🚨 Sub-Saharan & Mediterranean Thermal Surge Spike Detected
+                    </h2>
+                    <p class="anomaly-desc" id="banner-desc">
+                        Current excursion: <b class="text-crimson">+3.8°C</b> above 30-year seasonal baseline. Impacting 14 atmospheric hex-tiles.
+                    </p>
+                </div>
+                <div class="anomaly-actions">
+                    <button class="btn btn-outline" onclick="isolateQuad()">👁️ Isolate Quad</button>
+                    <button class="btn btn-crimson" onclick="dispatchAdvisory()">📢 Dispatch Stakeholder Advisory</button>
+                </div>
+            </section>
+
+            <!-- 4 KPI CYBER CARDS ROW -->
+            <section class="kpi-grid">
+                <!-- Card 1 -->
+                <div class="cyber-card">
+                    <div class="card-header-row">
+                        <span class="card-label">GLOBAL TEMP ANOMALY</span>
+                        <span class="badge badge-warn">WARN TIER 2</span>
+                    </div>
+                    <div class="card-value" id="kpi-temp">+1.48 <span class="val-unit">°C (vs Pre-Ind)</span></div>
+                    <div class="card-subtext text-crimson">
+                        📈 +0.03°C vs 2023 &nbsp;|&nbsp; ERA5-Land Model
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="cyber-card">
+                    <div class="card-header-row">
+                        <span class="card-label">ATMOSPHERIC CO₂</span>
+                        <span class="badge badge-cyan">MAUNA LOA SYNC</span>
+                    </div>
+                    <div class="card-value" id="kpi-co2">423.8 <span class="val-unit">ppm</span></div>
+                    <div class="card-subtext text-cyan">
+                        ↗ +1.2 ppm (24h Δ) &nbsp;|&nbsp; NOAA GML 10s
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="cyber-card">
+                    <div class="card-header-row">
+                        <span class="card-label">SENSOR INGESTION GRID</span>
+                        <span class="badge badge-green">99.4% UPTIME</span>
+                    </div>
+                    <div class="card-value" id="kpi-sensors">14,820 <span class="val-unit">Active Nodes</span></div>
+                    <div class="card-subtext text-green">
+                        📶 9,140 Buoys / 5,680 IoT &nbsp;|&nbsp; Loss: 0.04%
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="cyber-card">
+                    <div class="card-header-row">
+                        <span class="card-label">HDFS DATA WAREHOUSE</span>
+                        <span class="badge badge-cyan">71% CAP</span>
+                    </div>
+                    <div class="card-value" id="kpi-hdfs">1.42 <span class="val-unit">/ 2.00 PB</span></div>
+                    <div class="card-subtext text-blue">
+                        ⚡ 380 GB/hr Ingest &nbsp;|&nbsp; 124ms RT Latency
+                    </div>
+                </div>
+            </section>
+
+            <!-- CENTER SPLIT: RADAR (LEFT) & PREDICTIVE ML (RIGHT) -->
+            <section class="split-row">
+                <!-- Planetary Radar Map -->
+                <div class="radar-box">
+                    <div class="radar-header">
+                        <div class="box-title">
+                            🌐 PLANETARY SURVEILLANCE RADAR <span class="badge badge-cyan">ORTHO-WGS84</span>
+                        </div>
+                        <div class="radar-tabs">
+                            <button class="tab-btn active" onclick="setRadarMode('THERMAL MODIS')">THERMAL MODIS</button>
+                            <button class="tab-btn" onclick="setRadarMode('OCO-2 CO2')">OCO-2 CO₂</button>
+                            <button class="tab-btn" onclick="setRadarMode('PRECIP RADAR')">PRECIP RADAR</button>
+                            <button class="tab-btn" onclick="setRadarMode('NOAA SST')">NOAA SST</button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Holographic Plotly Radar Map -->
+                    <div id="planetary-radar-map" class="radar-chart-container"></div>
+
+                    <!-- Radar HUD Strip -->
+                    <div class="radar-hud-strip">
+                        <span id="radar-coords">🎯 LAT: 24° 16' 48" N | LON: 12° 04' 12" E</span>
+                        <span class="text-green">● 14,808 Nominal</span>
+                        <span class="text-crimson">● 12 Critical</span>
+                        <span class="text-cyan">SCAN SWEEP: 300ms</span>
+                    </div>
+
+                    <!-- 4 Micro Met Gauges -->
+                    <div class="gauges-grid">
+                        <div class="gauge-item">
+                            <div class="gauge-label">GLOBAL WIND SHEAR</div>
+                            <div class="gauge-val text-cyan" id="live-wind">34.2 m/s <span class="unit">ENE</span></div>
+                        </div>
+                        <div class="gauge-item">
+                            <div class="gauge-label">OCEAN THERMAL MEAN</div>
+                            <div class="gauge-val" id="live-ocean">21.08°C <span class="delta text-crimson">(+0.82°C)</span></div>
+                        </div>
+                        <div class="gauge-item">
+                            <div class="gauge-label">TROPOSPHERIC MOISTURE</div>
+                            <div class="gauge-val text-green" id="live-moisture">68.4% <span class="unit">STABLE</span></div>
+                        </div>
+                        <div class="gauge-item">
+                            <div class="gauge-label">SOLAR IRRADIANCE FLUX</div>
+                            <div class="gauge-val text-yellow" id="live-solar">1,361.2 <span class="unit">W/m²</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Predictive ML Inference -->
+                <div class="inference-box cyber-card">
+                    <div class="card-header-row">
+                        <div class="box-title">🤖 Predictive ML Inference</div>
+                        <span class="badge badge-cyan">LSTM + RF ENSEMBLE</span>
+                    </div>
+
+                    <div class="escalation-container">
+                        <div class="escalation-header">
+                            <span class="esc-label">Extreme Heatwave Escalation</span>
+                            <span class="esc-val text-crimson" id="esc-percent">91.4%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill gradient-crimson" style="width: 91.4%;"></div>
+                        </div>
+                        <p class="esc-desc">
+                            Forecast confidence based on 45,000 historical tropospheric simulation paths. High probability of flash drought in Quadrant Med-04.
+                        </p>
+                    </div>
+
+                    <div class="projection-chart-block">
+                        <div class="proj-header">
+                            <span>14-DAY HEAT ANOMALY PROJECTIONS</span>
+                            <span class="text-crimson">Peak Day +9 (CRIT)</span>
+                        </div>
+                        <div id="heat-projection-chart" style="height: 140px;"></div>
+                    </div>
+
+                    <div class="spectral-card">
+                        <div class="spectral-header">
+                            <span class="text-cyan">OCO-2 SPECTRAL SPECTROMETRY</span>
+                            <span class="text-green">SYNCED: 4m ago</span>
+                        </div>
+                        <div class="spectral-desc">
+                            Active Band: 0.76 µm O₂ A-band & 1.61 µm CO₂ Fraunhofer Absorption Matrix.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BOTTOM SPLIT: HADOOP MAPREDUCE (LEFT) & LIVE STREAM (RIGHT) -->
+            <section class="split-row">
+                <!-- Hadoop Cluster Health -->
+                <div class="hadoop-box cyber-card">
+                    <div class="card-header-row">
+                        <div>
+                            <div class="box-title">🐘 Hadoop MapReduce Stream & Cluster Health</div>
+                            <div class="sub-label">YARN Resource Orchestrator • 64 DataNodes Online • Zero Partition Failures</div>
+                        </div>
+                        <span class="badge badge-green">ALL HEALTHY</span>
+                    </div>
+
+                    <!-- Job 1 -->
+                    <div class="job-card">
+                        <div class="job-meta">
+                            <span class="text-cyan font-bold">#MR-9082 Global Sea Surface Temp Spatial Interpolation (NOAA HDF5)</span>
+                            <span class="text-green font-bold" id="job1-stage">STAGE: REDUCING 78%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill gradient-cyan-green" id="job1-bar" style="width: 78%;"></div>
+                        </div>
+                        <div class="job-footer">
+                            <span>Input: 412.8 GB / 520.0 GB</span>
+                            <span>Splits: 2,048 / 2,048 Mapped • Reducers: 128 Active</span>
+                        </div>
+                    </div>
+
+                    <!-- Job 2 -->
+                    <div class="job-card">
+                        <div class="job-meta">
+                            <span class="text-cyan font-bold">#MR-9083 Deforestation Carbon Flux Real-Time Matrix Aggregation</span>
+                            <span class="text-blue font-bold" id="job2-stage">STAGE: MAPPING 42%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill gradient-blue" id="job2-bar" style="width: 42%;"></div>
+                        </div>
+                        <div class="job-footer">
+                            <span>Input: 180.2 GB / 430.0 GB</span>
+                            <span>Splits: 840 / 2,000 Mapped • Spark Context: Attached</span>
+                        </div>
+                    </div>
+
+                    <!-- Cluster Grid -->
+                    <div class="cluster-grid">
+                        <div class="cluster-stat">
+                            <div class="card-label">ACTIVE DATANODES</div>
+                            <div class="cluster-val text-green">64 <span class="unit">/ 64 online</span></div>
+                        </div>
+                        <div class="cluster-stat">
+                            <div class="card-label">DEAD / STALE NODES</div>
+                            <div class="cluster-val text-green">0 <span class="unit">0.0% fault</span></div>
+                        </div>
+                        <div class="cluster-stat">
+                            <div class="card-label">TASKTRACKERS LOAD</div>
+                            <div class="cluster-val text-cyan">12 <span class="unit">High Compute</span></div>
+                        </div>
+                        <div class="cluster-stat">
+                            <div class="card-label">YARN MEMORY POOL</div>
+                            <div class="cluster-val text-blue">892 <span class="unit">/ 1,024 GB</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Event Stream -->
+                <div class="events-box cyber-card">
+                    <div class="card-header-row">
+                        <div class="box-title">🚨 Live Event Stream</div>
+                        <span class="badge badge-crimson">● LIVE FEED</span>
+                    </div>
+
+                    <div class="event-feed-list" id="event-feed-container">
+                        <!-- Feed Items populated dynamically -->
+                        <div class="event-feed-item">
+                            <div class="ev-header">
+                                <span class="text-crimson font-bold">● CRITICAL ESCALATION</span>
+                                <span class="ev-time">02m ago</span>
+                            </div>
+                            <div class="ev-title">Sub-Saharan Thermal Surge (+3.8°C Delta)</div>
+                            <div class="ev-meta">Station: NIAMEY-V4 • Trigger: Rule #TR-881</div>
+                        </div>
+
+                        <div class="event-feed-item">
+                            <div class="ev-header">
+                                <span class="text-cyan font-bold">● INTERMITTENT SIGNAL</span>
+                                <span class="ev-time">14m ago</span>
+                            </div>
+                            <div class="ev-title">Marine Buoy Cluster #41002 Dropouts</div>
+                            <div class="ev-meta">Pacific Quad 3 • Telemetry loss: 12% frames</div>
+                        </div>
+
+                        <div class="event-feed-item">
+                            <div class="ev-header">
+                                <span class="text-green font-bold">● BATCH FINALIZED</span>
+                                <span class="ev-time">32m ago</span>
+                            </div>
+                            <div class="ev-title">HDFS Ingest Partition Part-00431 Stored</div>
+                            <div class="ev-meta">Block size: 128 MB • Checksum verified</div>
+                        </div>
+                    </div>
+
+                    <div class="telemetry-actions">
+                        <div class="card-label mb-2">DIRECT TELEMETRY ACTIONS</div>
+                        <button class="btn btn-cyan w-100 mb-2" onclick="triggerDeepCompute()">⚡ Trigger Hadoop Deep Compute</button>
+                        <button class="btn btn-outline w-100" onclick="exportData()">📥 Export NetCDF / GeoJSON Data</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Live Telemetry JavaScript Engine -->
+    <script src="/static/js/command_center.js"></script>
+</body>
+</html>

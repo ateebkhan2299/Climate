@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GEOSPATIAL TELEMETRY // EARTHSCAPE HQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header class="hud-header">
+        <div class="hud-title">
+            <span class="hud-icon">🌐</span> EARTHSCAPE <span class="sub-title">GEOSPATIAL TELEMETRY</span>
+        </div>
+        <div class="hud-chips-container">
+            <div class="hud-chip chip-cyan"><a href="/" style="color:#00F2FE; text-decoration:none;">⬅ BACK TO COMMAND CENTER</a></div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <aside class="nav-rail">
+            <div class="rail-header">
+                <span class="rail-label">NAVIGATION</span>
+                <span class="badge badge-cyan">SYS-V4</span>
+            </div>
+            <nav class="rail-menu">
+                <a href="/" class="nav-item">🎛️ Command Center</a>
+                <a href="/analytics" class="nav-item active">📊 Geospatial Telemetry</a>
+                <a href="/anomalies" class="nav-item">🚨 ML Anomaly Detection</a>
+                <a href="/predictions" class="nav-item">🔮 Predictive Forecasting</a>
+                <a href="/admin" class="nav-item">⚙️ Hadoop & Cluster Health</a>
+            </nav>
+        </aside>
+
+        <main class="main-viewport">
+            <div class="cyber-card">
+                <div class="box-title">📊 Multi-Dimensional Climate Telemetry & Seasonality Matrix</div>
+                <div id="analytics-heatmap" style="height: 450px; margin-top: 15px;"></div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="cyber-card">
+                    <div class="card-label">TOTAL WEATHER EVENTS</div>
+                    <div class="card-value text-cyan" id="tot-events">8,627,181</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-label">ACTIVE SENSORS (GLOBAL)</div>
+                    <div class="card-value text-green">14,820</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-label">PRECIPITATION MEAN</div>
+                    <div class="card-value text-yellow">0.42 <span class="val-unit">in/hr</span></div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-label">SEVERITY INDEX</div>
+                    <div class="card-value text-crimson">TIER 2.4</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const types = ['Rain', 'Snow', 'Fog', 'Cold', 'Storm', 'Precipitation', 'Hail'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const zValues = types.map(() => months.map(() => Math.floor(Math.random() * 5000) + 1200));
+
+        Plotly.newPlot('analytics-heatmap', [{
+            z: zValues,
+            x: months,
+            y: types,
+            type: 'heatmap',
+            colorscale: 'Magma'
+        }], {
+            paper_bgcolor: '#0B132B',
+            plot_bgcolor: '#0B132B',
+            margin: { l: 80, r: 20, t: 20, b: 40 },
+            xaxis: { tickfont: { color: '#94A3B8' } },
+            yaxis: { tickfont: { color: '#94A3B8' } }
+        }, { responsive: true });
+    </script>
+</body>
+</html>
