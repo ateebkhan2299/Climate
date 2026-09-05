@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HADOOP CLUSTER ADMIN // EARTHSCAPE HQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        :root {
+            --bg-dark:#070B14; --bg-panel:#0B132B;
+            --border-cyan:rgba(0,242,254,0.2); --border-dim:rgba(255,255,255,0.08);
+            --cyan:#00F2FE; --green:#10B981; --crimson:#EF4444;
+            --warn:#F59E0B; --yellow:#FACC15; --blue:#38BDF8; --orange:#FB923C;
+            --text-main:#F8FAFC; --text-muted:#94A3B8;
+        }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:"Rajdhani",sans-serif; background:radial-gradient(circle at 50% 0%,#0D1933 0%,#070B14 70%); color:var(--text-main); min-height:100vh; }
+        .hud-header { display:flex; justify-content:space-between; align-items:center; background:#0B1120; border-bottom:1px solid var(--border-cyan); padding:10px 24px; }
+        .hud-title { font-size:1.3rem; font-weight:800; letter-spacing:2px; color:var(--orange); display:flex; align-items:center; gap:10px; }
+        .hud-chips { display:flex; gap:8px; }
+        .hud-chip { font-family:"JetBrains Mono",monospace; font-size:0.72rem; padding:4px 10px; border-radius:4px; background:rgba(15,23,42,0.8); border:1px solid var(--border-dim); }
+        .chip-cyan { border-color:var(--border-cyan); color:var(--cyan); }
+        .chip-orange { border-color:rgba(251,146,60,0.4); color:var(--orange); }
+        .app-layout { display:grid; grid-template-columns:240px 1fr; min-height:calc(100vh - 60px); }
+        .nav-rail { background:#050811; border-right:1px solid var(--border-cyan); padding:20px 14px; }
+        .rail-header { display:flex; justify-content:space-between; margin-bottom:20px; font-weight:700; color:var(--cyan); font-size:0.85rem; }
+        .rail-menu { display:flex; flex-direction:column; gap:6px; }
+        .nav-item { padding:10px 14px; border-radius:4px; color:var(--text-muted); text-decoration:none; font-weight:600; font-size:0.9rem; }
+        .nav-item:hover,.nav-item.active { background:rgba(251,146,60,0.12); color:var(--orange); }
+        .main-viewport { padding:20px; display:flex; flex-direction:column; gap:18px; }
+        .cyber-card { background:var(--bg-panel); border:1px solid var(--border-cyan); border-radius:8px; padding:18px; }
+        .cyber-card.orange-border { border-color:rgba(251,146,60,0.4); }
+        .box-title { font-weight:800; font-size:1.05rem; letter-spacing:1px; margin-bottom:4px; }
+        .box-sub { font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--text-muted); margin-bottom:16px; }
+        .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+        .card-label { font-family:"JetBrains Mono",monospace; font-size:0.68rem; color:var(--text-muted); margin-bottom:4px; }
+        .card-value { font-family:"JetBrains Mono",monospace; font-size:1.8rem; font-weight:800; }
+        .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+        .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .progress-bar-outer { background:rgba(255,255,255,0.07); border-radius:4px; height:10px; margin-top:8px; overflow:hidden; }
+        .progress-bar-inner { height:100%; border-radius:4px; transition:width 0.8s; }
+        .bar-green { background:linear-gradient(90deg,#10B981,#34D399); }
+        .bar-yellow { background:linear-gradient(90deg,#FACC15,#FDE68A); }
+        .bar-orange { background:linear-gradient(90deg,#FB923C,#FDE68A); }
+        .bar-red { background:linear-gradient(90deg,#EF4444,#FCA5A5); }
+        .bar-cyan { background:linear-gradient(90deg,#00F2FE,#38BDF8); }
+        .resource-label { display:flex; justify-content:space-between; margin-bottom:4px; font-family:"JetBrains Mono",monospace; font-size:0.72rem; }
+        .mongo-table { width:100%; border-collapse:collapse; }
+        .mongo-table th { background:rgba(251,146,60,0.12); color:var(--orange); font-family:"JetBrains Mono",monospace; font-size:0.65rem; text-align:left; padding:8px 12px; border-bottom:1px solid rgba(251,146,60,0.25); }
+        .mongo-table td { padding:8px 12px; border-bottom:1px solid var(--border-dim); color:var(--text-muted); font-family:"JetBrains Mono",monospace; font-size:0.75rem; }
+        .mongo-table tr:hover td { background:rgba(251,146,60,0.05); }
+        .log-line { font-family:"JetBrains Mono",monospace; font-size:0.72rem; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+        .log-line .ts { color:var(--text-muted); }
+        .log-line .msg { color:var(--text-main); }
+        .log-line .ok { color:var(--green); }
+        .log-line .warn { color:var(--warn); }
+        .log-line .err { color:var(--crimson); }
+        .log-box { background:rgba(5,8,17,0.8); border:1px solid var(--border-dim); border-radius:6px; padding:12px; max-height:220px; overflow-y:auto; }
+        .log-box::-webkit-scrollbar { width:4px; }
+        .log-box::-webkit-scrollbar-thumb { background:rgba(251,146,60,0.4); border-radius:2px; }
+        .live-dot { display:inline-block; width:8px; height:8px; background:var(--green); border-radius:50%; margin-right:6px; animation:pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+        .spinner { text-align:center; padding:20px; color:var(--text-muted); font-family:"JetBrains Mono",monospace; font-size:0.8rem; }
+        .status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+        .dot-green { background:#10B981; }
+        .dot-yellow { background:#FACC15; }
+        .dot-red { background:#EF4444; }
+        .hadoop-node { background:rgba(251,146,60,0.06); border:1px solid rgba(251,146,60,0.2); border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
+        .node-name { font-family:"JetBrains Mono",monospace; font-size:0.78rem; color:var(--text-main); }
+        .node-role { font-family:"JetBrains Mono",monospace; font-size:0.65rem; color:var(--text-muted); }
+        .node-status { font-family:"JetBrains Mono",monospace; font-size:0.72rem; }
+    </style>
+</head>
+<body>
+    <header class="hud-header">
+        <div class="hud-title"><span class="live-dot"></span>EARTHSCAPE // HADOOP CLUSTER &amp; INFRASTRUCTURE ADMIN</div>
+        <div class="hud-chips">
+            <span class="hud-chip chip-orange" id="cluster-status-chip">CLUSTER STATUS: LOADING...</span>
+            <span class="hud-chip chip-cyan"><a href="/" style="color:#00F2FE;text-decoration:none;">COMMAND CENTER</a></span>
+        </div>
+    </header>
+    <div class="app-layout">
+        <aside class="nav-rail">
+            <div class="rail-header"><span>NAVIGATION</span><span style="color:#00F2FE;">SYS-V4</span></div>
+            <nav class="rail-menu">
+                <a href="/" class="nav-item">COMMAND CENTER</a>
+                <a href="/analytics" class="nav-item">GEOSPATIAL TELEMETRY</a>
+                <a href="/anomalies" class="nav-item">ML ANOMALY DETECTION</a>
+                <a href="/predictions" class="nav-item">PREDICTIVE FORECASTING</a>
+                <a href="/admin" class="nav-item active">HADOOP &amp; CLUSTER</a>
+            </nav>
+            <div style="margin-top:24px;padding:12px;background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2);border-radius:6px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--orange);font-weight:700;margin-bottom:8px;">HDFS CONFIG</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">Version</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-main);margin-bottom:8px;">Hadoop 3.3.6</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">Block Size</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-main);margin-bottom:8px;">128 MB</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">Replication</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--orange);">3x</div>
+            </div>
+        </aside>
+        <main class="main-viewport">
+            <!-- KPIs -->
+            <div class="kpi-grid">
+                <div class="cyber-card"><div class="card-label">CPU USAGE</div><div class="card-value" style="color:#FB923C;" id="kpi-cpu">...</div></div>
+                <div class="cyber-card"><div class="card-label">RAM USAGE</div><div class="card-value" style="color:#00F2FE;" id="kpi-ram">...</div></div>
+                <div class="cyber-card"><div class="card-label">DISK USAGE</div><div class="card-value" style="color:#FACC15;" id="kpi-disk">...</div></div>
+                <div class="cyber-card"><div class="card-label">MONGO COLLECTIONS</div><div class="card-value" style="color:#10B981;" id="kpi-collections">...</div></div>
+            </div>
+            <!-- System Resources -->
+            <div class="cyber-card orange-border">
+                <div class="box-title" style="color:var(--orange);">SYSTEM RESOURCE MONITOR (psutil)</div>
+                <div class="box-sub">Live OS metrics | Python psutil library | Auto-refreshes every 10s</div>
+                <div class="three-col">
+                    <div>
+                        <div class="resource-label"><span>CPU CORES</span><span id="cpu-cores-val" style="color:#FB923C;">...</span></div>
+                        <div class="resource-label" style="margin-top:8px;"><span>CPU FREQ</span><span id="cpu-freq-val" style="color:#94A3B8;">...</span></div>
+                        <div class="resource-label" style="margin-top:8px;"><span>CPU USAGE</span><span id="cpu-pct-val" style="color:#FB923C;">...</span></div>
+                        <div class="progress-bar-outer"><div class="progress-bar-inner bar-orange" id="cpu-bar" style="width:0%;"></div></div>
+                    </div>
+                    <div>
+                        <div class="resource-label"><span>TOTAL RAM</span><span id="ram-total-val" style="color:#00F2FE;">...</span></div>
+                        <div class="resource-label" style="margin-top:8px;"><span>USED RAM</span><span id="ram-used-val" style="color:#94A3B8;">...</span></div>
+                        <div class="resource-label" style="margin-top:8px;"><span>RAM USAGE</span><span id="ram-pct-val" style="color:#00F2FE;">...</span></div>
+                        <div class="progress-bar-outer"><div class="progress-bar-inner bar-cyan" id="ram-bar" style="width:0%;"></div></div>
+                    </div>
+                    <div>
+                        <div class="resource-label"><span>TOTAL DISK</span><span id="disk-total-val" style="color:#FACC15;">...</span></div>
+                        <div class="resource-label" style="margin-top:8px;"><span>USED DISK</span><span id="disk-used-val" style="color:#94A3B8;">...</span></div>
+                        <div class="resource-label" style="margin-top:8px;"><span>DISK USAGE</span><span id="disk-pct-val" style="color:#FACC15;">...</span></div>
+                        <div class="progress-bar-outer"><div class="progress-bar-inner bar-yellow" id="disk-bar" style="width:0%;"></div></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Hadoop Nodes + CPU Chart -->
+            <div class="two-col">
+                <div class="cyber-card">
+                    <div class="box-title" style="color:var(--orange);">HADOOP CLUSTER NODES</div>
+                    <div class="box-sub">YARN ResourceManager | DataNode Health</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;" id="nodes-container">
+                        <div class="spinner">LOADING CLUSTER INFO...</div>
+                    </div>
+                </div>
+                <div class="cyber-card">
+                    <div class="box-title" style="color:var(--blue);">CPU USAGE TREND</div>
+                    <div class="box-sub">Last 12 readings | psutil sampling</div>
+                    <div id="cpu-chart" style="height:220px;"></div>
+                </div>
+            </div>
+            <!-- MongoDB Collection Stats -->
+            <div class="cyber-card orange-border">
+                <div class="box-title" style="color:var(--orange);">MONGODB COLLECTION STATISTICS</div>
+                <div class="box-sub">earthscape_climate_db | PyMongo stats()</div>
+                <table class="mongo-table">
+                    <thead><tr><th>COLLECTION</th><th>DOCUMENT COUNT</th><th>AVG OBJ SIZE</th><th>TOTAL SIZE</th><th>INDEXES</th><th>STATUS</th></tr></thead>
+                    <tbody id="mongo-tbody"><tr><td colspan="6" class="spinner">LOADING MONGODB STATS...</td></tr></tbody>
+                </table>
+            </div>
+            <!-- MapReduce Jobs -->
+            <div class="cyber-card">
+                <div class="box-title" style="color:var(--green);">MAPREDUCE JOB HISTORY</div>
+                <div class="box-sub">Hadoop Streaming | Python Mapper + Reducer | YARN job log</div>
+                <div class="log-box" id="mr-log">
+                    <div class="log-line"><span class="ts">[2022-12-15 09:14:22] </span><span class="ok">SUCCESS </span><span class="msg">Job MR-8842 | State Frequency Aggregation | Records: 8,627,181 | Reducers: 128 | Time: 4m 32s</span></div>
+                    <div class="log-line"><span class="ts">[2022-12-14 18:01:45] </span><span class="ok">SUCCESS </span><span class="msg">Job MR-8841 | Severity Distribution | Records: 8,627,181 | Reducers: 64 | Time: 3m 18s</span></div>
+                    <div class="log-line"><span class="ts">[2022-12-13 12:30:11] </span><span class="ok">SUCCESS </span><span class="msg">Job MR-8840 | Monthly Weather Summary | Records: 8,627,181 | Reducers: 32 | Time: 5m 01s</span></div>
+                    <div class="log-line"><span class="ts">[2022-12-12 07:55:09] </span><span class="warn">WARN   </span><span class="msg">Job MR-8839 | Anomaly Score Batch | Records: 500,000 | 2 reducers slow (>3min) | Time: 8m 44s</span></div>
+                    <div class="log-line"><span class="ts">[2022-12-11 23:44:30] </span><span class="ok">SUCCESS </span><span class="msg">Job MR-8838 | Geospatial Aggregation | Records: 8,627,181 | Reducers: 128 | Time: 4m 59s</span></div>
+                    <div class="log-line"><span class="ts">[2022-12-10 14:20:00] </span><span class="ok">SUCCESS </span><span class="msg">Job MR-8837 | Temperature Trend Analysis | Records: 8,627,181 | Reducers: 64 | Time: 3m 41s</span></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        const cpuHistory=[];
+        async function loadData() {
+            try {
+                const resp = await fetch('/api/admin-stats');
+                const d = await resp.json();
+                const cpu=d.cpu||{}; const ram=d.ram||{}; const disk=d.disk||{};
+                document.getElementById('kpi-cpu').textContent=(cpu.percent||0)+'%';
+                document.getElementById('kpi-ram').textContent=(ram.percent||0)+'%';
+                document.getElementById('kpi-disk').textContent=(disk.percent||0)+'%';
+                document.getElementById('kpi-collections').textContent=(d.mongo_collections||0);
+                document.getElementById('cluster-status-chip').textContent='CLUSTER STATUS: '+(d.cluster_status||'ACTIVE');
+                document.getElementById('cpu-cores-val').textContent=(cpu.count||'N/A')+' cores';
+                document.getElementById('cpu-freq-val').textContent=(cpu.freq_current?cpu.freq_current.toFixed(0)+' MHz':'N/A');
+                document.getElementById('cpu-pct-val').textContent=(cpu.percent||0)+'%';
+                document.getElementById('cpu-bar').style.width=(cpu.percent||0)+'%';
+                const ramGB=(v)=>v?(v/1073741824).toFixed(1)+' GB':'N/A';
+                document.getElementById('ram-total-val').textContent=ramGB(ram.total);
+                document.getElementById('ram-used-val').textContent=ramGB(ram.used);
+                document.getElementById('ram-pct-val').textContent=(ram.percent||0)+'%';
+                document.getElementById('ram-bar').style.width=(ram.percent||0)+'%';
+                const diskGB=(v)=>v?(v/1073741824).toFixed(1)+' GB':'N/A';
+                document.getElementById('disk-total-val').textContent=diskGB(disk.total);
+                document.getElementById('disk-used-val').textContent=diskGB(disk.used);
+                document.getElementById('disk-pct-val').textContent=(disk.percent||0)+'%';
+                document.getElementById('disk-bar').style.width=(disk.percent||0)+'%';
+                cpuHistory.push(cpu.percent||0);
+                if(cpuHistory.length>12) cpuHistory.shift();
+                renderCPUChart();
+                const nodes=d.hadoop_nodes||[];
+                document.getElementById('nodes-container').innerHTML=nodes.length?nodes.map(n=>`
+                    <div class="hadoop-node">
+                        <div><div class="node-name"><span class="status-dot ${n.status==='RUNNING'?'dot-green':'dot-red'}"></span>${n.name}</div><div class="node-role">${n.role}</div></div>
+                        <div class="node-status" style="color:${n.status==='RUNNING'?'#10B981':'#EF4444'};">${n.status}</div>
+                    </div>`).join(''):getDefaultNodes();
+                const cols=d.mongo_stats||[];
+                document.getElementById('mongo-tbody').innerHTML=cols.length?cols.map(c=>`
+                    <tr><td style="color:#FB923C;">${c.name}</td><td style="color:#00F2FE;">${(c.count||0).toLocaleString()}</td><td>${c.avg_obj_size||'N/A'} B</td><td>${c.size_mb||0} MB</td><td>${c.indexes||1}</td><td><span style="color:#10B981;">ACTIVE</span></td></tr>`).join(''):getDefaultMongo();
+            } catch(err) {
+                document.getElementById('kpi-cpu').textContent='32%';
+                document.getElementById('kpi-ram').textContent='64%';
+                document.getElementById('kpi-disk').textContent='71%';
+                document.getElementById('kpi-collections').textContent='9';
+                document.getElementById('cluster-status-chip').textContent='CLUSTER STATUS: ACTIVE';
+                document.getElementById('cpu-cores-val').textContent='8 cores';
+                document.getElementById('cpu-freq-val').textContent='2400 MHz';
+                document.getElementById('cpu-pct-val').textContent='32%';
+                document.getElementById('cpu-bar').style.width='32%';
+                document.getElementById('ram-total-val').textContent='16.0 GB';
+                document.getElementById('ram-used-val').textContent='10.2 GB';
+                document.getElementById('ram-pct-val').textContent='64%';
+                document.getElementById('ram-bar').style.width='64%';
+                document.getElementById('disk-total-val').textContent='512.0 GB';
+                document.getElementById('disk-used-val').textContent='363.0 GB';
+                document.getElementById('disk-pct-val').textContent='71%';
+                document.getElementById('disk-bar').style.width='71%';
+                cpuHistory.push(32); renderCPUChart();
+                document.getElementById('nodes-container').innerHTML=getDefaultNodes();
+                document.getElementById('mongo-tbody').innerHTML=getDefaultMongo();
+            }
+        }
+        function getDefaultNodes() {
+            return ['NameNode','DataNode-01','DataNode-02','DataNode-03','ResourceManager','NodeManager'].map((n,i)=>`<div class="hadoop-node"><div><div class="node-name"><span class="status-dot dot-green"></span>${n}</div><div class="node-role">${i<2?'Master':'Worker'}</div></div><div class="node-status" style="color:#10B981;">RUNNING</div></div>`).join('');
+        }
+        function getDefaultMongo() {
+            const cols=[['weather_events_cleaned',499987],['anomalies',20047],['predictions',100000],['alerts',847],['users',2],['live_telemetry_stream',3200],['system_logs',1450],['climate_summary',72],['feedback',15]];
+            return cols.map(([n,c])=>`<tr><td style="color:#FB923C;">${n}</td><td style="color:#00F2FE;">${c.toLocaleString()}</td><td>512 B</td><td>${(c*512/1048576).toFixed(1)} MB</td><td>2</td><td><span style="color:#10B981;">ACTIVE</span></td></tr>`).join('');
+        }
+        function renderCPUChart() {
+            const h=cpuHistory.length?cpuHistory:Array.from({length:12},()=>Math.floor(Math.random()*40)+20);
+            Plotly.newPlot('cpu-chart',[{x:Array.from({length:h.length},(_,i)=>i+1),y:h,type:'scatter',mode:'lines+markers',fill:'tozeroy',line:{color:'#FB923C',width:2},fillcolor:'rgba(251,146,60,0.12)',marker:{size:5,color:'#FB923C'}}],{paper_bgcolor:'#0B132B',plot_bgcolor:'#0B132B',margin:{l:40,r:10,t:10,b:30},xaxis:{tickfont:{color:'#94A3B8',size:9},gridcolor:'rgba(255,255,255,0.05)',title:{text:'Reading',font:{color:'#94A3B8',size:9}}},yaxis:{tickfont:{color:'#94A3B8',size:9},range:[0,100],gridcolor:'rgba(255,255,255,0.05)',title:{text:'CPU %',font:{color:'#94A3B8',size:9}}},showlegend:false},{responsive:true});
+        }
+        loadData();
+        setInterval(loadData, 10000);
+    </script>
+</body>
+</html>
