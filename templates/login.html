@@ -1,10 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECURE ACCESS // EARTHSCAPE HQ</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <style>
         :root {
             --bg-dark:#070B14; --bg-panel:#0B132B;
@@ -115,6 +116,14 @@
         function fillCreds(user,pass) {
             document.querySelector('input[name=username]').value=user;
             document.querySelector('input[name=password]').value=pass;
+        }
+
+        if (window.gsap) {
+            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+            tl.from('.logo-area', { y: -30, opacity: 0, duration: 0.6 })
+              .from('.login-card', { scale: 0.95, opacity: 0, duration: 0.5, ease: 'back.out(1.4)' }, '-=0.2')
+              .from('.form-group, .role-row, .submit-btn', { y: 15, opacity: 0, duration: 0.4, stagger: 0.08 }, '-=0.2')
+              .from('.demo-creds, .status-bar', { opacity: 0, duration: 0.5 }, '-=0.2');
         }
     </script>
 </body>

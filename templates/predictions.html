@@ -6,6 +6,7 @@
     <title>PREDICTIVE FORECASTING // EARTHSCAPE HQ</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <style>
         :root {
             --bg-dark:#070B14; --bg-panel:#0B132B;
@@ -194,6 +195,16 @@
             }
         }
         loadData();
+
+        if (window.gsap) {
+            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+            tl.from('.hud-header', { y: -30, opacity: 0, duration: 0.5 })
+              .from('.nav-rail', { x: -30, opacity: 0, duration: 0.4 }, '-=0.2')
+              .from('.nav-item', { x: -20, opacity: 0, duration: 0.3, stagger: 0.05 }, '-=0.2')
+              .from('.kpi-grid .cyber-card', { y: 20, opacity: 0, duration: 0.4, stagger: 0.08 }, '-=0.2')
+              .from('.metrics-row .metric-card', { scale: 0.9, opacity: 0, duration: 0.4, stagger: 0.08 }, '-=0.2')
+              .from('.cyber-card.purple-border, .charts-row .cyber-card', { y: 25, opacity: 0, duration: 0.5, stagger: 0.1 }, '-=0.2');
+        }
     </script>
 </body>
 </html>
