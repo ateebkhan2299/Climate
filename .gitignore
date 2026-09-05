@@ -25,3 +25,4 @@ ENV/
 # Logs & temporary files
 *.log
 app.log
+~$*
