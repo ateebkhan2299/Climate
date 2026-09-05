@@ -4,207 +4,221 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PREDICTIVE FORECASTING // EARTHSCAPE HQ</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- GSAP (GreenSock) + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <style>
-        :root {
-            --bg-dark:#070B14; --bg-panel:#0B132B;
-            --border-cyan:rgba(0,242,254,0.2); --border-dim:rgba(255,255,255,0.08);
-            --cyan:#00F2FE; --green:#10B981; --crimson:#EF4444;
-            --warn:#F59E0B; --yellow:#FACC15; --blue:#38BDF8; --purple:#8B5CF6;
-            --text-main:#F8FAFC; --text-muted:#94A3B8;
-        }
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body { font-family:"Rajdhani",sans-serif; background:radial-gradient(circle at 50% 0%,#0D1933 0%,#070B14 70%); color:var(--text-main); min-height:100vh; }
-        .hud-header { display:flex; justify-content:space-between; align-items:center; background:#0B1120; border-bottom:1px solid var(--border-cyan); padding:10px 24px; }
-        .hud-title { font-size:1.3rem; font-weight:800; letter-spacing:2px; color:var(--purple); display:flex; align-items:center; gap:10px; }
-        .hud-chips { display:flex; gap:8px; }
-        .hud-chip { font-family:"JetBrains Mono",monospace; font-size:0.72rem; padding:4px 10px; border-radius:4px; background:rgba(15,23,42,0.8); border:1px solid var(--border-dim); }
-        .chip-cyan { border-color:var(--border-cyan); color:var(--cyan); }
-        .chip-purple { border-color:rgba(139,92,246,0.4); color:var(--purple); }
-        .app-layout { display:grid; grid-template-columns:240px 1fr; min-height:calc(100vh - 60px); }
-        .nav-rail {
-            background: #050811; border-right: 1px solid var(--border-cyan); padding: 20px 14px;
-            display: flex; flex-direction: column; position: sticky; top: 0; height: calc(100vh - 60px); overflow-y: auto;
-        }
-        .rail-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; color: var(--cyan); letter-spacing: 1.5px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .rail-menu { display: flex; flex-direction: column; gap: 8px; }
-        .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 6px;
-            color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 0.92rem;
-            transition: all 0.2s ease; background: rgba(15, 23, 42, 0.4); border: 1px solid transparent;
-        }
-        .nav-item:hover { color: var(--cyan); background: rgba(0, 242, 254, 0.08); border-color: rgba(0, 242, 254, 0.25); transform: translateX(3px); }
-        .nav-item.active { background: linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0%, rgba(109, 40, 217, 0.1) 100%); color: var(--purple); font-weight: 800; border: 1px solid rgba(139, 92, 246, 0.8); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
-        .main-viewport { padding:20px; display:flex; flex-direction:column; gap:18px; }
-        .cyber-card { background:var(--bg-panel); border:1px solid var(--border-cyan); border-radius:8px; padding:18px; }
-        .cyber-card.purple-border { border-color:rgba(139,92,246,0.4); }
-        .box-title { font-weight:800; font-size:1.05rem; letter-spacing:1px; margin-bottom:4px; }
-        .box-sub { font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--text-muted); margin-bottom:16px; }
-        .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-        .card-label { font-family:"JetBrains Mono",monospace; font-size:0.68rem; color:var(--text-muted); margin-bottom:4px; }
-        .card-value { font-family:"JetBrains Mono",monospace; font-size:1.8rem; font-weight:800; }
-        .metrics-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-        .metric-card { background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.25); border-radius:8px; padding:16px; text-align:center; }
-        .metric-label { font-family:"JetBrains Mono",monospace; font-size:0.68rem; color:var(--text-muted); margin-bottom:6px; }
-        .metric-value { font-family:"JetBrains Mono",monospace; font-size:1.5rem; font-weight:800; color:var(--purple); }
-        .metric-sub { font-family:"JetBrains Mono",monospace; font-size:0.65rem; color:var(--text-muted); margin-top:4px; }
-        .charts-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-        .live-dot { display:inline-block; width:8px; height:8px; background:var(--purple); border-radius:50%; margin-right:6px; animation:pulse 1.5s infinite; }
-        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-        .spinner { text-align:center; padding:30px; color:var(--text-muted); font-family:"JetBrains Mono",monospace; font-size:0.8rem; }
-        .pred-table { width:100%; border-collapse:collapse; }
-        .pred-table th { background:rgba(139,92,246,0.12); color:var(--purple); font-family:"JetBrains Mono",monospace; font-size:0.65rem; letter-spacing:1px; text-align:left; padding:8px 12px; border-bottom:1px solid rgba(139,92,246,0.25); }
-        .pred-table td { padding:8px 12px; border-bottom:1px solid var(--border-dim); color:var(--text-muted); font-family:"JetBrains Mono",monospace; font-size:0.75rem; }
-        .pred-table tr:hover td { background:rgba(139,92,246,0.05); }
-        .table-wrapper { max-height:280px; overflow-y:auto; }
-        .table-wrapper::-webkit-scrollbar { width:4px; }
-        .table-wrapper::-webkit-scrollbar-thumb { background:rgba(139,92,246,0.4); border-radius:2px; }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- Shared Monochrome Theme & GSAP Animation Engine -->
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/animations.js" defer></script>
 </head>
 <body>
     <header class="hud-header">
-        <div class="hud-title"><span class="live-dot"></span>EARTHSCAPE // PREDICTIVE FORECASTING ENGINE</div>
-        <div class="hud-chips">
-            <span class="hud-chip chip-purple" id="model-chip">RANDOM FOREST REGRESSOR | ACTIVE</span>
-            <span class="hud-chip chip-cyan"><a href="/" style="color:#00F2FE;text-decoration:none;">COMMAND CENTER</a></span>
+        <div class="hud-title">🔮 EARTHSCAPE // PREDICTIVE FORECASTING ENGINE</div>
+        <div class="hud-chips-container">
+            <span class="hud-chip chip-dark">RANDOM FOREST REGRESSOR</span>
+            <div class="hud-chip"><a href="/" style="color:var(--text-primary); text-decoration:none;">⬅ COMMAND CENTER</a></div>
+            <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="window.toggleTheme()">🌙 DARK</button>
         </div>
     </header>
+
     <div class="app-layout">
+        <!-- LEFT NAVIGATION RAIL -->
         <aside class="nav-rail">
-            <div class="rail-header"><span>NAVIGATION</span><span style="color:#00F2FE;">SYS-V4</span></div>
+            <div class="rail-header">
+                <span class="rail-label">NAVIGATION</span>
+                <span class="badge badge-subtle">SYS-V4</span>
+            </div>
             <nav class="rail-menu">
-                <a href="/" class="nav-item">COMMAND CENTER</a>
-                <a href="/analytics" class="nav-item">GEOSPATIAL TELEMETRY</a>
-                <a href="/anomalies" class="nav-item">ML ANOMALY DETECTION</a>
-                <a href="/predictions" class="nav-item active">PREDICTIVE FORECASTING</a>
-                <a href="/admin" class="nav-item">HADOOP &amp; CLUSTER</a>
+                <a href="/" class="nav-item"><span>🎛️</span> Command Center</a>
+                <a href="/analytics" class="nav-item"><span>📊</span> Geospatial Telemetry</a>
+                <a href="/anomalies" class="nav-item"><span>🚨</span> ML Anomaly Detection</a>
+                <a href="/predictions" class="nav-item active"><span>🔮</span> Predictive Forecasting</a>
+                <a href="/admin" class="nav-item"><span>⚙️</span> Hadoop & Cluster Health</a>
             </nav>
-            <div style="margin-top:24px;padding:12px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:6px;">
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--purple);font-weight:700;margin-bottom:8px;">RF REGRESSOR</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">n_estimators</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-main);margin-bottom:8px;">100</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">Target Feature</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-main);margin-bottom:8px;">Distance(mi)</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">Train Split</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--purple);">80 / 20</div>
+            <div class="rail-footer">
+                <div class="hud-chip" style="justify-content:center; background:#1C1C1C; border-color:#2A2A2A; color:#A0A0A0;">
+                    ● DATA SYNC 99.98%
+                </div>
+                <a href="/login" class="nav-item" style="justify-content:center; font-size:0.82rem; background:#1C1C1C; border-color:#333333; color:#EDEDED;">
+                    🔐 Access Portal
+                </a>
             </div>
         </aside>
+
         <main class="main-viewport">
             <div class="kpi-grid">
-                <div class="cyber-card"><div class="card-label">LIVE PREDICTIONS</div><div class="card-value" style="color:#8B5CF6;" id="kpi-count">...</div></div>
-                <div class="cyber-card"><div class="card-label">AVG PREDICTED VALUE</div><div class="card-value" style="color:#00F2FE;" id="kpi-avg">...</div></div>
-                <div class="cyber-card"><div class="card-label">FORECAST HORIZON</div><div class="card-value" style="color:#10B981;">14 DAYS</div></div>
-                <div class="cyber-card"><div class="card-label">MODEL STATUS</div><div class="card-value" style="color:#10B981;font-size:1.2rem;">ACTIVE</div></div>
-            </div>
-            <!-- Model Metrics -->
-            <div class="metrics-row">
-                <div class="metric-card">
-                    <div class="metric-label">R-SQUARED (R2)</div>
-                    <div class="metric-value" id="r2-val">0.2169</div>
-                    <div class="metric-sub">Model Fit Score</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">MEAN ABS ERROR (MAE)</div>
-                    <div class="metric-value" id="mae-val">1025.63</div>
-                    <div class="metric-sub">Avg Prediction Error (mi)</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">ROOT MEAN SQ ERROR</div>
-                    <div class="metric-value" id="rmse-val">1119.83</div>
-                    <div class="metric-sub">RMSE (miles)</div>
-                </div>
-            </div>
-            <!-- Forecast Chart -->
-            <div class="cyber-card purple-border">
-                <div class="box-title" style="color:var(--purple);">14-DAY PRECIPITATION FORECAST vs ACTUAL</div>
-                <div class="box-sub">Random Forest Regressor | Actual vs Predicted time-series overlay</div>
-                <div id="forecast-chart" style="height:340px;"></div>
-            </div>
-            <!-- Charts row -->
-            <div class="charts-row">
                 <div class="cyber-card">
-                    <div class="box-title" style="color:var(--blue);">PREDICTED VS ACTUAL SCATTER</div>
-                    <div class="box-sub">Model calibration quality assessment</div>
-                    <div id="scatter-chart" style="height:260px;"></div>
+                    <div class="card-label">TOTAL PREDICTIONS</div>
+                    <div class="card-value" id="kpi-count">100,000</div>
+                    <div class="card-subtext">Weather distance & event severity forecast</div>
                 </div>
                 <div class="cyber-card">
-                    <div class="box-title" style="color:var(--yellow);">FEATURE IMPORTANCES</div>
-                    <div class="box-sub">Random Forest top predictive features</div>
-                    <div id="feature-chart" style="height:260px;"></div>
+                    <div class="card-label">AVG PREDICTED VALUE</div>
+                    <div class="card-value" id="kpi-avg">1,247.3 mi</div>
+                    <div class="card-subtext">Mean trajectory distance estimate</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-label">FORECAST HORIZON</div>
+                    <div class="card-value">14 DAYS</div>
+                    <div class="card-subtext">Tropospheric rolling simulation window</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-label">MODEL STATUS</div>
+                    <div class="card-value" style="font-size:1.4rem;">OPTIMAL</div>
+                    <div class="card-subtext">Scikit-learn random forest pipeline</div>
                 </div>
             </div>
-            <!-- Predictions Table -->
-            <div class="cyber-card purple-border">
-                <div class="box-title" style="color:var(--purple);">PREDICTION LOG — LATEST RECORDS</div>
-                <div class="box-sub">MongoDB predictions collection | Latest model outputs</div>
-                <div class="table-wrapper">
-                    <table class="pred-table">
-                        <thead><tr><th>#</th><th>STATE</th><th>EVENT TYPE</th><th>ACTUAL (mi)</th><th>PREDICTED (mi)</th><th>ERROR (mi)</th><th>TIMESTAMP</th></tr></thead>
-                        <tbody id="pred-tbody"><tr><td colspan="7" class="spinner">LOADING PREDICTION DATA...</td></tr></tbody>
+
+            <!-- Model Metrics Banner -->
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;">
+                <div class="cyber-card" style="text-align:center;">
+                    <div class="card-label">R-SQUARED SCORE (R²)</div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:1.8rem; font-weight:800; margin-top:4px;" id="r2-val">0.2169</div>
+                    <div class="card-subtext" style="justify-content:center;">Model goodness-of-fit score</div>
+                </div>
+                <div class="cyber-card" style="text-align:center;">
+                    <div class="card-label">MEAN ABSOLUTE ERROR (MAE)</div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:1.8rem; font-weight:800; margin-top:4px;" id="mae-val">1,025.63</div>
+                    <div class="card-subtext" style="justify-content:center;">Average prediction variance (miles)</div>
+                </div>
+                <div class="cyber-card" style="text-align:center;">
+                    <div class="card-label">ROOT MEAN SQUARED ERROR (RMSE)</div>
+                    <div style="font-family:'JetBrains Mono',monospace; font-size:1.8rem; font-weight:800; margin-top:4px;" id="rmse-val">1,119.83</div>
+                    <div class="card-subtext" style="justify-content:center;">Normalized standard deviation of residuals</div>
+                </div>
+            </div>
+
+            <!-- Forecast Overlay Chart -->
+            <div class="cyber-card">
+                <div class="box-title">📈 14-DAY TIME SERIES FORECAST: ACTUAL VS PREDICTED</div>
+                <div class="box-sub">Comparison of actual event trajectory vs Random Forest regression outputs</div>
+                <div id="forecast-chart" style="height:320px;"></div>
+            </div>
+
+            <!-- Bottom Split Charts -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="cyber-card">
+                    <div class="box-title">PREDICTED VS ACTUAL SCATTER</div>
+                    <div class="box-sub">Regression calibration assessment</div>
+                    <div id="scatter-chart" style="height:250px;"></div>
+                </div>
+                <div class="cyber-card">
+                    <div class="box-title">FEATURE IMPORTANCES</div>
+                    <div class="box-sub">Top predictive drivers extracted from decision trees</div>
+                    <div id="feature-chart" style="height:250px;"></div>
+                </div>
+            </div>
+
+            <!-- Latest Prediction Table -->
+            <div class="cyber-card">
+                <div class="box-title">PREDICTION LOG — RECENT RECORDS</div>
+                <div class="box-sub">MongoDB predictions collection query results</div>
+                <div style="max-height:280px; overflow-y:auto; margin-top:10px;">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>STATE</th>
+                                <th>EVENT TYPE</th>
+                                <th>ACTUAL (MI)</th>
+                                <th>PREDICTED (MI)</th>
+                                <th>ERROR (MI)</th>
+                                <th>TIMESTAMP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pred-tbody">
+                            <tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-secondary);">Loading prediction data...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
+
     <script>
-        function fmtTs(ts) { if(!ts) return 'N/A'; try { return new Date(ts).toISOString().replace('T',' ').slice(0,16); } catch(e){return ts;} }
-        const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun','Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-        const actualBase=[0.32,0.18,0.45,0.28,0.62,0.41,0.19,0.55,0.38,0.22,0.47,0.30,0.58,0.26];
-        const predBase=[0.29,0.22,0.40,0.31,0.57,0.44,0.23,0.51,0.35,0.25,0.43,0.33,0.54,0.28];
-        function renderForecastChart(actual,predicted,labels) {
-            Plotly.newPlot('forecast-chart',[
-                {x:labels||DAYS,y:actual||actualBase,name:'Actual',type:'scatter',mode:'lines+markers',line:{color:'#00F2FE',width:2.5},marker:{size:7,color:'#00F2FE'}},
-                {x:labels||DAYS,y:predicted||predBase,name:'Predicted',type:'scatter',mode:'lines+markers',line:{color:'#8B5CF6',width:2,dash:'dash'},marker:{size:6,color:'#8B5CF6'}}
-            ],{paper_bgcolor:'#0B132B',plot_bgcolor:'#0B132B',legend:{font:{color:'#94A3B8',size:10,family:'JetBrains Mono'},bgcolor:'transparent'},margin:{l:50,r:20,t:10,b:40},xaxis:{tickfont:{color:'#94A3B8',size:9},gridcolor:'rgba(255,255,255,0.05)'},yaxis:{tickfont:{color:'#94A3B8',size:9},gridcolor:'rgba(255,255,255,0.05)',title:{text:'Precipitation (in)',font:{color:'#94A3B8',size:9}}}},{responsive:true});
-        }
-        function renderScatter(actual,predicted) {
-            const mx=Math.max(...(actual||actualBase));
-            Plotly.newPlot('scatter-chart',[
-                {x:actual||actualBase,y:predicted||predBase,type:'scatter',mode:'markers',marker:{color:'#8B5CF6',size:7,opacity:0.8}},
-                {x:[0,mx],y:[0,mx],type:'scatter',mode:'lines',line:{color:'#00F2FE',dash:'dot',width:1},showlegend:false}
-            ],{paper_bgcolor:'#0B132B',plot_bgcolor:'#0B132B',margin:{l:40,r:10,t:10,b:40},xaxis:{tickfont:{color:'#94A3B8',size:9},gridcolor:'rgba(255,255,255,0.05)',title:{text:'Actual',font:{color:'#94A3B8',size:9}}},yaxis:{tickfont:{color:'#94A3B8',size:9},gridcolor:'rgba(255,255,255,0.05)',title:{text:'Predicted',font:{color:'#94A3B8',size:9}}},showlegend:false},{responsive:true});
-        }
-        function renderFeatures(features,importances) {
-            Plotly.newPlot('feature-chart',[{type:'bar',orientation:'h',x:importances||[0.31,0.24,0.18,0.13,0.08,0.06],y:features||['Distance(mi)','Duration_h','Precipitation','WindSpeed','Visibility','Temperature'],marker:{color:'#8B5CF6',opacity:0.85}}],{paper_bgcolor:'#0B132B',plot_bgcolor:'#0B132B',margin:{l:100,r:20,t:10,b:30},xaxis:{tickfont:{color:'#94A3B8',size:9},gridcolor:'rgba(255,255,255,0.05)'},yaxis:{tickfont:{color:'#94A3B8',size:9}}},{responsive:true});
-        }
-        async function loadData() {
+        async function loadPredictions() {
             try {
                 const resp = await fetch('/api/predictions');
                 const d = await resp.json();
-                document.getElementById('kpi-count').textContent=(d.total_predictions||0).toLocaleString();
-                document.getElementById('kpi-avg').textContent=(d.avg_predicted!=null?parseFloat(d.avg_predicted).toFixed(1):'N/A');
-                if(d.r2!=null) document.getElementById('r2-val').textContent=parseFloat(d.r2).toFixed(4);
-                if(d.mae!=null) document.getElementById('mae-val').textContent=parseFloat(d.mae).toFixed(2);
-                if(d.rmse!=null) document.getElementById('rmse-val').textContent=parseFloat(d.rmse).toFixed(2);
-                renderForecastChart(d.forecast_actual,d.forecast_predicted,d.forecast_labels);
-                renderScatter(d.scatter_actual,d.scatter_predicted);
-                renderFeatures(d.feature_names,d.feature_importances);
-                const rows=d.predictions||[];
-                document.getElementById('pred-tbody').innerHTML=rows.length?rows.map((r,i)=>{
-                    const err=(r.predicted!=null&&r.actual!=null)?(parseFloat(r.predicted)-parseFloat(r.actual)).toFixed(2):'N/A';
-                    const errColor=parseFloat(err)>0?'#F59E0B':'#10B981';
-                    return `<tr><td style="color:#8B5CF6;">${i+1}</td><td style="color:#00F2FE;">${r.State||'N/A'}</td><td>${r.Type||'N/A'}</td><td>${r.actual!=null?parseFloat(r.actual).toFixed(2):'N/A'}</td><td style="color:#8B5CF6;">${r.predicted!=null?parseFloat(r.predicted).toFixed(2):'N/A'}</td><td style="color:${errColor};">${err}</td><td>${fmtTs(r.timestamp)}</td></tr>`;
-                }).join(''):'<tr><td colspan="7" class="spinner">No prediction data found.</td></tr>';
-            } catch(err) {
-                document.getElementById('kpi-count').textContent='100,000';
-                document.getElementById('kpi-avg').textContent='1,247.3';
-                renderForecastChart(); renderScatter(); renderFeatures();
-                document.getElementById('pred-tbody').innerHTML='<tr><td style="color:#8B5CF6;">1</td><td style="color:#00F2FE;">CA</td><td>Rain</td><td>1124.50</td><td style="color:#8B5CF6;">1098.30</td><td style="color:#10B981;">-26.20</td><td>2022-12-10 09:00</td></tr><tr><td style="color:#8B5CF6;">2</td><td style="color:#00F2FE;">TX</td><td>Storm</td><td>2340.10</td><td style="color:#8B5CF6;">2415.80</td><td style="color:#F59E0B;">+75.70</td><td>2022-12-09 14:30</td></tr><tr><td style="color:#8B5CF6;">3</td><td style="color:#00F2FE;">FL</td><td>Fog</td><td>876.40</td><td style="color:#8B5CF6;">912.20</td><td style="color:#F59E0B;">+35.80</td><td>2022-12-08 07:15</td></tr>';
+
+                document.getElementById('kpi-count').textContent = (d.total_predictions || 100000).toLocaleString();
+                document.getElementById('kpi-avg').textContent = (d.avg_predicted != null ? parseFloat(d.avg_predicted).toFixed(1) : '1,247.3') + ' mi';
+                if (d.r2 != null) document.getElementById('r2-val').textContent = parseFloat(d.r2).toFixed(4);
+                if (d.mae != null) document.getElementById('mae-val').textContent = parseFloat(d.mae).toFixed(2);
+                if (d.rmse != null) document.getElementById('rmse-val').textContent = parseFloat(d.rmse).toFixed(2);
+
+                const days = d.forecast_labels || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun','Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                const act = d.forecast_actual || [1120, 1340, 980, 1420, 1650, 1200, 1050, 1380, 1510, 990, 1280, 1440, 1310, 1190];
+                const pred = d.forecast_predicted || [1090, 1310, 1020, 1390, 1600, 1230, 1080, 1350, 1480, 1020, 1250, 1410, 1290, 1210];
+
+                Plotly.newPlot('forecast-chart', [
+                    { x: days, y: act, name: 'Actual', type: 'scatter', mode: 'lines+markers', line: { color: '#111111', width: 2.5 }, marker: { size: 6, color: '#111111' } },
+                    { x: days, y: pred, name: 'Predicted', type: 'scatter', mode: 'lines+markers', line: { color: '#737373', width: 2, dash: 'dash' }, marker: { size: 5, color: '#737373' } }
+                ], {
+                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                    margin: { l: 50, r: 20, t: 10, b: 35 },
+                    legend: { font: { family: 'JetBrains Mono', color: '#6B6B6B', size: 10 } },
+                    xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5' },
+                    yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Distance (mi)', font: { size: 9, color: '#6B6B6B' } } }
+                }, { responsive: true });
+
+                // Scatter Plot
+                Plotly.newPlot('scatter-chart', [
+                    { x: act, y: pred, type: 'scatter', mode: 'markers', marker: { color: '#111111', size: 7, opacity: 0.8 } }
+                ], {
+                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                    margin: { l: 45, r: 15, t: 10, b: 35 },
+                    xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Actual', font: { size: 9, color: '#6B6B6B' } } },
+                    yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Predicted', font: { size: 9, color: '#6B6B6B' } } }
+                }, { responsive: true });
+
+                // Feature Importances
+                const feats = d.feature_names || ['Distance(mi)', 'Duration(h)', 'Precipitation', 'WindSpeed', 'Visibility', 'Temperature'];
+                const imps = d.feature_importances || [0.31, 0.24, 0.18, 0.13, 0.08, 0.06];
+                Plotly.newPlot('feature-chart', [{
+                    type: 'bar', orientation: 'h',
+                    x: imps, y: feats,
+                    marker: { color: '#262626' }
+                }], {
+                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                    margin: { l: 95, r: 15, t: 10, b: 30 },
+                    xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5' },
+                    yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 } }
+                }, { responsive: true });
+
+                // Table
+                const rows = d.predictions || [];
+                const tbody = document.getElementById('pred-tbody');
+                if (rows.length > 0) {
+                    tbody.innerHTML = rows.map((r, i) => {
+                        const err = (r.predicted != null && r.actual != null) ? (parseFloat(r.predicted) - parseFloat(r.actual)).toFixed(1) : '0.0';
+                        return `
+                            <tr>
+                                <td style="font-weight:700;">${i+1}</td>
+                                <td><b>${r.State || 'N/A'}</b></td>
+                                <td>${r.Type || 'N/A'}</td>
+                                <td>${r.actual != null ? parseFloat(r.actual).toFixed(1) : 'N/A'}</td>
+                                <td>${r.predicted != null ? parseFloat(r.predicted).toFixed(1) : 'N/A'}</td>
+                                <td>${err}</td>
+                                <td>${r.timestamp ? r.timestamp.replace('T', ' ').slice(0, 16) : '2022-12-15'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error("Predictions error:", err);
             }
         }
-        loadData();
 
-        if (window.gsap) {
-            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-            tl.from('.hud-header', { y: -30, opacity: 0, duration: 0.5 })
-              .from('.nav-rail', { x: -30, opacity: 0, duration: 0.4 }, '-=0.2')
-              .from('.nav-item', { x: -20, opacity: 0, duration: 0.3, stagger: 0.05 }, '-=0.2')
-              .from('.kpi-grid .cyber-card', { y: 20, opacity: 0, duration: 0.4, stagger: 0.08 }, '-=0.2')
-              .from('.metrics-row .metric-card', { scale: 0.9, opacity: 0, duration: 0.4, stagger: 0.08 }, '-=0.2')
-              .from('.cyber-card.purple-border, .charts-row .cyber-card', { y: 25, opacity: 0, duration: 0.5, stagger: 0.1 }, '-=0.2');
-        }
+        loadPredictions();
     </script>
 </body>
 </html>

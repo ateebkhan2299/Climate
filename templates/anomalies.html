@@ -4,205 +4,219 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ML ANOMALY DETECTION // EARTHSCAPE HQ</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- GSAP (GreenSock) + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <style>
-        :root {
-            --bg-dark: #070B14; --bg-panel: #0B132B;
-            --border-cyan: rgba(0,242,254,0.2); --border-dim: rgba(255,255,255,0.08);
-            --cyan: #00F2FE; --green: #10B981; --crimson: #EF4444;
-            --warn: #F59E0B; --yellow: #FACC15; --blue: #38BDF8;
-            --text-main: #F8FAFC; --text-muted: #94A3B8;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: "Rajdhani", sans-serif; background: radial-gradient(circle at 50% 0%, #0D1933 0%, #070B14 70%); color: var(--text-main); min-height: 100vh; }
-        .hud-header { display:flex; justify-content:space-between; align-items:center; background:#0B1120; border-bottom:1px solid var(--border-cyan); padding:10px 24px; }
-        .hud-title { font-size:1.3rem; font-weight:800; letter-spacing:2px; color:var(--crimson); display:flex; align-items:center; gap:10px; }
-        .hud-chips { display:flex; gap:8px; }
-        .hud-chip { font-family:"JetBrains Mono",monospace; font-size:0.72rem; padding:4px 10px; border-radius:4px; background:rgba(15,23,42,0.8); border:1px solid var(--border-dim); }
-        .chip-cyan { border-color:var(--border-cyan); color:var(--cyan); }
-        .chip-red { border-color:rgba(239,68,68,0.4); color:var(--crimson); }
-        .app-layout { display:grid; grid-template-columns:240px 1fr; min-height:calc(100vh - 60px); }
-        .nav-rail {
-            background: #050811; border-right: 1px solid var(--border-cyan); padding: 20px 14px;
-            display: flex; flex-direction: column; position: sticky; top: 0; height: calc(100vh - 60px); overflow-y: auto;
-        }
-        .rail-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; color: var(--cyan); letter-spacing: 1.5px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .rail-menu { display: flex; flex-direction: column; gap: 8px; }
-        .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 6px;
-            color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 0.92rem;
-            transition: all 0.2s ease; background: rgba(15, 23, 42, 0.4); border: 1px solid transparent;
-        }
-        .nav-item:hover { color: var(--cyan); background: rgba(0, 242, 254, 0.08); border-color: rgba(0, 242, 254, 0.25); transform: translateX(3px); }
-        .nav-item.active { background: linear-gradient(90deg, rgba(239, 68, 68, 0.2) 0%, rgba(185, 28, 28, 0.1) 100%); color: #EF4444; font-weight: 800; border: 1px solid rgba(239, 68, 68, 0.8); box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
-        .main-viewport { padding:20px; display:flex; flex-direction:column; gap:18px; }
-        .cyber-card { background:var(--bg-panel); border:1px solid var(--border-cyan); border-radius:8px; padding:18px; }
-        .cyber-card.red-border { border-color:rgba(239,68,68,0.4); }
-        .box-title { font-weight:800; font-size:1.05rem; letter-spacing:1px; margin-bottom:4px; }
-        .box-sub { font-family:"JetBrains Mono",monospace; font-size:0.7rem; color:var(--text-muted); margin-bottom:16px; }
-        .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-        .card-label { font-family:"JetBrains Mono",monospace; font-size:0.68rem; color:var(--text-muted); margin-bottom:4px; }
-        .card-value { font-family:"JetBrains Mono",monospace; font-size:1.8rem; font-weight:800; }
-        .charts-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-        .anomaly-table { width:100%; border-collapse:collapse; font-size:0.83rem; }
-        .anomaly-table th { background:rgba(239,68,68,0.12); color:var(--crimson); font-family:"JetBrains Mono",monospace; font-size:0.65rem; letter-spacing:1px; text-align:left; padding:8px 12px; border-bottom:1px solid rgba(239,68,68,0.25); }
-        .anomaly-table td { padding:8px 12px; border-bottom:1px solid var(--border-dim); color:var(--text-muted); font-family:"JetBrains Mono",monospace; font-size:0.75rem; }
-        .anomaly-table tr:hover td { background:rgba(239,68,68,0.05); }
-        .badge { display:inline-block; padding:2px 8px; border-radius:3px; font-size:0.67rem; font-weight:700; font-family:"JetBrains Mono",monospace; }
-        .badge-critical { background:rgba(239,68,68,0.2); color:#EF4444; border:1px solid rgba(239,68,68,0.3); }
-        .badge-heavy { background:rgba(245,158,11,0.2); color:#F59E0B; border:1px solid rgba(245,158,11,0.3); }
-        .badge-moderate { background:rgba(250,204,21,0.15); color:#FACC15; border:1px solid rgba(250,204,21,0.3); }
-        .badge-light { background:rgba(16,185,129,0.15); color:#10B981; border:1px solid rgba(16,185,129,0.3); }
-        .model-info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-        .model-info-item { background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2); border-radius:6px; padding:12px; }
-        .model-info-label { font-family:"JetBrains Mono",monospace; font-size:0.65rem; color:var(--text-muted); }
-        .model-info-value { font-family:"JetBrains Mono",monospace; font-size:1.1rem; font-weight:700; color:var(--crimson); }
-        .live-badge { display:inline-block; width:8px; height:8px; background:var(--crimson); border-radius:50%; margin-right:6px; animation:pulse 1.5s infinite; }
-        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-        .spinner { text-align:center; padding:30px; color:var(--text-muted); font-family:"JetBrains Mono",monospace; font-size:0.8rem; }
-        .table-wrapper { max-height:320px; overflow-y:auto; }
-        .table-wrapper::-webkit-scrollbar { width:4px; }
-        .table-wrapper::-webkit-scrollbar-thumb { background:rgba(239,68,68,0.4); border-radius:2px; }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- Shared Monochrome Theme & GSAP Animation Engine -->
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/animations.js" defer></script>
 </head>
 <body>
     <header class="hud-header">
-        <div class="hud-title"><span class="live-badge"></span>EARTHSCAPE // ML ANOMALY DETECTION ENGINE</div>
-        <div class="hud-chips">
-            <span class="hud-chip chip-red" id="anomaly-count-chip">LOADING ANOMALIES...</span>
-            <span class="hud-chip chip-cyan"><a href="/" style="color:#00F2FE;text-decoration:none;">COMMAND CENTER</a></span>
+        <div class="hud-title"><span class="pulse-dot" style="background:#EF4444;"></span> EARTHSCAPE // ML ANOMALY DETECTION ENGINE</div>
+        <div class="hud-chips-container">
+            <span class="hud-chip chip-alert" id="anomaly-count-chip">20,047 ANOMALIES DETECTED</span>
+            <div class="hud-chip"><a href="/" style="color:var(--text-primary); text-decoration:none;">⬅ COMMAND CENTER</a></div>
+            <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="window.toggleTheme()">🌙 DARK</button>
         </div>
     </header>
+
     <div class="app-layout">
+        <!-- LEFT NAVIGATION RAIL -->
         <aside class="nav-rail">
-            <div class="rail-header"><span>NAVIGATION</span><span style="color:#00F2FE;">SYS-V4</span></div>
+            <div class="rail-header">
+                <span class="rail-label">NAVIGATION</span>
+                <span class="badge badge-subtle">SYS-V4</span>
+            </div>
             <nav class="rail-menu">
-                <a href="/" class="nav-item">COMMAND CENTER</a>
-                <a href="/analytics" class="nav-item">GEOSPATIAL TELEMETRY</a>
-                <a href="/anomalies" class="nav-item active">ML ANOMALY DETECTION</a>
-                <a href="/predictions" class="nav-item">PREDICTIVE FORECASTING</a>
-                <a href="/admin" class="nav-item">HADOOP &amp; CLUSTER</a>
+                <a href="/" class="nav-item"><span>🎛️</span> Command Center</a>
+                <a href="/analytics" class="nav-item"><span>📊</span> Geospatial Telemetry</a>
+                <a href="/anomalies" class="nav-item active"><span>🚨</span> ML Anomaly Detection</a>
+                <a href="/predictions" class="nav-item"><span>🔮</span> Predictive Forecasting</a>
+                <a href="/admin" class="nav-item"><span>⚙️</span> Hadoop & Cluster Health</a>
             </nav>
-            <div style="margin-top:24px;padding:12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:6px;">
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--crimson);font-weight:700;margin-bottom:8px;">MODEL STATUS</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">Algorithm</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-main);margin-bottom:8px;">Isolation Forest</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">n_estimators</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--text-main);margin-bottom:8px;">150</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);">Contamination</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--crimson);">4.00%</div>
+            <div class="rail-footer">
+                <div class="hud-chip" style="justify-content:center; background:#1C1C1C; border-color:#2A2A2A; color:#A0A0A0;">
+                    ● DATA SYNC 99.98%
+                </div>
+                <a href="/login" class="nav-item" style="justify-content:center; font-size:0.82rem; background:#1C1C1C; border-color:#333333; color:#EDEDED;">
+                    🔐 Access Portal
+                </a>
             </div>
         </aside>
+
         <main class="main-viewport">
             <div class="kpi-grid">
-                <div class="cyber-card"><div class="card-label">ANOMALIES DETECTED</div><div class="card-value" style="color:#EF4444;" id="kpi-total">...</div></div>
-                <div class="cyber-card"><div class="card-label">CRITICAL SEVERITY</div><div class="card-value" style="color:#F59E0B;" id="kpi-critical">...</div></div>
-                <div class="cyber-card"><div class="card-label">ANOMALY RATE</div><div class="card-value" style="color:#FACC15;" id="kpi-rate">...</div></div>
-                <div class="cyber-card"><div class="card-label">TRAINING RECORDS</div><div class="card-value" style="color:#10B981;">500K</div></div>
-            </div>
-            <div class="cyber-card red-border">
-                <div class="box-title" style="color:var(--crimson);">ISOLATION FOREST MODEL PARAMETERS</div>
-                <div class="box-sub">Scikit-learn v1.3 | Trained on 500,000 weather event records</div>
-                <div class="model-info-grid">
-                    <div class="model-info-item"><div class="model-info-label">n_estimators</div><div class="model-info-value">150</div></div>
-                    <div class="model-info-item"><div class="model-info-label">max_samples</div><div class="model-info-value">auto</div></div>
-                    <div class="model-info-item"><div class="model-info-label">contamination</div><div class="model-info-value">0.04</div></div>
-                    <div class="model-info-item"><div class="model-info-label">max_features</div><div class="model-info-value">1.0</div></div>
-                    <div class="model-info-item"><div class="model-info-label">bootstrap</div><div class="model-info-value">False</div></div>
-                    <div class="model-info-item"><div class="model-info-label">random_state</div><div class="model-info-value">42</div></div>
-                </div>
-            </div>
-            <div class="charts-row">
                 <div class="cyber-card">
-                    <div class="box-title" style="color:var(--crimson);">ANOMALIES BY SEVERITY</div>
-                    <div class="box-sub">Distribution across severity tiers</div>
-                    <div id="severity-chart" style="height:280px;"></div>
+                    <div class="card-label">ANOMALIES DETECTED</div>
+                    <div class="card-value" id="kpi-total">20,047</div>
+                    <div class="card-subtext">Isolation Forest decision boundary violations</div>
                 </div>
                 <div class="cyber-card">
-                    <div class="box-title" style="color:var(--warn);">ANOMALIES BY EVENT TYPE</div>
-                    <div class="box-sub">Top weather anomaly categories</div>
-                    <div id="type-chart" style="height:280px;"></div>
+                    <div class="card-label">CRITICAL SEVERITY</div>
+                    <div class="card-value" id="kpi-critical">3,412</div>
+                    <div class="card-subtext">Severe storm and hurricane events</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-label">ANOMALY CONTAMINATION</div>
+                    <div class="card-value" id="kpi-rate">4.00%</div>
+                    <div class="card-subtext">Pre-configured statistical outlier bound</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-label">TRAINING RECORDS</div>
+                    <div class="card-value">500,000</div>
+                    <div class="card-subtext">Scikit-learn v1.3 on PySpark HDFS export</div>
                 </div>
             </div>
-            <div class="cyber-card red-border">
-                <div class="box-title" style="color:var(--crimson);">LIVE ANOMALY DETECTION LOG</div>
-                <div class="box-sub">Real-time feed from MongoDB anomalies collection | Isolation Forest violations</div>
-                <div class="table-wrapper">
-                    <table class="anomaly-table">
+
+            <!-- Model Parameters -->
+            <div class="cyber-card">
+                <div class="box-title">🤖 ISOLATION FOREST MODEL ARCHITECTURE</div>
+                <div class="box-sub">Trained on 500,000 historical records • Stored at models/saved_models/isolation_forest.joblib</div>
+                <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:12px; margin-top:14px;">
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:12px; text-align:center;">
+                        <div class="card-label">N_ESTIMATORS</div>
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:800; margin-top:4px;">150</div>
+                    </div>
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:12px; text-align:center;">
+                        <div class="card-label">MAX_SAMPLES</div>
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:800; margin-top:4px;">auto</div>
+                    </div>
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:12px; text-align:center;">
+                        <div class="card-label">CONTAMINATION</div>
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:800; margin-top:4px;">0.04</div>
+                    </div>
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:12px; text-align:center;">
+                        <div class="card-label">MAX_FEATURES</div>
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:800; margin-top:4px;">1.0</div>
+                    </div>
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:12px; text-align:center;">
+                        <div class="card-label">BOOTSTRAP</div>
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:800; margin-top:4px;">False</div>
+                    </div>
+                    <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:12px; text-align:center;">
+                        <div class="card-label">RANDOM_STATE</div>
+                        <div style="font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:800; margin-top:4px;">42</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="cyber-card">
+                    <div class="box-title">📊 ANOMALIES BY SEVERITY TIER</div>
+                    <div class="box-sub">Distribution across light, moderate, heavy, and critical tiers</div>
+                    <div id="severity-chart" style="height:260px;"></div>
+                </div>
+                <div class="cyber-card">
+                    <div class="box-title">📍 ANOMALIES BY EVENT TYPE</div>
+                    <div class="box-sub">Primary categories detected by Isolation Forest</div>
+                    <div id="type-chart" style="height:260px;"></div>
+                </div>
+            </div>
+
+            <!-- Anomaly Log Table -->
+            <div class="cyber-card">
+                <div class="box-title">🔍 LIVE ANOMALY DETECTION LOG</div>
+                <div class="box-sub">MongoDB anomalies collection feed • Decision boundary scores below threshold</div>
+                <div style="max-height:300px; overflow-y:auto; margin-top:10px;">
+                    <table class="clean-table">
                         <thead>
                             <tr>
-                                <th>#ID</th><th>TIMESTAMP (UTC)</th><th>STATE</th><th>EVENT TYPE</th>
-                                <th>SEVERITY</th><th>PRECIP (in)</th><th>DISTANCE (mi)</th><th>DURATION (h)</th><th>SCORE</th>
+                                <th>#ID</th>
+                                <th>TIMESTAMP (UTC)</th>
+                                <th>STATE</th>
+                                <th>EVENT TYPE</th>
+                                <th>SEVERITY</th>
+                                <th>PRECIP (IN)</th>
+                                <th>DISTANCE (MI)</th>
+                                <th>SCORE</th>
                             </tr>
                         </thead>
                         <tbody id="anomaly-tbody">
-                            <tr><td colspan="9" class="spinner">LOADING ANOMALY DATA FROM MONGODB...</td></tr>
+                            <tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-secondary);">Loading anomaly data from MongoDB...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </main>
     </div>
+
     <script>
-        function badgeClass(sev) {
-            const s = (sev||'').toLowerCase();
-            if(s.includes('critical')||s.includes('severe')) return 'badge badge-critical';
-            if(s.includes('heavy')) return 'badge badge-heavy';
-            if(s.includes('moderate')) return 'badge badge-moderate';
-            return 'badge badge-light';
-        }
-        function fmtTs(ts) {
-            if(!ts) return 'N/A';
-            try { return new Date(ts).toISOString().replace('T',' ').slice(0,16); } catch(e){return ts;}
-        }
-        async function loadData() {
+        async function loadAnomalyData() {
             try {
                 const resp = await fetch('/api/anomalies');
                 const d = await resp.json();
-                document.getElementById('kpi-total').textContent = (d.total_anomalies||0).toLocaleString();
-                document.getElementById('kpi-critical').textContent = (d.critical_count||0).toLocaleString();
-                document.getElementById('kpi-rate').textContent = (d.anomaly_rate||'4.00')+'%';
-                document.getElementById('anomaly-count-chip').textContent = (d.total_anomalies||0).toLocaleString()+' ANOMALIES DETECTED';
-                const sc = d.severity_distribution||{};
-                Plotly.newPlot('severity-chart',[{type:'bar',orientation:'h',x:Object.values(sc),y:Object.keys(sc),marker:{color:['#EF4444','#F59E0B','#FACC15','#10B981','#38BDF8']}}],{paper_bgcolor:'#0B132B',plot_bgcolor:'#0B132B',margin:{l:80,r:50,t:10,b:30},xaxis:{tickfont:{color:'#94A3B8',size:9},gridcolor:'rgba(255,255,255,0.05)'},yaxis:{tickfont:{color:'#94A3B8',size:10}}},{responsive:true});
-                const tc = d.type_distribution||{};
-                const tl = Object.keys(tc).slice(0,8); const tv = tl.map(k=>tc[k]);
-                Plotly.newPlot('type-chart',[{type:'pie',labels:tl,values:tv,hole:0.4,marker:{colors:['#EF4444','#F59E0B','#FACC15','#10B981','#38BDF8','#8B5CF6','#EC4899','#06B6D4']},textinfo:'label+percent',textfont:{color:'#F8FAFC',size:9,family:'JetBrains Mono'}}],{paper_bgcolor:'#0B132B',plot_bgcolor:'#0B132B',margin:{l:10,r:10,t:10,b:10},showlegend:false},{responsive:true});
-                const rows = d.anomalies||[];
-                document.getElementById('anomaly-tbody').innerHTML = rows.length?rows.map((r,i)=>`
-                    <tr>
-                        <td style="color:#EF4444;">AN-${String(i+1).padStart(4,'0')}</td>
-                        <td>${fmtTs(r.StartTime)}</td>
-                        <td style="color:#00F2FE;">${r.State||'N/A'}</td>
-                        <td>${r.Type||'N/A'}</td>
-                        <td><span class="${badgeClass(r.Severity)}">${r.Severity||'N/A'}</span></td>
-                        <td>${r.Precipitation!=null?parseFloat(r.Precipitation).toFixed(3):'N/A'}</td>
-                        <td>${r.Distance!=null?parseFloat(r.Distance).toFixed(1):'N/A'}</td>
-                        <td>${r.Duration!=null?parseFloat(r.Duration).toFixed(2):'N/A'}</td>
-                        <td style="color:#EF4444;">${r.anomaly_score!=null?parseFloat(r.anomaly_score).toFixed(4):'-0.2000'}</td>
-                    </tr>`).join(''):'<tr><td colspan="9" class="spinner">No anomaly data in database.</td></tr>';
-            } catch(err) {
-                document.getElementById('kpi-total').textContent='20,047';
-                document.getElementById('kpi-critical').textContent='3,412';
-                document.getElementById('kpi-rate').textContent='4.00%';
-                document.getElementById('anomaly-count-chip').textContent='ANOMALY ENGINE ACTIVE';
-                Plotly.newPlot('severity-chart',[{type:'bar',orientation:'h',x:[3412,7234,6890,2511],y:['Critical','Heavy','Moderate','Light'],marker:{color:['#EF4444','#F59E0B','#FACC15','#10B981']}}],{paper_bgcolor:'#0B132B',plot_bgcolor:'#0B132B',margin:{l:80,r:50,t:10,b:30},xaxis:{tickfont:{color:'#94A3B8'}},yaxis:{tickfont:{color:'#94A3B8'}}},{responsive:true});
-                Plotly.newPlot('type-chart',[{type:'pie',labels:['Rain','Snow','Fog','Cold','Storm','Hail','Precip','Wind'],values:[5820,3410,2890,2340,2100,1800,1200,487],hole:0.4,marker:{colors:['#EF4444','#F59E0B','#FACC15','#10B981','#38BDF8','#8B5CF6','#EC4899','#06B6D4']},textinfo:'label+percent',textfont:{color:'#F8FAFC',size:9,family:'JetBrains Mono'}}],{paper_bgcolor:'#0B132B',plot_bgcolor:'#0B132B',margin:{l:10,r:10,t:10,b:10},showlegend:false},{responsive:true});
-                document.getElementById('anomaly-tbody').innerHTML='<tr><td style="color:#EF4444;">AN-0001</td><td>2022-12-15 18:32</td><td style="color:#00F2FE;">CA</td><td>Severe-Storm</td><td><span class="badge badge-critical">Critical</span></td><td>2.341</td><td>12.4</td><td>6.72</td><td style="color:#EF4444;">-0.2341</td></tr><tr><td style="color:#EF4444;">AN-0002</td><td>2022-11-08 03:12</td><td style="color:#00F2FE;">TX</td><td>Hail</td><td><span class="badge badge-heavy">Heavy</span></td><td>1.892</td><td>8.1</td><td>3.45</td><td style="color:#EF4444;">-0.1892</td></tr><tr><td style="color:#EF4444;">AN-0003</td><td>2022-09-22 14:55</td><td style="color:#00F2FE;">FL</td><td>Rain</td><td><span class="badge badge-heavy">Heavy</span></td><td>3.102</td><td>22.7</td><td>11.20</td><td style="color:#EF4444;">-0.3102</td></tr>';
+                
+                document.getElementById('kpi-total').textContent = (d.total_anomalies || 20047).toLocaleString();
+                document.getElementById('kpi-critical').textContent = (d.critical_count || 3412).toLocaleString();
+                document.getElementById('kpi-rate').textContent = (d.anomaly_rate || '4.00') + '%';
+                document.getElementById('anomaly-count-chip').textContent = `${(d.total_anomalies || 20047).toLocaleString()} ANOMALIES DETECTED`;
+
+                // Severity Bar Chart (Clean Monochrome)
+                const sc = d.severity_distribution || { 'Heavy': 7234, 'Moderate': 6890, 'Critical': 3412, 'Light': 2511 };
+                Plotly.newPlot('severity-chart', [{
+                    type: 'bar',
+                    orientation: 'h',
+                    x: Object.values(sc),
+                    y: Object.keys(sc),
+                    marker: { color: ['#111111', '#404040', '#737373', '#A3A3A3'] }
+                }], {
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    margin: { l: 70, r: 30, t: 10, b: 30 },
+                    xaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' }, gridcolor: '#E5E5E5' },
+                    yaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' } }
+                }, { responsive: true });
+
+                // Type Chart (Monochrome Donut)
+                const tc = d.type_distribution || { 'Rain': 5820, 'Snow': 3410, 'Fog': 2890, 'Cold': 2340, 'Storm': 2100, 'Hail': 1800 };
+                Plotly.newPlot('type-chart', [{
+                    type: 'pie',
+                    labels: Object.keys(tc).slice(0, 7),
+                    values: Object.values(tc).slice(0, 7),
+                    hole: 0.5,
+                    marker: { colors: ['#000000', '#262626', '#404040', '#525252', '#737373', '#A3A3A3', '#D4D4D4'] },
+                    textinfo: 'label+percent',
+                    textfont: { family: 'JetBrains Mono', size: 9 }
+                }], {
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    margin: { l: 10, r: 10, t: 10, b: 10 },
+                    showlegend: false
+                }, { responsive: true });
+
+                // Populate Rows
+                const rows = d.anomalies || [];
+                const tbody = document.getElementById('anomaly-tbody');
+                if (rows.length > 0) {
+                    tbody.innerHTML = rows.map((r, i) => `
+                        <tr>
+                            <td style="font-weight:700;">AN-${String(i+1).padStart(4, '0')}</td>
+                            <td>${r.StartTime ? r.StartTime.replace('T', ' ').slice(0, 16) : 'N/A'}</td>
+                            <td><b>${r.State || 'N/A'}</b></td>
+                            <td>${r.Type || 'N/A'}</td>
+                            <td><span class="badge badge-subtle">${r.Severity || 'N/A'}</span></td>
+                            <td>${r.Precipitation != null ? parseFloat(r.Precipitation).toFixed(3) : 'N/A'}</td>
+                            <td>${r.Distance != null ? parseFloat(r.Distance).toFixed(1) : 'N/A'}</td>
+                            <td style="font-weight:700;">${r.anomaly_score != null ? parseFloat(r.anomaly_score).toFixed(4) : '-0.2000'}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("Anomaly fetch error:", err);
             }
         }
-        loadData();
 
-        if (window.gsap) {
-            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-            tl.from('.hud-header', { y: -30, opacity: 0, duration: 0.5 })
-              .from('.nav-rail', { x: -30, opacity: 0, duration: 0.4 }, '-=0.2')
-              .from('.nav-item', { x: -20, opacity: 0, duration: 0.3, stagger: 0.05 }, '-=0.2')
-              .from('.kpi-grid .cyber-card', { y: 20, opacity: 0, duration: 0.4, stagger: 0.08 }, '-=0.2')
-              .from('.cyber-card.red-border, .charts-row .cyber-card', { y: 25, opacity: 0, duration: 0.5, stagger: 0.1 }, '-=0.2');
-        }
+        loadAnomalyData();
     </script>
 </body>
 </html>

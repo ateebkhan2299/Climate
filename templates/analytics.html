@@ -4,104 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GEOSPATIAL TELEMETRY // EARTHSCAPE HQ</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- GSAP (GreenSock) + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
-    <style>
-        :root {
-            --bg-dark: #070B14;
-            --bg-panel: #0B132B;
-            --border-cyan: rgba(0, 242, 254, 0.2);
-            --border-dim: rgba(255, 255, 255, 0.08);
-            --cyan: #00F2FE;
-            --green: #10B981;
-            --crimson: #EF4444;
-            --yellow: #FACC15;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #0D1933 0%, #070B14 70%);
-            color: var(--text-main);
-            min-height: 100vh;
-        }
-        .hud-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #0B1120; border-bottom: 1px solid var(--border-cyan); padding: 10px 24px;
-        }
-        .hud-title { font-size: 1.3rem; font-weight: 800; letter-spacing: 2px; color: var(--cyan); }
-        .hud-chip {
-            font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 4px 10px;
-            border-radius: 4px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-dim);
-        }
-        .chip-cyan { border-color: var(--border-cyan); color: var(--cyan); }
-        .app-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 60px); }
-        .nav-rail {
-            background: #050811; border-right: 1px solid var(--border-cyan); padding: 20px 14px;
-            display: flex; flex-direction: column; position: sticky; top: 0; height: calc(100vh - 60px); overflow-y: auto;
-        }
-        .rail-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; color: var(--cyan); letter-spacing: 1.5px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .rail-menu { display: flex; flex-direction: column; gap: 8px; }
-        .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 6px;
-            color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 0.92rem;
-            transition: all 0.2s ease; background: rgba(15, 23, 42, 0.4); border: 1px solid transparent;
-        }
-        .nav-item:hover { color: var(--cyan); background: rgba(0, 242, 254, 0.08); border-color: rgba(0, 242, 254, 0.25); transform: translateX(3px); }
-        .nav-item.active { background: linear-gradient(90deg, rgba(0, 242, 254, 0.2) 0%, rgba(2, 132, 199, 0.1) 100%); color: #00F2FE; font-weight: 800; border: 1px solid var(--cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); }
-        .main-viewport { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
-        .cyber-card {
-            background: var(--bg-panel); border: 1px solid var(--border-cyan); border-radius: 8px; padding: 16px;
-        }
-        .box-title { font-weight: 800; font-size: 1.05rem; color: var(--cyan); letter-spacing: 1px; }
-        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-        .card-label { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-muted); }
-        .card-value { font-family: 'JetBrains Mono', monospace; font-size: 1.85rem; font-weight: 800; }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- Shared Monochrome Theme & GSAP Animation Engine -->
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/animations.js" defer></script>
 </head>
 <body>
     <header class="hud-header">
         <div class="hud-title">🌐 EARTHSCAPE // GEOSPATIAL TELEMETRY</div>
-        <div class="hud-chip chip-cyan"><a href="/" style="color:#00F2FE; text-decoration:none;">⬅ BACK TO COMMAND CENTER</a></div>
+        <div class="hud-chips-container">
+            <div class="hud-chip"><a href="/" style="color:var(--text-primary); text-decoration:none;">⬅ COMMAND CENTER</a></div>
+            <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="window.toggleTheme()">🌙 DARK</button>
+        </div>
     </header>
 
     <div class="app-layout">
+        <!-- LEFT NAVIGATION RAIL -->
         <aside class="nav-rail">
-            <div class="rail-header"><span>NAVIGATION</span><span style="color:#00F2FE;">SYS-V4</span></div>
+            <div class="rail-header">
+                <span class="rail-label">NAVIGATION</span>
+                <span class="badge badge-subtle">SYS-V4</span>
+            </div>
             <nav class="rail-menu">
-                <a href="/" class="nav-item">🎛️ Command Center</a>
-                <a href="/analytics" class="nav-item active">📊 Geospatial Telemetry</a>
-                <a href="/anomalies" class="nav-item">🚨 ML Anomaly Detection</a>
-                <a href="/predictions" class="nav-item">🔮 Predictive Forecasting</a>
-                <a href="/admin" class="nav-item">⚙️ Hadoop & Cluster Health</a>
+                <a href="/" class="nav-item"><span>🎛️</span> Command Center</a>
+                <a href="/analytics" class="nav-item active"><span>📊</span> Geospatial Telemetry</a>
+                <a href="/anomalies" class="nav-item"><span>🚨</span> ML Anomaly Detection</a>
+                <a href="/predictions" class="nav-item"><span>🔮</span> Predictive Forecasting</a>
+                <a href="/admin" class="nav-item"><span>⚙️</span> Hadoop & Cluster Health</a>
             </nav>
+            <div class="rail-footer">
+                <div class="hud-chip" style="justify-content:center; background:#1C1C1C; border-color:#2A2A2A; color:#A0A0A0;">
+                    ● DATA SYNC 99.98%
+                </div>
+                <a href="/login" class="nav-item" style="justify-content:center; font-size:0.82rem; background:#1C1C1C; border-color:#333333; color:#EDEDED;">
+                    🔐 Access Portal
+                </a>
+            </div>
         </aside>
 
         <main class="main-viewport">
             <div class="cyber-card">
                 <div class="box-title">📊 Multi-Dimensional Climate Telemetry & Seasonality Matrix</div>
-                <div id="analytics-heatmap" style="height: 450px; margin-top: 15px;"></div>
+                <div class="box-sub">Monthly frequency analysis across primary atmospheric event types</div>
+                <div id="analytics-heatmap" style="height: 440px; margin-top: 15px;"></div>
             </div>
 
             <div class="kpi-grid">
                 <div class="cyber-card">
                     <div class="card-label">TOTAL WEATHER EVENTS</div>
-                    <div class="card-value" style="color:#00F2FE;">8,627,181</div>
+                    <div class="card-value">8,627,181</div>
+                    <div class="card-subtext">Aggregated via PySpark HDFS Extract</div>
                 </div>
                 <div class="cyber-card">
                     <div class="card-label">ACTIVE SENSORS (GLOBAL)</div>
-                    <div class="card-value" style="color:#10B981;">14,820</div>
+                    <div class="card-value">14,820</div>
+                    <div class="card-subtext">Open-Meteo & Ground IoT Nodes</div>
                 </div>
                 <div class="cyber-card">
                     <div class="card-label">PRECIPITATION MEAN</div>
-                    <div class="card-value" style="color:#FACC15;">0.42 in/hr</div>
+                    <div class="card-value">0.42 in/hr</div>
+                    <div class="card-subtext">Tropospheric baseline index</div>
                 </div>
                 <div class="cyber-card">
                     <div class="card-label">SEVERITY INDEX</div>
-                    <div class="card-value" style="color:#EF4444;">TIER 2.4</div>
+                    <div class="card-value">TIER 2.4</div>
+                    <div class="card-subtext">Normalized storm severity rating</div>
                 </div>
             </div>
         </main>
@@ -117,22 +94,20 @@
             x: months,
             y: types,
             type: 'heatmap',
-            colorscale: 'Magma'
+            colorscale: [
+                [0, '#F7F7F7'],
+                [0.2, '#D4D4D4'],
+                [0.5, '#737373'],
+                [0.8, '#262626'],
+                [1.0, '#000000']
+            ]
         }], {
-            paper_bgcolor: '#0B132B',
-            plot_bgcolor: '#0B132B',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
             margin: { l: 80, r: 20, t: 20, b: 40 },
-            xaxis: { tickfont: { color: '#94A3B8' } },
-            yaxis: { tickfont: { color: '#94A3B8' } }
+            xaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' } },
+            yaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' } }
         }, { responsive: true });
-
-        if (window.gsap) {
-            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-            tl.from('.hud-header', { y: -30, opacity: 0, duration: 0.5 })
-              .from('.nav-rail', { x: -30, opacity: 0, duration: 0.4 }, '-=0.2')
-              .from('.nav-item', { x: -20, opacity: 0, duration: 0.3, stagger: 0.05 }, '-=0.2')
-              .from('.cyber-card', { y: 25, opacity: 0, duration: 0.5, stagger: 0.1 }, '-=0.2');
-        }
     </script>
 </body>
 </html>

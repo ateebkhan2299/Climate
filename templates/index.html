@@ -7,640 +7,55 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <!-- GSAP (GreenSock) Animation Engine -->
+    <!-- GSAP (GreenSock) + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
-    <style>
-        /* =========================================================
-           EARTHSCAPE SURVEILLANCE HQ — EMBEDDED CYBERPUNK THEME
-           ========================================================= */
-        :root {
-            --bg-dark: #070B14;
-            --bg-panel: #0B132B;
-            --bg-card: #0D1933;
-            --bg-sub: #050811;
-            --border-cyan: rgba(0, 242, 254, 0.2);
-            --border-dim: rgba(255, 255, 255, 0.08);
-            
-            --cyan: #00F2FE;
-            --cyan-dim: #0284C7;
-            --green: #10B981;
-            --crimson: #EF4444;
-            --warn: #F59E0B;
-            --yellow: #FACC15;
-            --blue: #38BDF8;
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --text-dim: #64748B;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #0D1933 0%, #070B14 70%);
-            color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Typography & Helpers */
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .font-bold { font-weight: 700; }
-        .text-cyan { color: var(--cyan); }
-        .text-green { color: var(--green); }
-        .text-crimson { color: var(--crimson); }
-        .text-warn { color: var(--warn); }
-        .text-yellow { color: var(--yellow); }
-        .text-blue { color: var(--blue); }
-        .mb-2 { margin-bottom: 8px; }
-        .w-100 { width: 100%; }
-
-        /* TOP HUD HEADER */
-        .hud-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #0B1120;
-            border-bottom: 1px solid var(--border-cyan);
-            padding: 10px 24px;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.05);
-        }
-        .hud-title {
-            font-size: 1.3rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--cyan);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .hud-title .sub-title {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            font-weight: 600;
-        }
-        .hud-chips-container {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .hud-chip {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            padding: 4px 10px;
-            border-radius: 4px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border-dim);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .chip-green { border-color: rgba(16, 185, 129, 0.4); color: var(--green); }
-        .chip-cyan { border-color: var(--border-cyan); color: var(--cyan); }
-        .chip-live {
-            border-color: rgba(239, 68, 68, 0.5);
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--crimson);
-            font-weight: 700;
-        }
-        .pulse-dot {
-            width: 6px;
-            height: 6px;
-            background-color: var(--crimson);
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 8px var(--crimson);
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(1.2); }
-        }
-
-        /* APP LAYOUT */
-        .app-layout {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            min-height: calc(100vh - 60px);
-        }
-
-        /* NAVIGATION RAIL */
-        .nav-rail {
-            background: #050811;
-            border-right: 1px solid var(--border-cyan);
-            padding: 20px 14px;
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: calc(100vh - 60px);
-            overflow-y: auto;
-            z-index: 50;
-        }
-        .nav-rail::-webkit-scrollbar {
-            width: 4px;
-        }
-        .nav-rail::-webkit-scrollbar-thumb {
-            background: rgba(0, 242, 254, 0.2);
-            border-radius: 2px;
-        }
-        .rail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        .rail-label {
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: var(--cyan);
-            letter-spacing: 1.5px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .rail-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            border-radius: 6px;
-            color: #94A3B8;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.92rem;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-            background: rgba(15, 23, 42, 0.4);
-        }
-        .nav-item:hover {
-            color: var(--cyan);
-            background: rgba(0, 242, 254, 0.08);
-            border-color: rgba(0, 242, 254, 0.25);
-            transform: translateX(3px);
-        }
-        .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 242, 254, 0.2) 0%, rgba(2, 132, 199, 0.1) 100%);
-            color: #00F2FE;
-            font-weight: 800;
-            border: 1px solid var(--cyan);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2), inset 0 0 10px rgba(0, 242, 254, 0.1);
-        }
-        .rail-footer {
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .sync-chip {
-            width: 100%;
-            justify-content: center;
-        }
-
-        /* MAIN VIEWPORT */
-        .main-viewport {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        /* CRITICAL ANOMALY BANNER */
-        .anomaly-banner {
-            background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%);
-            border: 1px solid var(--crimson);
-            border-left: 6px solid var(--crimson);
-            border-radius: 6px;
-            padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.15);
-        }
-        .anomaly-meta {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        .geo-hash {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        .anomaly-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-        .anomaly-desc {
-            font-size: 0.85rem;
-            color: #CBD5E1;
-            margin-top: 3px;
-        }
-        .anomaly-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        /* CYBER CARDS */
-        .cyber-card {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-cyan);
-            border-radius: 8px;
-            padding: 16px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 15px rgba(0, 242, 254, 0.03);
-        }
-        .cyber-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-        }
-        .card-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .card-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-        .card-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.85rem;
-            font-weight: 800;
-            color: #F8FAFC;
-        }
-        .card-value .val-unit {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        .card-subtext {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.72rem;
-            margin-top: 6px;
-        }
-
-        /* BADGES */
-        .badge {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 700;
-        }
-        .badge-crimson { background: var(--crimson); color: white; }
-        .badge-warn { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.4); }
-        .badge-cyan { background: rgba(0, 242, 254, 0.15); color: var(--cyan); border: 1px solid var(--border-cyan); }
-        .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
-
-        /* KPI GRID */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-        }
-
-        /* SPLIT ROWS */
-        .split-row {
-            display: grid;
-            grid-template-columns: 2.2fr 1fr;
-            gap: 16px;
-        }
-
-        /* PLANETARY RADAR BOX */
-        .radar-box {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-cyan);
-            border-radius: 8px;
-            padding: 16px;
-        }
-        .radar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .box-title {
-            font-weight: 800;
-            font-size: 1.05rem;
-            color: var(--cyan);
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .sub-label {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
-        .radar-tabs {
-            display: flex;
-            gap: 6px;
-        }
-        .tab-btn {
-            background: #070B14;
-            border: 1px solid var(--border-dim);
-            color: var(--text-muted);
-            padding: 4px 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-        .tab-btn.active, .tab-btn:hover {
-            background: rgba(0, 242, 254, 0.15);
-            border-color: var(--cyan);
-            color: var(--cyan);
-        }
-        .radar-chart-container {
-            height: 420px;
-            width: 100%;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .radar-hud-strip {
-            display: flex;
-            justify-content: space-between;
-            background: var(--bg-dark);
-            border: 1px solid var(--border-cyan);
-            padding: 8px 14px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            margin-top: 10px;
-        }
-        .gauges-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .gauge-item {
-            background: var(--bg-dark);
-            border: 1px solid var(--border-dim);
-            padding: 8px 12px;
-            border-radius: 4px;
-        }
-        .gauge-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--text-dim);
-        }
-        .gauge-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.1rem;
-            font-weight: 800;
-        }
-        .gauge-val .unit { font-size: 0.7rem; color: var(--text-muted); }
-        .gauge-val .delta { font-size: 0.7rem; }
-
-        /* INFERENCE BOX */
-        .escalation-container {
-            margin: 12px 0;
-        }
-        .escalation-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            font-weight: 700;
-        }
-        .esc-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.25rem;
-            font-weight: 800;
-        }
-        .progress-bar-bg {
-            background: rgba(15, 23, 42, 0.8);
-            height: 6px;
-            border-radius: 3px;
-            margin: 6px 0;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            transition: width 0.6s ease;
-        }
-        .gradient-crimson { background: linear-gradient(90deg, #F59E0B 0%, #EF4444 100%); }
-        .gradient-cyan-green { background: linear-gradient(90deg, #00F2FE 0%, #10B981 100%); }
-        .gradient-blue { background: linear-gradient(90deg, #38BDF8 0%, #00F2FE 100%); }
-        .esc-desc {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            line-height: 1.3;
-        }
-        .projection-chart-block {
-            margin-top: 14px;
-        }
-        .proj-header {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-        .spectral-card {
-            background: var(--bg-dark);
-            border: 1px solid var(--border-cyan);
-            border-radius: 4px;
-            padding: 10px;
-            margin-top: 10px;
-        }
-        .spectral-header {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-        }
-        .spectral-desc {
-            color: var(--text-dim);
-            font-size: 0.75rem;
-            margin-top: 4px;
-        }
-
-        /* HADOOP CLUSTER BOX */
-        .job-card {
-            margin: 10px 0;
-            background: var(--bg-dark);
-            border: 1px solid var(--border-dim);
-            border-radius: 4px;
-            padding: 10px;
-        }
-        .job-meta {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-        }
-        .job-footer {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.68rem;
-            color: var(--text-dim);
-        }
-        .cluster-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .cluster-stat {
-            background: var(--bg-dark);
-            padding: 8px;
-            border-radius: 4px;
-        }
-        .cluster-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.1rem;
-            font-weight: 800;
-        }
-        .cluster-val .unit { font-size: 0.7rem; color: var(--text-dim); }
-
-        /* LIVE EVENT STREAM */
-        .event-feed-list {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            margin-top: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .event-feed-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 6px;
-        }
-        .ev-header {
-            display: flex;
-            justify-content: space-between;
-        }
-        .ev-time { color: var(--text-dim); }
-        .ev-title { color: var(--text-main); font-size: 0.8rem; margin: 2px 0; }
-        .ev-meta { color: var(--text-dim); font-size: 0.68rem; }
-
-        /* BUTTONS */
-        .btn {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            letter-spacing: 1px;
-            border-radius: 4px;
-            padding: 8px 16px;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s ease;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-cyan);
-            color: var(--cyan);
-        }
-        .btn-outline:hover {
-            background: rgba(0, 242, 254, 0.1);
-        }
-        .btn-crimson {
-            background: linear-gradient(90deg, #F43F5E 0%, #BE123C 100%);
-            color: white;
-        }
-        .btn-crimson:hover {
-            box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
-        }
-        .btn-cyan {
-            background: linear-gradient(90deg, #00F2FE 0%, #0284C7 100%);
-            color: #070B14;
-            font-weight: 800;
-        }
-        .btn-cyan:hover {
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-        }
-
-        @media (max-width: 1024px) {
-            .app-layout { grid-template-columns: 1fr; }
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .split-row { grid-template-columns: 1fr; }
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- Shared Monochrome Theme & GSAP Animation Engine -->
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/animations.js" defer></script>
 </head>
 <body>
-
-    <!-- TOP HUD BAR -->
+    <!-- TOP HUD BAR (Clean B&W) -->
     <header class="hud-header">
         <div class="hud-title">
-            <span class="hud-icon">🌐</span> EARTHSCAPE <span class="sub-title">SURVEILLANCE HQ</span>
+            <span>🌐</span> EARTHSCAPE <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:600;">SURVEILLANCE HQ</span>
         </div>
         <div class="hud-chips-container">
-            <div class="hud-chip chip-live"><span class="pulse-dot"></span> LIVE OPEN-METEO API</div>
-            <div class="hud-chip chip-green">● HADOOP: OPERATIONAL</div>
-            <div class="hud-chip chip-cyan">🗄️ HDFS: 1.4PB / 2.0PB</div>
+            <div class="hud-chip"><span class="pulse-dot"></span> LIVE OPEN-METEO API</div>
+            <div class="hud-chip">● HADOOP: OPERATIONAL</div>
+            <div class="hud-chip">🗄️ HDFS: 1.4PB / 2.0PB</div>
             <div class="hud-chip">📡 SENSORS: 14,820</div>
-            <div class="hud-chip chip-green">⚡ INGESTION: 48.2 MB/s</div>
-            <div class="hud-chip" id="live-utc-clock">2026-09-04 10:20:00 UTC</div>
-            <div class="hud-chip chip-cyan">👤 ANALYST [SYSADMIN]</div>
+            <div class="hud-chip">⚡ INGESTION: 48.2 MB/s</div>
+            <div class="hud-chip" id="live-utc-clock">2026-09-05 05:00:00 UTC</div>
+            <div class="hud-chip chip-dark">👤 ANALYST [SYSADMIN]</div>
+            <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="window.toggleTheme()">🌙 DARK</button>
         </div>
     </header>
 
-    <!-- MAIN APP LAYOUT -->
     <div class="app-layout">
-
         <!-- LEFT NAVIGATION RAIL -->
         <aside class="nav-rail">
             <div class="rail-header">
-                <span class="rail-label">NAVIGATION RAIL</span>
-                <span class="badge badge-cyan">SYS-V4</span>
+                <span class="rail-label">NAVIGATION</span>
+                <span class="badge badge-subtle">SYS-V4</span>
             </div>
             <nav class="rail-menu">
-                <a href="/" class="nav-item active">
-                    <span class="nav-icon">🎛️</span> Command Center
-                </a>
-                <a href="/analytics" class="nav-item">
-                    <span class="nav-icon">📊</span> Geospatial Telemetry
-                </a>
-                <a href="/anomalies" class="nav-item">
-                    <span class="nav-icon">🚨</span> ML Anomaly Detection
-                </a>
-                <a href="/predictions" class="nav-item">
-                    <span class="nav-icon">🔮</span> Predictive Forecasting
-                </a>
-                <a href="/admin" class="nav-item">
-                    <span class="nav-icon">⚙️</span> Hadoop & Cluster Health
-                </a>
+                <a href="/" class="nav-item active"><span>🎛️</span> Command Center</a>
+                <a href="/analytics" class="nav-item"><span>📊</span> Geospatial Telemetry</a>
+                <a href="/anomalies" class="nav-item"><span>🚨</span> ML Anomaly Detection</a>
+                <a href="/predictions" class="nav-item"><span>🔮</span> Predictive Forecasting</a>
+                <a href="/admin" class="nav-item"><span>⚙️</span> Hadoop & Cluster Health</a>
             </nav>
-
             <div class="rail-footer">
-                <div class="hud-chip chip-green sync-chip">
+                <div class="hud-chip" style="justify-content:center; background:#1C1C1C; border-color:#2A2A2A; color:#A0A0A0;">
                     ● DATA SYNC 99.98%
                 </div>
-                <a href="/login" class="nav-item" style="justify-content:center; font-size:0.82rem; background:rgba(0,242,254,0.05); border-color:rgba(0,242,254,0.2);">
+                <a href="/login" class="nav-item" style="justify-content:center; font-size:0.82rem; background:#1C1C1C; border-color:#333333; color:#EDEDED;">
                     🔐 Access Portal
                 </a>
             </div>
@@ -648,287 +63,160 @@
 
         <!-- MAIN COMMAND CENTER CONTENT -->
         <main class="main-viewport">
-
-            <!-- CRITICAL ANOMALY BANNER -->
-            <section class="anomaly-banner">
+            <!-- ANOMALY / METEO BANNER -->
+            <section class="anomaly-banner" id="anomaly-banner">
                 <div class="anomaly-info">
                     <div class="anomaly-meta">
-                        <span class="badge badge-crimson">CRITICAL ANOMALY VECTOR #809</span>
-                        <span class="geo-hash">GEO-HASH: 18.243°N, 9.421°E</span>
+                        <span class="badge badge-subtle" id="banner-badge" style="background:var(--accent-black); color:var(--bg-main);">LIVE METEO VECTOR #809</span>
+                        <span class="geo-hash" id="banner-geohash">GEO-HASH: 18.243°N, 9.421°E</span>
                     </div>
                     <h2 class="anomaly-title" id="banner-title">
-                        🚨 Sub-Saharan & Mediterranean Thermal Surge Spike Detected
+                        Observing Live Global Telemetry via Open-Meteo API
                     </h2>
                     <p class="anomaly-desc" id="banner-desc">
-                        Current excursion: <b class="text-crimson">+3.8°C</b> above 30-year seasonal baseline. Impacting 14 atmospheric hex-tiles.
+                        Cycle telemetry across 12 global sensor stations. Isolation Forest ML actively computing decision boundaries.
                     </p>
                 </div>
                 <div class="anomaly-actions">
-                    <button class="btn btn-outline" onclick="isolateQuad()">👁️ Isolate Quad</button>
-                    <button class="btn btn-crimson" onclick="dispatchAdvisory()">📢 Dispatch Stakeholder Advisory</button>
+                    <button class="btn btn-outline" onclick="isolateQuad()">👁️ Focus Station</button>
+                    <button class="btn btn-primary" onclick="dispatchAdvisory()">📢 Dispatch Advisory</button>
                 </div>
             </section>
 
-            <!-- 4 KPI CYBER CARDS ROW -->
+            <!-- 4 KPI CARDS ROW -->
             <section class="kpi-grid">
-                <!-- Card 1 -->
                 <div class="cyber-card">
                     <div class="card-header-row">
-                        <span class="card-label">GLOBAL TEMP ANOMALY</span>
-                        <span class="badge badge-warn">WARN TIER 2</span>
+                        <span class="card-label">CURRENT TEMPERATURE</span>
+                        <span class="badge badge-subtle">LIVE</span>
                     </div>
-                    <div class="card-value" id="kpi-temp">+1.48 <span class="val-unit">°C (vs Pre-Ind)</span></div>
-                    <div class="card-subtext text-crimson">
-                        📈 +0.03°C vs 2023 &nbsp;|&nbsp; ERA5-Land Model
-                    </div>
+                    <div class="card-value" id="kpi-temp">29.1°C</div>
+                    <div class="card-subtext" id="kpi-station-name">Station: Karachi HQ • Clear Sky</div>
                 </div>
 
-                <!-- Card 2 -->
                 <div class="cyber-card">
                     <div class="card-header-row">
-                        <span class="card-label">ATMOSPHERIC CO₂</span>
-                        <span class="badge badge-cyan">MAUNA LOA SYNC</span>
+                        <span class="card-label">PRECIPITATION (IN)</span>
+                        <span class="badge badge-subtle">TELEMETRY</span>
                     </div>
-                    <div class="card-value" id="kpi-co2">423.8 <span class="val-unit">ppm</span></div>
-                    <div class="card-subtext text-cyan">
-                        ↗ +1.2 ppm (24h Δ) &nbsp;|&nbsp; NOAA GML 10s
-                    </div>
+                    <div class="card-value" id="kpi-precip">0.00</div>
+                    <div class="card-subtext" id="kpi-humidity">Humidity: 65% • Pressure: 1012 hPa</div>
                 </div>
 
-                <!-- Card 3 -->
                 <div class="cyber-card">
                     <div class="card-header-row">
-                        <span class="card-label">SENSOR INGESTION GRID</span>
-                        <span class="badge badge-green">99.4% UPTIME</span>
+                        <span class="card-label">ACTIVE SENSORS (GLOBAL)</span>
+                        <span class="badge badge-subtle">99.4% UP</span>
                     </div>
-                    <div class="card-value" id="kpi-sensors">14,820 <span class="val-unit">Active Nodes</span></div>
-                    <div class="card-subtext text-green">
-                        📶 9,140 Buoys / 5,680 IoT &nbsp;|&nbsp; Loss: 0.04%
-                    </div>
+                    <div class="card-value" id="kpi-sensors">14,820</div>
+                    <div class="card-subtext">9,140 Buoys / 5,680 IoT Nodes</div>
                 </div>
 
-                <!-- Card 4 -->
                 <div class="cyber-card">
                     <div class="card-header-row">
-                        <span class="card-label">HDFS DATA WAREHOUSE</span>
-                        <span class="badge badge-cyan">71% CAP</span>
+                        <span class="card-label">HDFS REPOSITORY</span>
+                        <span class="badge badge-subtle">71% CAP</span>
                     </div>
-                    <div class="card-value" id="kpi-hdfs">1.42 <span class="val-unit">/ 2.00 PB</span></div>
-                    <div class="card-subtext text-blue">
-                        ⚡ 380 GB/hr Ingest &nbsp;|&nbsp; 124ms RT Latency
-                    </div>
+                    <div class="card-value">1.42 <span style="font-size:1.1rem; color:var(--text-secondary);">/ 2.0 PB</span></div>
+                    <div class="card-subtext">380 GB/hr Ingest • 124ms RT Latency</div>
                 </div>
             </section>
 
-            <!-- CENTER SPLIT: RADAR (LEFT) & PREDICTIVE ML (RIGHT) -->
-            <section class="split-row">
-                <!-- Planetary Radar Map -->
-                <div class="radar-box">
-                    <div class="radar-header">
-                        <div class="box-title">
-                            🌐 PLANETARY SURVEILLANCE RADAR <span class="badge badge-cyan">ORTHO-WGS84</span>
+            <!-- MIDDLE SPLIT: RADAR MAP + PREDICTION -->
+            <section class="split-row" style="display:grid; grid-template-columns:2fr 1fr; gap:16px;">
+                <div class="cyber-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <div>
+                            <div class="box-title">🌐 PLANETARY SURVEILLANCE RADAR</div>
+                            <div class="box-sub">Real-Time Sensor Telemetry Coordinates across 12 Strategic Global Nodes</div>
                         </div>
-                        <div class="radar-tabs">
-                            <button class="tab-btn active" onclick="setRadarMode('THERMAL MODIS')">THERMAL MODIS</button>
-                            <button class="tab-btn" onclick="setRadarMode('OCO-2 CO2')">OCO-2 CO₂</button>
-                            <button class="tab-btn" onclick="setRadarMode('PRECIP RADAR')">PRECIP RADAR</button>
-                            <button class="tab-btn" onclick="setRadarMode('NOAA SST')">NOAA SST</button>
-                        </div>
-                    </div>
-
-                    <!-- Interactive Holographic Plotly Radar Map -->
-                    <div id="planetary-radar-map" class="radar-chart-container"></div>
-
-                    <!-- Radar HUD Strip -->
-                    <div class="radar-hud-strip">
-                        <span id="radar-coords">🎯 LAT: 24° 16' 48" N | LON: 12° 04' 12" E</span>
-                        <span class="text-green">● 14,808 Nominal</span>
-                        <span class="text-crimson">● 12 Critical</span>
-                        <span class="text-cyan">SCAN SWEEP: 300ms</span>
-                    </div>
-
-                    <!-- 4 Micro Met Gauges -->
-                    <div class="gauges-grid">
-                        <div class="gauge-item">
-                            <div class="gauge-label">GLOBAL WIND SHEAR</div>
-                            <div class="gauge-val text-cyan" id="live-wind">34.2 m/s <span class="unit">ENE</span></div>
-                        </div>
-                        <div class="gauge-item">
-                            <div class="gauge-label">OCEAN THERMAL MEAN</div>
-                            <div class="gauge-val" id="live-ocean">21.08°C <span class="delta text-crimson">(+0.82°C)</span></div>
-                        </div>
-                        <div class="gauge-item">
-                            <div class="gauge-label">TROPOSPHERIC MOISTURE</div>
-                            <div class="gauge-val text-green" id="live-moisture">68.4% <span class="unit">STABLE</span></div>
-                        </div>
-                        <div class="gauge-item">
-                            <div class="gauge-label">SOLAR IRRADIANCE FLUX</div>
-                            <div class="gauge-val text-yellow" id="live-solar">1,361.2 <span class="unit">W/m²</span></div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.7rem;" onclick="setRadarMode('GLOBAL')">GLOBAL</button>
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.7rem;" onclick="setRadarMode('THERMAL')">THERMAL</button>
+                            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.7rem;" onclick="setRadarMode('PRECIP')">PRECIP</button>
                         </div>
                     </div>
+                    <div id="planetary-radar-map" style="height:360px;"></div>
                 </div>
 
-                <!-- Predictive ML Inference -->
-                <div class="inference-box cyber-card">
-                    <div class="card-header-row">
-                        <div class="box-title">🤖 Predictive ML Inference</div>
-                        <span class="badge badge-cyan">LSTM + RF ENSEMBLE</span>
-                    </div>
-
-                    <div class="escalation-container">
-                        <div class="escalation-header">
-                            <span class="esc-label">Extreme Heatwave Escalation</span>
-                            <span class="esc-val text-crimson" id="esc-percent">91.4%</span>
+                <div class="cyber-card">
+                    <div class="box-title">🔮 PREDICTIVE ML INFERENCE</div>
+                    <div class="box-sub">Random Forest Regressor • R²=0.2169, MAE=1025.63</div>
+                    <div style="margin-top:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span style="font-size:0.85rem; font-weight:700;">Heatwave Escalation Risk</span>
+                            <span style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:800;" id="risk-score">91.4%</span>
                         </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill gradient-crimson" style="width: 91.4%;"></div>
-                        </div>
-                        <p class="esc-desc">
-                            Forecast confidence based on 45,000 historical tropospheric simulation paths. High probability of flash drought in Quadrant Med-04.
+                        <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">
+                            Forecast confidence derived from 500,000 historical tropospheric observations. High probability in coastal quads.
                         </p>
                     </div>
-
-                    <div class="projection-chart-block">
-                        <div class="proj-header">
-                            <span>14-DAY HEAT ANOMALY PROJECTIONS</span>
-                            <span class="text-crimson">Peak Day +9 (CRIT)</span>
-                        </div>
-                        <div id="heat-projection-chart" style="height: 140px;"></div>
-                    </div>
-
-                    <div class="spectral-card">
-                        <div class="spectral-header">
-                            <span class="text-cyan">OCO-2 SPECTRAL SPECTROMETRY</span>
-                            <span class="text-green">SYNCED: 4m ago</span>
-                        </div>
-                        <div class="spectral-desc">
-                            Active Band: 0.76 µm O₂ A-band & 1.61 µm CO₂ Fraunhofer Absorption Matrix.
-                        </div>
+                    <div style="margin-top:20px;">
+                        <div class="box-title" style="font-size:0.88rem;">14-DAY FORECAST PROJECTION</div>
+                        <div id="heat-projection-chart" style="height:140px; margin-top:8px;"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- BOTTOM SPLIT: HADOOP MAPREDUCE (LEFT) & LIVE STREAM (RIGHT) -->
-            <section class="split-row">
-                <!-- Hadoop Cluster Health -->
-                <div class="hadoop-box cyber-card">
-                    <div class="card-header-row">
+            <!-- BOTTOM ROW: DISTRIBUTED MAPREDUCE + LIVE EVENT STREAM -->
+            <section class="split-row" style="display:grid; grid-template-columns:2fr 1fr; gap:16px;">
+                <div class="cyber-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                         <div>
-                            <div class="box-title">🐘 Hadoop MapReduce Stream & Cluster Health</div>
-                            <div class="sub-label">YARN Resource Orchestrator • 64 DataNodes Online • Zero Partition Failures</div>
+                            <div class="box-title">⚙️ HADOOP DISTRIBUTED INGESTION PIPELINE</div>
+                            <div class="box-sub">HDFS Cluster Node Health • MapReduce Batch Jobs</div>
                         </div>
-                        <span class="badge badge-green">ALL HEALTHY</span>
-                    </div>
-
-                    <!-- Job 1 -->
-                    <div class="job-card">
-                        <div class="job-meta">
-                            <span class="text-cyan font-bold">#MR-9082 Global Sea Surface Temp Spatial Interpolation (NOAA HDF5)</span>
-                            <span class="text-green font-bold" id="job1-stage">STAGE: REDUCING 78%</span>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill gradient-cyan-green" id="job1-bar" style="width: 78%;"></div>
-                        </div>
-                        <div class="job-footer">
-                            <span>Input: 412.8 GB / 520.0 GB</span>
-                            <span>Splits: 2,048 / 2,048 Mapped • Reducers: 128 Active</span>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn btn-outline" onclick="exportData()" style="padding:6px 12px; font-size:0.75rem;">📥 Export GeoJSON</button>
+                            <button class="btn btn-primary" onclick="triggerDeepCompute()" style="padding:6px 12px; font-size:0.75rem;">⚡ Trigger MapReduce</button>
                         </div>
                     </div>
 
-                    <!-- Job 2 -->
-                    <div class="job-card">
-                        <div class="job-meta">
-                            <span class="text-cyan font-bold">#MR-9083 Deforestation Carbon Flux Real-Time Matrix Aggregation</span>
-                            <span class="text-blue font-bold" id="job2-stage">STAGE: MAPPING 42%</span>
+                    <div class="meter-wrapper">
+                        <div class="meter-info">
+                            <span>Job #MR-9084: State Frequency Mapper</span>
+                            <span id="job1-stage">STAGE: REDUCING 84%</span>
                         </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill gradient-blue" id="job2-bar" style="width: 42%;"></div>
-                        </div>
-                        <div class="job-footer">
-                            <span>Input: 180.2 GB / 430.0 GB</span>
-                            <span>Splits: 840 / 2,000 Mapped • Spark Context: Attached</span>
+                        <div class="meter-track">
+                            <div class="meter-fill" id="job1-bar" style="width:84%;"></div>
                         </div>
                     </div>
 
-                    <!-- Cluster Grid -->
-                    <div class="cluster-grid">
-                        <div class="cluster-stat">
-                            <div class="card-label">ACTIVE DATANODES</div>
-                            <div class="cluster-val text-green">64 <span class="unit">/ 64 online</span></div>
+                    <div class="meter-wrapper">
+                        <div class="meter-info">
+                            <span>Job #MR-9085: Isolation Forest Batch Aggregator</span>
+                            <span id="job2-stage">STAGE: MAPPING 42%</span>
                         </div>
-                        <div class="cluster-stat">
-                            <div class="card-label">DEAD / STALE NODES</div>
-                            <div class="cluster-val text-green">0 <span class="unit">0.0% fault</span></div>
-                        </div>
-                        <div class="cluster-stat">
-                            <div class="card-label">TASKTRACKERS LOAD</div>
-                            <div class="cluster-val text-cyan">12 <span class="unit">High Compute</span></div>
-                        </div>
-                        <div class="cluster-stat">
-                            <div class="card-label">YARN MEMORY POOL</div>
-                            <div class="cluster-val text-blue">892 <span class="unit">/ 1,024 GB</span></div>
+                        <div class="meter-track">
+                            <div class="meter-fill" id="job2-bar" style="width:42%;"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Live Event Stream -->
-                <div class="events-box cyber-card">
-                    <div class="card-header-row">
-                        <div class="box-title">🚨 Live Event Stream</div>
-                        <span class="badge badge-crimson">● LIVE FEED</span>
-                    </div>
-
-                    <div class="event-feed-list" id="event-feed-container">
+                <div class="cyber-card">
+                    <div class="box-title">📡 LIVE EVENT TELEMETRY STREAM</div>
+                    <div class="box-sub">Open-Meteo REST API Ingestion Feed (4s Polling)</div>
+                    <div id="event-feed-container" style="max-height:220px; overflow-y:auto;">
                         <div class="event-feed-item">
                             <div class="ev-header">
-                                <span class="text-crimson font-bold">● CRITICAL ESCALATION</span>
-                                <span class="ev-time">02m ago</span>
+                                <span>● Karachi HQ Observation</span>
+                                <span class="ev-time">Initial</span>
                             </div>
-                            <div class="ev-title">Sub-Saharan Thermal Surge (+3.8°C Delta)</div>
-                            <div class="ev-meta">Station: NIAMEY-V4 • Trigger: Rule #TR-881</div>
+                            <div class="ev-title">29.1°C | Clear Sky [Light]</div>
+                            <div class="ev-meta">Source: Open-Meteo Live API • Wind: 14 km/h</div>
                         </div>
-
-                        <div class="event-feed-item">
-                            <div class="ev-header">
-                                <span class="text-cyan font-bold">● INTERMITTENT SIGNAL</span>
-                                <span class="ev-time">14m ago</span>
-                            </div>
-                            <div class="ev-title">Marine Buoy Cluster #41002 Dropouts</div>
-                            <div class="ev-meta">Pacific Quad 3 • Telemetry loss: 12% frames</div>
-                        </div>
-
-                        <div class="event-feed-item">
-                            <div class="ev-header">
-                                <span class="text-green font-bold">● BATCH FINALIZED</span>
-                                <span class="ev-time">32m ago</span>
-                            </div>
-                            <div class="ev-title">HDFS Ingest Partition Part-00431 Stored</div>
-                            <div class="ev-meta">Block size: 128 MB • Checksum verified</div>
-                        </div>
-                    </div>
-
-                    <div class="telemetry-actions">
-                        <div class="card-label mb-2">DIRECT TELEMETRY ACTIONS</div>
-                        <button class="btn btn-cyan w-100 mb-2" onclick="triggerDeepCompute()">⚡ Trigger Hadoop Deep Compute</button>
-                        <button class="btn btn-outline w-100" onclick="exportData()">📥 Export NetCDF / GeoJSON Data</button>
                     </div>
                 </div>
             </section>
-
         </main>
     </div>
 
     <script>
-        /* =========================================================
-           EARTHSCAPE SURVEILLANCE HQ — EMBEDDED REAL-TIME SCRIPT
-           ========================================================= */
-        let currentRadarMode = "THERMAL MODIS";
-
         function updateClock() {
             const now = new Date();
-            const utcString = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-            const clockEl = document.getElementById('live-utc-clock');
-            if (clockEl) clockEl.innerText = utcString;
+            const utcString = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+            const el = document.getElementById('live-utc-clock');
+            if (el) el.innerText = utcString;
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -940,7 +228,7 @@
                     const lats = data.map(d => d.lat);
                     const lons = data.map(d => d.lon);
                     const texts = data.map(d => `${d.name}: ${d.temp}°C (${d.type})`);
-                    const colors = data.map(d => d.severity === 'Severe' ? '#EF4444' : (d.severity === 'Heavy' ? '#F59E0B' : '#00F2FE'));
+                    const colors = data.map(d => d.severity === 'Severe' || d.severity === 'Heavy' ? '#111111' : '#666666');
 
                     const trace = {
                         type: 'scattergeo',
@@ -949,30 +237,30 @@
                         lon: lons,
                         text: data.map(d => d.name),
                         textposition: 'top center',
-                        textfont: { family: 'JetBrains Mono', size: 9, color: '#00F2FE' },
+                        textfont: { family: 'JetBrains Mono', size: 9, color: '#111111' },
                         hoverinfo: 'text',
                         hovertext: texts,
                         marker: {
-                            size: 10,
+                            size: 8,
                             color: colors,
                             symbol: 'circle',
-                            line: { width: 1, color: '#FFFFFF' }
+                            line: { width: 1.5, color: '#FFFFFF' }
                         }
                     };
 
                     const layout = {
-                        height: 420,
+                        height: 360,
                         margin: { l: 0, r: 0, t: 0, b: 0 },
-                        paper_bgcolor: '#0B132B',
-                        plot_bgcolor: '#0B132B',
+                        paper_bgcolor: 'rgba(0,0,0,0)',
+                        plot_bgcolor: 'rgba(0,0,0,0)',
                         geo: {
-                            bgcolor: '#070B14',
-                            lakecolor: '#0B132B',
-                            landcolor: '#0D1933',
+                            bgcolor: 'rgba(0,0,0,0)',
+                            lakecolor: '#F0F0F0',
+                            landcolor: '#E5E5E5',
                             showland: true,
                             showcountries: true,
-                            countrycolor: 'rgba(0, 242, 254, 0.3)',
-                            subunitcolor: 'rgba(0, 242, 254, 0.15)'
+                            countrycolor: '#CCCCCC',
+                            subunitcolor: '#E0E0E0'
                         }
                     };
 
@@ -984,22 +272,21 @@
         function initHeatProjectionChart() {
             const days = Array.from({ length: 14 }, (_, i) => `D+${i + 1}`);
             const vals = [2.1, 2.4, 3.0, 3.6, 4.2, 5.0, 5.8, 6.4, 7.2, 6.8, 5.5, 4.1, 3.2, 2.6];
-            const colors = vals.map(v => v < 3.5 ? '#00F2FE' : (v < 5.5 ? '#F59E0B' : '#EF4444'));
 
             const trace = {
                 x: days,
                 y: vals,
                 type: 'bar',
-                marker: { color: colors }
+                marker: { color: '#111111' }
             };
 
             const layout = {
                 height: 140,
-                margin: { l: 0, r: 0, t: 0, b: 0 },
+                margin: { l: 20, r: 10, t: 10, b: 25 },
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0)',
-                xaxis: { showgrid: false, tickfont: { size: 8, color: '#64748B' } },
-                yaxis: { showgrid: true, gridcolor: 'rgba(255,255,255,0.05)', tickfont: { size: 8, color: '#64748B' } }
+                xaxis: { showgrid: false, tickfont: { size: 8, color: '#6B6B6B', family: 'JetBrains Mono' } },
+                yaxis: { showgrid: true, gridcolor: '#E5E5E5', tickfont: { size: 8, color: '#6B6B6B', family: 'JetBrains Mono' } }
             };
 
             Plotly.newPlot('heat-projection-chart', [trace], layout, { responsive: true, displayModeBar: false });
@@ -1012,42 +299,46 @@
                     if (!data) return;
 
                     const tempEl = document.getElementById('kpi-temp');
-                    if (tempEl) tempEl.innerHTML = `${data.temp}°C <span class="val-unit">(${data.temp_f}°F)</span>`;
+                    if (tempEl) {
+                        tempEl.innerHTML = `${data.temp}°C`;
+                        if (window.gsap) {
+                            gsap.fromTo(tempEl, { scale: 1.08, color: '#000000' }, { scale: 1, color: 'var(--text-primary)', duration: 0.5 });
+                        }
+                    }
 
-                    const co2El = document.getElementById('kpi-co2');
-                    if (co2El) co2El.innerHTML = `${data.precip_in} <span class="val-unit">in precip</span>`;
+                    const stName = document.getElementById('kpi-station-name');
+                    if (stName) stName.textContent = `Station: ${data.station} • ${data.type}`;
+
+                    const precipEl = document.getElementById('kpi-precip');
+                    if (precipEl) precipEl.textContent = `${data.precip_in}`;
+
+                    const humidityEl = document.getElementById('kpi-humidity');
+                    if (humidityEl) humidityEl.textContent = `Humidity: ${data.humidity}% • Pressure: ${data.pressure} hPa`;
 
                     const bannerTitle = document.getElementById('banner-title');
-                    if (bannerTitle) {
-                        bannerTitle.innerText = `🚨 Live Open-Meteo Reading: ${data.station} (${data.temp}°C, ${data.type} [${data.severity}])`;
-                    }
-
                     const bannerDesc = document.getElementById('banner-desc');
-                    if (bannerDesc) {
-                        bannerDesc.innerHTML = `Wind: <b class="text-cyan">${data.wind_speed} km/h</b> | Pressure: <b class="text-yellow">${data.pressure} hPa</b> | Humidity: <b class="text-green">${data.humidity}%</b>`;
+                    const banner = document.getElementById('anomaly-banner');
+
+                    if (data.is_anomaly && bannerTitle) {
+                        bannerTitle.innerHTML = `🚨 Anomaly Detected: ${data.station} (${data.temp}°C, ${data.type})`;
+                        bannerDesc.innerHTML = `Observation violates standard 30-year variance boundaries. Severity Tier: <b>${data.severity}</b>.`;
+                        if (banner) banner.classList.add('has-critical');
+                        if (window.EarthScape && window.EarthScape.showToast) {
+                            window.EarthScape.showToast(`Anomaly detected at ${data.station}: ${data.type}`, true);
+                        }
+                    } else if (bannerTitle) {
+                        bannerTitle.innerHTML = `Observation Stream: ${data.station} (${data.temp}°C, ${data.type})`;
+                        bannerDesc.innerHTML = `Station telemetry verified normal. Wind: ${data.wind_speed} km/h • Surface Pressure: ${data.pressure} hPa.`;
+                        if (banner) banner.classList.remove('has-critical');
                     }
 
-                    const windEl = document.getElementById('live-wind');
-                    if (windEl) windEl.innerHTML = `${data.wind_speed} km/h <span class="unit">ENE</span>`;
-
-                    const oceanEl = document.getElementById('live-ocean');
-                    if (oceanEl) oceanEl.innerHTML = `${(data.temp * 0.72).toFixed(2)}°C <span class="delta text-crimson">(+0.82°C)</span>`;
-
-                    const moistEl = document.getElementById('live-moisture');
-                    if (moistEl) moistEl.innerHTML = `${data.humidity}% <span class="unit">STABLE</span>`;
-
-                    const coordsEl = document.getElementById('radar-coords');
-                    if (coordsEl) coordsEl.innerText = `🎯 LAT: ${data.lat}° N | LON: ${data.lon}° E | NODE: ${data.station}`;
-
-                    const t = Math.floor(Date.now() / 1000) % 100;
-                    const prog1 = Math.min(98, Math.max(20, (t * 3) % 100));
-                    const prog2 = Math.min(95, Math.max(15, (t * 2 + 10) % 100));
-
+                    const prog1 = (75 + Math.floor(Math.random() * 20));
                     const bar1 = document.getElementById('job1-bar');
                     const st1 = document.getElementById('job1-stage');
                     if (bar1) bar1.style.width = `${prog1}%`;
                     if (st1) st1.innerText = `STAGE: REDUCING ${prog1}%`;
 
+                    const prog2 = (35 + Math.floor(Math.random() * 30));
                     const bar2 = document.getElementById('job2-bar');
                     const st2 = document.getElementById('job2-stage');
                     if (bar2) bar2.style.width = `${prog2}%`;
@@ -1059,42 +350,50 @@
                         item.className = 'event-feed-item';
                         item.innerHTML = `
                             <div class="ev-header">
-                                <span class="text-cyan font-bold">● ${data.station}</span>
+                                <span>● ${data.station}</span>
                                 <span class="ev-time">Just now</span>
                             </div>
                             <div class="ev-title">${data.temp}°C | ${data.type} [${data.severity}]</div>
-                            <div class="ev-meta">Source: Open-Meteo Live Free API • Wind: ${data.wind_speed} km/h</div>
+                            <div class="ev-meta">Open-Meteo Live API • Wind: ${data.wind_speed} km/h</div>
                         `;
                         feed.insertBefore(item, feed.firstChild);
                         if (window.gsap) {
-                            gsap.from(item, { opacity: 0, x: -20, duration: 0.4, ease: 'power2.out' });
+                            gsap.from(item, { opacity: 0, y: -10, duration: 0.35, ease: 'power2.out' });
                         }
                         if (feed.children.length > 4) {
                             feed.removeChild(feed.lastChild);
                         }
-                    }
-
-                    // GSAP Live Pulse on Telemetry Update
-                    if (window.gsap) {
-                        gsap.fromTo('#kpi-temp', { scale: 1.1, color: '#00F2FE' }, { scale: 1, color: '#F8FAFC', duration: 0.5, ease: 'power2.out' });
-                        gsap.fromTo('.anomaly-banner', { borderColor: '#EF4444', boxShadow: '0 0 35px rgba(239,68,68,0.4)' }, { borderColor: 'var(--crimson)', boxShadow: '0 0 25px rgba(239,68,68,0.15)', duration: 0.8 });
                     }
                 })
                 .catch(err => console.log('Poll error:', err));
         }
 
         function isolateQuad() {
-            alert("Isolating Quadrant Med-04 hex-tiles and focusing orbital telemetry scanners...");
+            if (window.EarthScape && window.EarthScape.showToast) {
+                window.EarthScape.showToast("Focusing orbital telemetry scanners on targeted quadrant...");
+            } else {
+                alert("Focusing orbital telemetry scanners on targeted quadrant...");
+            }
         }
 
         function dispatchAdvisory() {
-            alert("Meteorological Advisory successfully dispatched to Global Early Warning Network!");
+            if (window.EarthScape && window.EarthScape.showToast) {
+                window.EarthScape.showToast("Meteorological Advisory dispatched to Early Warning Network.");
+            } else {
+                alert("Meteorological Advisory dispatched to Early Warning Network.");
+            }
         }
 
         function triggerDeepCompute() {
             fetch('/api/trigger-compute', { method: 'POST' })
                 .then(res => res.json())
-                .then(data => alert(`Hadoop YARN Task Dispatched: ${data.job_id}`))
+                .then(data => {
+                    if (window.EarthScape && window.EarthScape.showToast) {
+                        window.EarthScape.showToast(`Hadoop YARN Task Dispatched: ${data.job_id}`);
+                    } else {
+                        alert(`Hadoop YARN Task Dispatched: ${data.job_id}`);
+                    }
+                })
                 .catch(err => alert("Hadoop YARN task dispatched: #MR-9084"));
         }
 
@@ -1103,28 +402,15 @@
         }
 
         function setRadarMode(mode) {
-            currentRadarMode = mode;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            alert(`Switched Radar Mode to: ${mode}`);
+            if (window.EarthScape && window.EarthScape.showToast) {
+                window.EarthScape.showToast(`Switched Radar Mode to: ${mode}`);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             initRadarMap();
             initHeatProjectionChart();
             setInterval(pollLiveTelemetry, 4000);
-
-            // GSAP Cyberpunk Entrance Sequence
-            if (window.gsap) {
-                const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-                tl.from('.hud-header', { y: -40, opacity: 0, duration: 0.6 })
-                  .from('.hud-chip', { scale: 0.85, opacity: 0, duration: 0.35, stagger: 0.04 }, '-=0.3')
-                  .from('.nav-rail', { x: -40, opacity: 0, duration: 0.5 }, '-=0.2')
-                  .from('.nav-item', { x: -20, opacity: 0, duration: 0.3, stagger: 0.05 }, '-=0.3')
-                  .from('.anomaly-banner', { y: 20, opacity: 0, duration: 0.5, ease: 'back.out(1.2)' }, '-=0.2')
-                  .from('.kpi-grid .cyber-card', { y: 25, opacity: 0, duration: 0.45, stagger: 0.08 }, '-=0.3')
-                  .from('.split-row .cyber-card, .progress-col .cyber-card', { y: 20, opacity: 0, duration: 0.5, stagger: 0.1 }, '-=0.2');
-            }
         });
     </script>
 </body>
