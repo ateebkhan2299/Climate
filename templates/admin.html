@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,11 +23,19 @@
         .chip-cyan { border-color:var(--border-cyan); color:var(--cyan); }
         .chip-orange { border-color:rgba(251,146,60,0.4); color:var(--orange); }
         .app-layout { display:grid; grid-template-columns:240px 1fr; min-height:calc(100vh - 60px); }
-        .nav-rail { background:#050811; border-right:1px solid var(--border-cyan); padding:20px 14px; }
-        .rail-header { display:flex; justify-content:space-between; margin-bottom:20px; font-weight:700; color:var(--cyan); font-size:0.85rem; }
-        .rail-menu { display:flex; flex-direction:column; gap:6px; }
-        .nav-item { padding:10px 14px; border-radius:4px; color:var(--text-muted); text-decoration:none; font-weight:600; font-size:0.9rem; }
-        .nav-item:hover,.nav-item.active { background:rgba(251,146,60,0.12); color:var(--orange); }
+        .nav-rail {
+            background: #050811; border-right: 1px solid var(--border-cyan); padding: 20px 14px;
+            display: flex; flex-direction: column; position: sticky; top: 0; height: calc(100vh - 60px); overflow-y: auto;
+        }
+        .rail-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; color: var(--cyan); letter-spacing: 1.5px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .rail-menu { display: flex; flex-direction: column; gap: 8px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 6px;
+            color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 0.92rem;
+            transition: all 0.2s ease; background: rgba(15, 23, 42, 0.4); border: 1px solid transparent;
+        }
+        .nav-item:hover { color: var(--cyan); background: rgba(0, 242, 254, 0.08); border-color: rgba(0, 242, 254, 0.25); transform: translateX(3px); }
+        .nav-item.active { background: linear-gradient(90deg, rgba(251, 146, 60, 0.2) 0%, rgba(234, 88, 12, 0.1) 100%); color: var(--orange); font-weight: 800; border: 1px solid rgba(251, 146, 60, 0.8); box-shadow: 0 0 15px rgba(251, 146, 60, 0.2); }
         .main-viewport { padding:20px; display:flex; flex-direction:column; gap:18px; }
         .cyber-card { background:var(--bg-panel); border:1px solid var(--border-cyan); border-radius:8px; padding:18px; }
         .cyber-card.orange-border { border-color:rgba(251,146,60,0.4); }
