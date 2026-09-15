@@ -5,20 +5,28 @@ Unique content on every page: Command Center, Geospatial, Anomaly Detection, Pre
 Exporting top-level app and handler for Vercel/Render deployment.
 """
 from flask import Flask, render_template, jsonify, request, Response, session, redirect, url_for
-import os, sys, json, datetime, random, requests
+import os, sys, json, datetime, requests
+from functools import wraps
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from utils.open_meteo import GLOBAL_STATIONS, fetch_live_weather_from_open_meteo, ingest_open_meteo_live_event
 from database.mongodb import get_db
-from functools import wraps
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-app.secret_key = "earthscape_super_secret_cyber_key"
+app.secret_key = os.environ.get("SECRET_KEY", "earthscape_super_secret_cyber_key")
 handler = app   # Vercel requires top-level "handler"
 
-db = get_db()
+# Lazy DB connection — do NOT connect at module import time (causes Vercel timeout)
+_db_instance = None
 _station_index = 0
+
+def get_db_conn():
+    """Get DB connection, connecting lazily on first use."""
+    global _db_instance
+    if _db_instance is None:
+        _db_instance = get_db()
+    return _db_instance
 
 def login_required(f):
     @wraps(f)
@@ -36,33 +44,29 @@ def login():
     if request.method == "POST":
         username = request.form.get("username","").strip()
         password = request.form.get("password","").strip()
+        db = get_db_conn()
         # Check against MongoDB users collection
         try:
             import bcrypt
-            user_doc = db["users"].find_one({"username": username})
-            if user_doc:
-                stored_hash = user_doc.get("password_hash","")
-                if isinstance(stored_hash, str):
-                    stored_hash = stored_hash.encode()
-                if bcrypt.checkpw(password.encode(), stored_hash):
-                    session["username"] = username
-                    session["role"] = user_doc.get("role","ANALYST")
-                    return redirect(url_for("index"))
-            # Fallback: demo credentials
-            demo = {"admin":"admin123","analyst":"analyst123"}
-            if username in demo and demo[username] == password:
-                session["username"] = username
-                session["role"] = "ADMIN" if username=="admin" else "ANALYST"
-                return redirect(url_for("index"))
-            return render_template("login.html", error="ACCESS DENIED — Invalid credentials.")
+            if db is not None:
+                user_doc = db["users"].find_one({"username": username})
+                if user_doc:
+                    stored_hash = user_doc.get("password_hash","")
+                    if isinstance(stored_hash, str):
+                        stored_hash = stored_hash.encode()
+                    if bcrypt.checkpw(password.encode(), stored_hash):
+                        session["username"] = username
+                        session["role"] = user_doc.get("role","ANALYST")
+                        return redirect(url_for("index"))
         except Exception:
-            # If bcrypt/mongo unavailable, use demo credentials
-            demo = {"admin":"admin123","analyst":"analyst123"}
-            if username in demo and demo[username] == password:
-                session["username"] = username
-                session["role"] = "ADMIN" if username=="admin" else "ANALYST"
-                return redirect(url_for("index"))
-            return render_template("login.html", error="ACCESS DENIED — Invalid credentials.")
+            pass
+        # Fallback: demo credentials
+        demo = {"admin":"admin123","analyst":"analyst123"}
+        if username in demo and demo[username] == password:
+            session["username"] = username
+            session["role"] = "ADMIN" if username=="admin" else "ANALYST"
+            return redirect(url_for("index"))
+        return render_template("login.html", error="ACCESS DENIED — Invalid credentials.")
     return render_template("login.html", error=None)
 
 @app.route("/logout")
@@ -120,6 +124,7 @@ def get_live_telemetry():
     station = GLOBAL_STATIONS[_station_index % len(GLOBAL_STATIONS)]
     _station_index += 1
     try:
+        db = get_db_conn()
         event = ingest_open_meteo_live_event(station, db=db)
         if not event or event.get("Temperature_C") is None:
             return jsonify({"success": False, "error": "No climate data available", "data": []}), 503
@@ -148,11 +153,11 @@ def get_live_telemetry():
 @app.route("/api/radar-points")
 def get_radar_points():
     try:
+        db = get_db_conn()
         if db is None:
-            return jsonify({"success": False, "error": "Unable to load data. Please try again later.", "data": []}), 503
-            
+            return jsonify({"success": False, "error": "Database unavailable.", "data": []}), 503
+
         col = db["live_telemetry_stream"]
-        # Fetch the most recent event for each station
         points = []
         for s in GLOBAL_STATIONS:
             event = col.find_one({"StationName": s["name"]}, sort=[("StartTime(UTC)", -1)])
@@ -164,10 +169,10 @@ def get_radar_points():
                     "type": event.get("Type", "Unknown"),
                     "severity": event.get("Severity", "Unknown")
                 })
-        
+
         if not points:
-             return jsonify({"success": True, "error": "No climate data available", "data": []})
-             
+            return jsonify({"success": True, "message": "No climate data available", "data": []})
+
         return jsonify({"success": True, "data": points})
     except Exception as e:
         return jsonify({"success": False, "error": "Unable to load data. Please try again later.", "data": []}), 500
@@ -176,16 +181,18 @@ def get_radar_points():
 def get_anomalies_api():
     """Real anomaly data from MongoDB anomalies collection."""
     try:
+        db = get_db_conn()
         if db is None:
-             return jsonify({"success": False, "error": "Unable to load data. Please try again later.", "data": []}), 503
-             
+            return jsonify({"success": False, "error": "Database unavailable.", "data": []}), 503
+
         col = db["anomalies"]
         total = col.count_documents({})
-        
+
         if total == 0:
             return jsonify({
-                "success": True, 
+                "success": True,
                 "message": "No anomaly results available.",
+                "total_records": 0,
                 "total_anomalies": 0,
                 "critical_count": 0,
                 "anomaly_rate": "0.00",
@@ -193,17 +200,17 @@ def get_anomalies_api():
                 "type_distribution": {},
                 "anomalies": []
             })
-            
+
         total_records = db["weather_events_cleaned"].count_documents({})
         critical_count = col.count_documents({"Severity": {"$in": ["Critical","Severe","Heavy"]}})
         anomaly_rate = round((total / max(total_records,1)) * 100, 2)
-        # Severity distribution
+
         sev_agg = list(col.aggregate([{"$group":{"_id":"$Severity","count":{"$sum":1}}},{"$sort":{"count":-1}},{"$limit":6}]))
         severity_distribution = {d["_id"]:d["count"] for d in sev_agg if d["_id"]}
-        # Type distribution
+
         type_agg = list(col.aggregate([{"$group":{"_id":"$Type","count":{"$sum":1}}},{"$sort":{"count":-1}},{"$limit":8}]))
         type_distribution = {d["_id"]:d["count"] for d in type_agg if d["_id"]}
-        # Latest anomaly records
+
         records = list(col.find({},{"_id":0,"StartTime(UTC)":1,"State":1,"Type":1,"Severity":1,"Precipitation(in)":1,"Distance(mi)":1,"anomaly_score":1}).sort("StartTime(UTC)",-1).limit(50))
         anomalies_out = []
         for r in records:
@@ -217,6 +224,7 @@ def get_anomalies_api():
                 "Duration": r.get("Duration(h)"),
                 "anomaly_score": r.get("anomaly_score", -0.2)
             })
+
         return jsonify({
             "success": True,
             "total_records": total_records,
@@ -234,9 +242,10 @@ def get_anomalies_api():
 def get_predictions_api():
     """Real prediction data from MongoDB predictions collection."""
     try:
+        db = get_db_conn()
         if db is None:
-             return jsonify({"success": False, "error": "Unable to load data. Please try again later.", "data": []}), 503
-             
+            return jsonify({"success": False, "error": "Database unavailable.", "data": []}), 503
+
         col = db["predictions"]
         total = col.count_documents({})
         if total == 0:
@@ -246,14 +255,12 @@ def get_predictions_api():
                 "total_predictions": 0,
                 "predictions": []
             })
-            
-        # Model metrics from climate_summary
+
         summary = db["climate_summary"].find_one({"type":"model_metrics"}) or {}
         r2 = summary.get("r2", 0)
         mae = summary.get("mae", 0)
         rmse = summary.get("rmse", 0)
-        
-        # Latest 30 predictions
+
         records = list(col.find({},{"_id":0,"State":1,"Type":1,"actual":1,"predicted":1,"timestamp":1}).sort("timestamp",-1).limit(30))
         pred_out = []
         actuals, preds = [], []
@@ -263,18 +270,16 @@ def get_predictions_api():
             if act is not None: actuals.append(float(act))
             if pred is not None: preds.append(float(pred))
             pred_out.append({"State":r.get("State",""),"Type":r.get("Type",""),"actual":act,"predicted":pred,"timestamp":r.get("timestamp","")})
-        
+
         avg_predicted = sum(preds)/len(preds) if preds else 0
-        
-        # 14-day forecast
+
         fa = actuals[:14] if len(actuals)>=14 else actuals
         fp = preds[:14] if len(preds)>=14 else preds
         days = [f"D+{i+1}" for i in range(max(len(fa), len(fp)))]
-        
-        # Feature importances from saved model (or empty if none)
+
         features = ["Distance(mi)","Duration(h)","Precipitation","WindSpeed","Visibility","Temperature"]
         importances = summary.get("feature_importances", [0, 0, 0, 0, 0, 0])
-        
+
         return jsonify({
             "success": True,
             "total_predictions": total,
@@ -297,7 +302,7 @@ def get_admin_stats():
     """Real system stats: psutil CPU/RAM/Disk + MongoDB collection counts + Hadoop nodes."""
     try:
         import psutil
-        cpu_pct = psutil.cpu_percent(interval=0.5)
+        cpu_pct = psutil.cpu_percent(interval=0.1)
         cpu_count = psutil.cpu_count()
         cpu_freq = psutil.cpu_freq()
         ram = psutil.virtual_memory()
@@ -310,7 +315,7 @@ def get_admin_stats():
         ram_data = None
         disk_data = None
 
-    # MongoDB collection stats
+    db = get_db_conn()
     mongo_stats = []
     mongo_collections = 0
     if db is not None:
@@ -322,13 +327,13 @@ def get_admin_stats():
             mongo_collections = len(col_names)
         except Exception:
             pass
-            
+
     # Check if Hadoop is running locally via jps
     hadoop_nodes = []
     cluster_status = "Unavailable"
     try:
         import subprocess
-        jps_out = subprocess.check_output(["jps"], text=True)
+        jps_out = subprocess.check_output(["jps"], text=True, timeout=3)
         if "NameNode" in jps_out or "DataNode" in jps_out:
             cluster_status = "HEALTHY"
             if "NameNode" in jps_out: hadoop_nodes.append({"name":"NameNode","role":"Master","status":"RUNNING"})
@@ -337,7 +342,7 @@ def get_admin_stats():
             if "NodeManager" in jps_out: hadoop_nodes.append({"name":"NodeManager","role":"Worker","status":"RUNNING"})
     except Exception:
         pass
-        
+
     return jsonify({
         "success": True,
         "data": {
@@ -353,15 +358,15 @@ def get_admin_stats():
 def get_analytics_trends():
     """Monthly weather trends from MongoDB for Geospatial Analytics page."""
     try:
+        db = get_db_conn()
         if db is None:
-             return jsonify({"success": False, "error": "Unable to load data. Please try again later.", "data": []}), 503
-             
+            return jsonify({"success": False, "error": "Database unavailable.", "data": []}), 503
+
         col = db["weather_events_cleaned"]
         total = col.count_documents({})
         if total == 0:
             return jsonify({"success": True, "message": "No climate data available", "trends": [], "total": 0})
-            
-        # Aggregate by month and type
+
         pipeline = [
             {"$group":{"_id":{"type":"$Type", "month":"$Month"},"count":{"$sum":1},"avg_precip":{"$avg":"$Precipitation(in)"}}},
             {"$sort":{"count":-1}},
@@ -384,5 +389,5 @@ def export_geojson():
         headers={"Content-disposition":"attachment; filename=earthscape_telemetry.geojson"})
 
 if __name__ == "__main__":
-    print("EarthScape Surveillance HQ Flask Server starting on http://localhost:5000 ...")
+    print("EarthScape Flask Server starting on http://localhost:5000 ...")
     app.run(host="0.0.0.0", port=5000, debug=True)
