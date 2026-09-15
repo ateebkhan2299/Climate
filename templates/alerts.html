@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EARTHSCAPE // ALERTS</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shared Theme -->
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/animations.js" defer></script>
+</head>
+<body>
+        <header class="hud-header">
+        <div class="hud-title">
+            <span>🌐</span> EARTHSCAPE <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:600; margin-left:10px;">Climate Monitoring & Intelligence Dashboard</span>
+        </div>
+        <div class="hud-chips-container">
+            <div class="hud-chip"><span class="pulse-dot"></span> LIVE OPEN-METEO API</div>
+            <div class="hud-chip">● SYSTEM: ONLINE</div>
+            <div class="hud-chip" id="live-utc-clock">UTC</div>
+            <div class="hud-chip chip-dark">👤 ANALYST</div>
+            <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="window.toggleTheme()">🌙 DARK</button>
+        </div>
+    </header>
+    <div class="app-layout">
+                <aside class="nav-rail">
+            <div class="rail-header">
+                <span class="rail-label" style="font-family: var(--font-sans);">EARTHSCAPE</span>
+            </div>
+            <nav class="rail-menu">
+                <a href="/" class="nav-item">Dashboard</a>
+                <a href="/analytics" class="nav-item">Analytics</a>
+                <a href="/anomalies" class="nav-item">Anomalies</a>
+                <a href="/predictions" class="nav-item">Predictions</a>
+                <a href="/data" class="nav-item">Data</a>
+                <a href="/alerts" class="nav-item active">Alerts</a>
+                <a href="/admin" class="nav-item">Admin</a>
+                <a href="/support" class="nav-item">Support</a>
+                <a href="/logout" class="nav-item">Logout</a>
+            </nav>
+        </aside>
+        <main class="main-viewport">
+            <section class="cyber-card">
+                <h2 class="box-title">Alerts</h2>
+                <p class="box-sub">Alert configuration is not currently available.</p>
+                <div style="padding:40px; text-align:center; color:var(--text-secondary); border:1px dashed var(--border-color); border-radius:var(--radius-md);">
+                    Alert configuration is not currently available.
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

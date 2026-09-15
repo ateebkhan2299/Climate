@@ -80,9 +80,27 @@ def anomalies_view():
 def predictions_view():
     return render_template("predictions.html")
 
-@app.route("/admin")
-def admin_view():
-    return render_template("admin.html")
+@app.route('/admin')
+@login_required
+def admin():
+    if session.get('role') != 'ADMIN':
+        return redirect(url_for('index'))
+    return render_template('admin.html')
+
+@app.route('/data')
+@login_required
+def data_page():
+    return render_template('data.html')
+
+@app.route('/alerts')
+@login_required
+def alerts_page():
+    return render_template('alerts.html')
+
+@app.route('/support')
+@login_required
+def support_page():
+    return render_template('support.html')
 
 # =========================================================
 # REAL-TIME APIS
@@ -167,8 +185,9 @@ def get_anomalies_api():
                 "anomalies": []
             })
             
+        total_records = db["weather_events_cleaned"].count_documents({})
         critical_count = col.count_documents({"Severity": {"$in": ["Critical","Severe","Heavy"]}})
-        anomaly_rate = round((total / max(db["weather_events_cleaned"].count_documents({}),1)) * 100, 2)
+        anomaly_rate = round((total / max(total_records,1)) * 100, 2)
         # Severity distribution
         sev_agg = list(col.aggregate([{"$group":{"_id":"$Severity","count":{"$sum":1}}},{"$sort":{"count":-1}},{"$limit":6}]))
         severity_distribution = {d["_id"]:d["count"] for d in sev_agg if d["_id"]}
@@ -191,6 +210,7 @@ def get_anomalies_api():
             })
         return jsonify({
             "success": True,
+            "total_records": total_records,
             "total_anomalies": total,
             "critical_count": critical_count,
             "anomaly_rate": str(anomaly_rate),

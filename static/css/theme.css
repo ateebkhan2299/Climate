@@ -1,4 +1,4 @@
-﻿/* =========================================================
+/* =========================================================
    EARTHSCAPE CLIMATE AGENCY — MONOCHROME THEME (B&W)
    Professional, Minimalist, Corporate Data Science Design System
    ========================================================= */
@@ -37,12 +37,12 @@
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
     
     --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
     
-    --font-sans: 'Rajdhani', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-heading: 'Rajdhani', sans-serif;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 [data-theme="dark"] {
@@ -52,15 +52,15 @@
     --bg-sidebar: #050505;
     --bg-sidebar-hover: #171717;
     
-    --border-color: #262626;
+    --border-color: #2A2A2A;
     --border-subtle: #1C1C1C;
-    --border-sidebar: #202020;
+    --border-sidebar: #2A2A2A;
     
-    --text-primary: #EDEDED;
-    --text-secondary: #A1A1A1;
+    --text-primary: #F2F2F2;
+    --text-secondary: #999999;
     --text-muted: #666666;
-    --text-sidebar: #EDEDED;
-    --text-sidebar-muted: #888888;
+    --text-sidebar: #F2F2F2;
+    --text-sidebar-muted: #999999;
     
     --accent-black: #FFFFFF;
     --accent-subtle: #D4D4D4;
@@ -126,9 +126,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hud-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    letter-spacing: 1.5px;
+    font-size: 28px;
+    font-weight: 700;
     color: var(--text-primary);
     display: flex;
     align-items: center;
@@ -372,11 +371,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card-value {
-    font-family: var(--font-mono);
-    font-size: 2rem;
-    font-weight: 800;
+    font-family: var(--font-sans);
+    font-size: 32px;
+    font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: -0.5px;
+    margin-top: 4px;
 }
 
 .card-subtext {
@@ -389,11 +388,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .box-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-size: 20px;
+    font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .box-sub {
