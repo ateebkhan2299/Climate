@@ -21,6 +21,7 @@
 </head>
 <body>
     <header class="hud-header">
+        <button class="mobile-menu-toggle" onclick="window.EarthScape.toggleMenu()" aria-label="Toggle Menu">☰</button>
         <div class="hud-title">
             <span>🌍</span> EARTHSCAPE <span style="font-size:15px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">System Admin | Infrastructure & cluster health</span>
         </div>
@@ -32,6 +33,7 @@
         </div>
     </header>
 
+    <div class="nav-overlay" id="nav-overlay" onclick="window.EarthScape.closeMenu()"></div>
     <div class="app-layout">
         <aside class="nav-rail">
             <div class="rail-header">
@@ -75,7 +77,8 @@
                 <h2 class="box-title">System Services</h2>
                 <p class="box-sub">Current status of backend infrastructure components</p>
                 <div style="margin-top:16px;">
-                    <table class="clean-table" id="services-table">
+                    <div class="table-responsive-wrapper">
+                <table class="clean-table" id="services-table">
                         <thead>
                             <tr>
                                 <th>Service Name</th>
@@ -90,6 +93,7 @@
                             <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-secondary);">Loading system data...</td></tr>
                         </tbody>
                     </table>
+            </div>
                 </div>
             </section>
 

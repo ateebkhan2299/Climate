@@ -15,6 +15,7 @@
 </head>
 <body>
     <header class="hud-header">
+        <button class="mobile-menu-toggle" onclick="window.EarthScape.toggleMenu()" aria-label="Toggle Menu">☰</button>
         <div class="hud-title">
             <span>🌍</span> EARTHSCAPE <span style="font-size:15px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Climate Analytics | Historical weather event analysis</span>
         </div>
@@ -26,6 +27,7 @@
         </div>
     </header>
 
+    <div class="nav-overlay" id="nav-overlay" onclick="window.EarthScape.closeMenu()"></div>
     <div class="app-layout">
         <aside class="nav-rail">
             <div class="rail-header"><span class="rail-label">EARTHSCAPE</span></div>

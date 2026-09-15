@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EarthScape Climate Agency — GSAP Animation Engine
  * Minimalist, Corporate Monochrome Animation System
  * Compatible with GSAP 3.12.5 + ScrollTrigger
@@ -202,18 +202,51 @@
         if (btn) btn.textContent = savedTheme === 'dark' ? '☀️ LIGHT' : '🌙 DARK';
     }
 
+    // =========================================================
+    // 7. MOBILE MENU & RESPONSIVE LOGIC
+    // =========================================================
+    function initMobileMenu() {
+        window.EarthScape.toggleMenu = function () {
+            const nav = document.querySelector('.nav-rail');
+            const overlay = document.getElementById('nav-overlay');
+            if (nav && overlay) {
+                nav.classList.toggle('nav-open');
+                overlay.classList.toggle('active');
+            }
+        };
+
+        window.EarthScape.closeMenu = function () {
+            const nav = document.querySelector('.nav-rail');
+            const overlay = document.getElementById('nav-overlay');
+            if (nav && overlay) {
+                nav.classList.remove('nav-open');
+                overlay.classList.remove('active');
+            }
+        };
+
+        // Plotly global responsive resize
+        window.addEventListener('resize', () => {
+            if (window.Plotly) {
+                const charts = document.querySelectorAll('.js-plotly-plot');
+                charts.forEach(chart => {
+                    try { Plotly.Plots.resize(chart); } catch (e) {}
+                });
+            }
+        });
+    }
+
     // Initialize on DOM ready
     document.addEventListener('DOMContentLoaded', () => {
         initThemeToggle();
         animatePageEntrance();
         initMicroInteractions();
         initScrollTriggerAnimations();
+        initMobileMenu();
     });
 
     // Expose utility functions globally
-    window.EarthScape = {
-        animateCountUp: animateCountUp,
-        showToast: showToast,
-        animatePageEntrance: animatePageEntrance
-    };
+    window.EarthScape = window.EarthScape || {};
+    window.EarthScape.animateCountUp = animateCountUp;
+    window.EarthScape.showToast = showToast;
+    window.EarthScape.animatePageEntrance = animatePageEntrance;
 })();

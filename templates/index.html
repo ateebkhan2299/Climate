@@ -21,6 +21,7 @@
 </head>
 <body>
     <header class="hud-header">
+        <button class="mobile-menu-toggle" onclick="window.EarthScape.toggleMenu()" aria-label="Toggle Menu">☰</button>
         <div class="hud-title">
             <span>🌍</span> EARTHSCAPE <span style="font-size:15px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Climate Monitoring & Intelligence Dashboard</span>
         </div>
@@ -32,6 +33,7 @@
         </div>
     </header>
 
+    <div class="nav-overlay" id="nav-overlay" onclick="window.EarthScape.closeMenu()"></div>
     <div class="app-layout">
         <aside class="nav-rail">
             <div class="rail-header">
@@ -139,6 +141,7 @@
             <section class="cyber-card" style="width:100%; overflow-x:auto;">
                 <h2 class="box-title">Recent Data</h2>
                 <p class="box-sub">Live telemetry stream from global sensor array</p>
+                <div class="table-responsive-wrapper">
                 <table class="clean-table" id="recent-data-table">
                     <thead>
                         <tr>
@@ -154,6 +157,7 @@
                         <!-- Populated by JS -->
                     </tbody>
                 </table>
+            </div>
             </section>
 
         </main>

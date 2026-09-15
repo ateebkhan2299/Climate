@@ -12,6 +12,7 @@
 </head>
 <body>
     <header class="hud-header">
+        <button class="mobile-menu-toggle" onclick="window.EarthScape.toggleMenu()" aria-label="Toggle Menu">☰</button>
         <div class="hud-title">
             <span>🌍</span> EARTHSCAPE <span style="font-size:15px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Data Catalog | System datasets and ingestion status</span>
         </div>
@@ -23,6 +24,7 @@
         </div>
     </header>
 
+    <div class="nav-overlay" id="nav-overlay" onclick="window.EarthScape.closeMenu()"></div>
     <div class="app-layout">
         <aside class="nav-rail">
             <div class="rail-header"><span class="rail-label">EARTHSCAPE</span></div>
@@ -46,7 +48,8 @@
                 <p class="box-sub">Overview of active MongoDB collections and local sources</p>
                 
                 <div style="margin-top:16px;">
-                    <table class="clean-table">
+                    <div class="table-responsive-wrapper">
+                <table class="clean-table">
                         <thead>
                             <tr>
                                 <th>Collection / Source</th>
@@ -59,6 +62,7 @@
                             <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-secondary);">Loading dataset statistics...</td></tr>
                         </tbody>
                     </table>
+            </div>
                 </div>
             </section>
 
