@@ -1,0 +1,361 @@
+{
+  "avg_predicted": 6008.75,
+  "feature_importances": [],
+  "feature_names": [
+    "Month",
+    "TimeIndex",
+    "AvgPrecip",
+    "AvgDuration",
+    "AvgSeverity",
+    "Lag_1"
+  ],
+  "forecast_actual": [
+    4233,
+    7289,
+    6028,
+    6088,
+    6134,
+    6475,
+    6007,
+    3930,
+    4133,
+    4592,
+    4248,
+    4314,
+    6416,
+    8430
+  ],
+  "forecast_labels": [
+    "2021-11",
+    "2021-12",
+    "2022-01",
+    "2022-02",
+    "2022-03",
+    "2022-04",
+    "2022-05",
+    "2022-06",
+    "2022-07",
+    "2022-08",
+    "2022-09",
+    "2022-10",
+    "2022-11",
+    "2022-12"
+  ],
+  "forecast_predicted": [
+    6112,
+    6696,
+    7682,
+    7261,
+    5909,
+    5713,
+    5440,
+    5269,
+    5192,
+    5141,
+    5188,
+    5843,
+    5493,
+    6918
+  ],
+  "mae": 1025.63,
+  "predictions": [
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4376,
+      "predicted": 4638,
+      "timestamp": "2020-07-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4475,
+      "predicted": 4800,
+      "timestamp": "2020-08-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 5328,
+      "predicted": 5491,
+      "timestamp": "2020-09-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 5859,
+      "predicted": 5844,
+      "timestamp": "2020-10-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 5296,
+      "predicted": 5459,
+      "timestamp": "2020-11-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 6010,
+      "predicted": 6212,
+      "timestamp": "2020-12-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 7297,
+      "predicted": 7332,
+      "timestamp": "2021-01-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 7564,
+      "predicted": 7386,
+      "timestamp": "2021-02-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 5614,
+      "predicted": 5851,
+      "timestamp": "2021-03-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4548,
+      "predicted": 5051,
+      "timestamp": "2021-04-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 5232,
+      "predicted": 5159,
+      "timestamp": "2021-05-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4856,
+      "predicted": 4891,
+      "timestamp": "2021-06-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 5848,
+      "predicted": 5727,
+      "timestamp": "2021-07-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 5552,
+      "predicted": 5031,
+      "timestamp": "2021-08-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4339,
+      "predicted": 5242,
+      "timestamp": "2021-09-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 6679,
+      "predicted": 5372,
+      "timestamp": "2021-10-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4233,
+      "predicted": 6112,
+      "timestamp": "2021-11-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 7289,
+      "predicted": 6696,
+      "timestamp": "2021-12-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 6028,
+      "predicted": 7682,
+      "timestamp": "2022-01-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 6088,
+      "predicted": 7261,
+      "timestamp": "2022-02-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 6134,
+      "predicted": 5909,
+      "timestamp": "2022-03-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 6475,
+      "predicted": 5713,
+      "timestamp": "2022-04-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 6007,
+      "predicted": 5440,
+      "timestamp": "2022-05-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 3930,
+      "predicted": 5269,
+      "timestamp": "2022-06-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4133,
+      "predicted": 5192,
+      "timestamp": "2022-07-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4592,
+      "predicted": 5141,
+      "timestamp": "2022-08-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4248,
+      "predicted": 5188,
+      "timestamp": "2022-09-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 4314,
+      "predicted": 5843,
+      "timestamp": "2022-10-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 6416,
+      "predicted": 5493,
+      "timestamp": "2022-11-01"
+    },
+    {
+      "State": "Monthly",
+      "Type": "Event Frequency",
+      "actual": 8430,
+      "predicted": 6918,
+      "timestamp": "2022-12-01"
+    }
+  ],
+  "r2": 0.2169,
+  "rmse": 1119.83,
+  "scatter_actual": [
+    7137,
+    5764,
+    6094,
+    5988,
+    5769,
+    4354,
+    5265,
+    6223,
+    5017,
+    4862,
+    4952,
+    7183,
+    8191,
+    5205,
+    6172,
+    6363,
+    6078,
+    5295,
+    5271,
+    6120,
+    4931,
+    5547,
+    4504,
+    6085,
+    6045,
+    7107,
+    6482,
+    5797,
+    6029,
+    5064,
+    5594,
+    6361,
+    6141,
+    7000,
+    7310,
+    7931,
+    7843,
+    9432,
+    6897,
+    6793
+  ],
+  "scatter_predicted": [
+    7193,
+    6138,
+    5985,
+    5910,
+    5831,
+    4750,
+    5186,
+    5851,
+    5183,
+    5157,
+    5304,
+    6955,
+    7591,
+    5999,
+    6053,
+    6224,
+    5920,
+    5189,
+    5124,
+    5907,
+    5490,
+    5622,
+    5209,
+    6545,
+    6482,
+    6569,
+    6489,
+    6056,
+    5959,
+    5383,
+    5397,
+    6143,
+    5970,
+    6456,
+    7125,
+    7282,
+    7774,
+    8567,
+    6966,
+    6877
+  ],
+  "success": true,
+  "total_predictions": 84
+}

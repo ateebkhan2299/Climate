@@ -1,0 +1,406 @@
+{
+  "success": true,
+  "total": 20000,
+  "trends": [
+    {
+      "_id": {
+        "month": 5,
+        "type": "Rain"
+      },
+      "avg_precip": 0.08792727272727273,
+      "count": 1650
+    },
+    {
+      "_id": {
+        "month": 8,
+        "type": "Rain"
+      },
+      "avg_precip": 0.12798196948682386,
+      "count": 1442
+    },
+    {
+      "_id": {
+        "month": 6,
+        "type": "Rain"
+      },
+      "avg_precip": 0.10707512764405544,
+      "count": 1371
+    },
+    {
+      "_id": {
+        "month": 7,
+        "type": "Rain"
+      },
+      "avg_precip": 0.1176006711409396,
+      "count": 1192
+    },
+    {
+      "_id": {
+        "month": 9,
+        "type": "Rain"
+      },
+      "avg_precip": 0.08550590219224283,
+      "count": 1186
+    },
+    {
+      "_id": {
+        "month": 10,
+        "type": "Rain"
+      },
+      "avg_precip": 0.08883982683982684,
+      "count": 1155
+    },
+    {
+      "_id": {
+        "month": 4,
+        "type": "Rain"
+      },
+      "avg_precip": 0.10335243553008595,
+      "count": 1047
+    },
+    {
+      "_id": {
+        "month": 3,
+        "type": "Rain"
+      },
+      "avg_precip": 0.1011784140969163,
+      "count": 908
+    },
+    {
+      "_id": {
+        "month": 8,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 697
+    },
+    {
+      "_id": {
+        "month": 11,
+        "type": "Rain"
+      },
+      "avg_precip": 0.10891104294478528,
+      "count": 652
+    },
+    {
+      "_id": {
+        "month": 1,
+        "type": "Snow"
+      },
+      "avg_precip": 0.007615131578947368,
+      "count": 608
+    },
+    {
+      "_id": {
+        "month": 12,
+        "type": "Rain"
+      },
+      "avg_precip": 0.12714527027027026,
+      "count": 592
+    },
+    {
+      "_id": {
+        "month": 2,
+        "type": "Snow"
+      },
+      "avg_precip": 0.008313253012048194,
+      "count": 581
+    },
+    {
+      "_id": {
+        "month": 12,
+        "type": "Snow"
+      },
+      "avg_precip": 0.00736013986013986,
+      "count": 572
+    },
+    {
+      "_id": {
+        "month": 1,
+        "type": "Rain"
+      },
+      "avg_precip": 0.1671041666666667,
+      "count": 480
+    },
+    {
+      "_id": {
+        "month": 2,
+        "type": "Rain"
+      },
+      "avg_precip": 0.1071002132196162,
+      "count": 469
+    },
+    {
+      "_id": {
+        "month": 9,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 417
+    },
+    {
+      "_id": {
+        "month": 1,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 385
+    },
+    {
+      "_id": {
+        "month": 7,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 384
+    },
+    {
+      "_id": {
+        "month": 12,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 362
+    },
+    {
+      "_id": {
+        "month": 10,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 361
+    },
+    {
+      "_id": {
+        "month": 3,
+        "type": "Snow"
+      },
+      "avg_precip": 0.01135483870967742,
+      "count": 310
+    },
+    {
+      "_id": {
+        "month": 11,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 305
+    },
+    {
+      "_id": {
+        "month": 11,
+        "type": "Snow"
+      },
+      "avg_precip": 0.010559210526315789,
+      "count": 304
+    },
+    {
+      "_id": {
+        "month": 2,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 278
+    },
+    {
+      "_id": {
+        "month": 4,
+        "type": "Snow"
+      },
+      "avg_precip": 0.015551470588235295,
+      "count": 272
+    },
+    {
+      "_id": {
+        "month": 4,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 231
+    },
+    {
+      "_id": {
+        "month": 3,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 213
+    },
+    {
+      "_id": {
+        "month": 6,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 213
+    },
+    {
+      "_id": {
+        "month": 5,
+        "type": "Fog"
+      },
+      "avg_precip": 0.0,
+      "count": 205
+    },
+    {
+      "_id": {
+        "month": 1,
+        "type": "Cold"
+      },
+      "avg_precip": 0.0,
+      "count": 93
+    },
+    {
+      "_id": {
+        "month": 8,
+        "type": "Precipitation"
+      },
+      "avg_precip": 0.9328915662650603,
+      "count": 83
+    },
+    {
+      "_id": {
+        "month": 10,
+        "type": "Snow"
+      },
+      "avg_precip": 0.014320987654320987,
+      "count": 81
+    },
+    {
+      "_id": {
+        "month": 2,
+        "type": "Cold"
+      },
+      "avg_precip": 0.0,
+      "count": 76
+    },
+    {
+      "_id": {
+        "month": 7,
+        "type": "Precipitation"
+      },
+      "avg_precip": 1.2287142857142859,
+      "count": 70
+    },
+    {
+      "_id": {
+        "month": 5,
+        "type": "Snow"
+      },
+      "avg_precip": 0.046515151515151516,
+      "count": 66
+    },
+    {
+      "_id": {
+        "month": 6,
+        "type": "Precipitation"
+      },
+      "avg_precip": 0.77859375,
+      "count": 64
+    },
+    {
+      "_id": {
+        "month": 5,
+        "type": "Precipitation"
+      },
+      "avg_precip": 0.8548333333333333,
+      "count": 60
+    },
+    {
+      "_id": {
+        "month": 4,
+        "type": "Precipitation"
+      },
+      "avg_precip": 1.4105555555555556,
+      "count": 54
+    },
+    {
+      "_id": {
+        "month": 4,
+        "type": "Storm"
+      },
+      "avg_precip": 0.0,
+      "count": 30
+    },
+    {
+      "_id": {
+        "month": 3,
+        "type": "Storm"
+      },
+      "avg_precip": 0.0,
+      "count": 29
+    },
+    {
+      "_id": {
+        "month": 9,
+        "type": "Precipitation"
+      },
+      "avg_precip": 0.5907142857142856,
+      "count": 28
+    },
+    {
+      "_id": {
+        "month": 12,
+        "type": "Cold"
+      },
+      "avg_precip": 0.0,
+      "count": 27
+    },
+    {
+      "_id": {
+        "month": 11,
+        "type": "Cold"
+      },
+      "avg_precip": 0.0,
+      "count": 27
+    },
+    {
+      "_id": {
+        "month": 4,
+        "type": "Cold"
+      },
+      "avg_precip": 0.0,
+      "count": 26
+    },
+    {
+      "_id": {
+        "month": 9,
+        "type": "Snow"
+      },
+      "avg_precip": 0.0436,
+      "count": 25
+    },
+    {
+      "_id": {
+        "month": 5,
+        "type": "Cold"
+      },
+      "avg_precip": 0.0,
+      "count": 24
+    },
+    {
+      "_id": {
+        "month": 12,
+        "type": "Precipitation"
+      },
+      "avg_precip": 1.0040909090909091,
+      "count": 22
+    },
+    {
+      "_id": {
+        "month": 3,
+        "type": "Cold"
+      },
+      "avg_precip": 0.0,
+      "count": 22
+    },
+    {
+      "_id": {
+        "month": 10,
+        "type": "Precipitation"
+      },
+      "avg_precip": 1.301904761904762,
+      "count": 21
+    }
+  ]
+}

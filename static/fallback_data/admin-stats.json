@@ -1,0 +1,90 @@
+{
+  "data": {
+    "cluster_status": "Unavailable",
+    "cpu": {
+      "count": 8,
+      "freq_current": 1600.0,
+      "percent": 14.5
+    },
+    "disk": {
+      "free": 274450243584,
+      "percent": 12.8,
+      "total": 314572795904,
+      "used": 40122552320
+    },
+    "hadoop_nodes": [],
+    "mongo_collections": 9,
+    "mongo_stats": [
+      {
+        "avg_obj_size": 512,
+        "count": 2,
+        "indexes": 2,
+        "name": "users",
+        "size_mb": 0.0
+      },
+      {
+        "avg_obj_size": 512,
+        "count": 56,
+        "indexes": 2,
+        "name": "live_telemetry_stream",
+        "size_mb": 0.0
+      },
+      {
+        "avg_obj_size": 512,
+        "count": 0,
+        "indexes": 2,
+        "name": "feedback",
+        "size_mb": 0.0
+      },
+      {
+        "avg_obj_size": 512,
+        "count": 1230,
+        "indexes": 2,
+        "name": "anomalies",
+        "size_mb": 0.6
+      },
+      {
+        "avg_obj_size": 512,
+        "count": 1,
+        "indexes": 2,
+        "name": "climate_summary",
+        "size_mb": 0.0
+      },
+      {
+        "avg_obj_size": 512,
+        "count": 20000,
+        "indexes": 2,
+        "name": "weather_events_cleaned",
+        "size_mb": 9.8
+      },
+      {
+        "avg_obj_size": 512,
+        "count": 3,
+        "indexes": 2,
+        "name": "system_logs",
+        "size_mb": 0.0
+      },
+      {
+        "avg_obj_size": 512,
+        "count": 100,
+        "indexes": 2,
+        "name": "alerts",
+        "size_mb": 0.0
+      },
+      {
+        "avg_obj_size": 512,
+        "count": 1,
+        "indexes": 2,
+        "name": "predictions",
+        "size_mb": 0.0
+      }
+    ],
+    "ram": {
+      "available": 1095798784,
+      "percent": 87.0,
+      "total": 8429322240,
+      "used": 7333523456
+    }
+  },
+  "success": true
+}

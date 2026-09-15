@@ -1,0 +1,508 @@
+{
+  "alerts": [
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Storm",
+      "message": "\ud83d\udea8 High-severity event detected: Severe Storm in CO.",
+      "severity": "Severe",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2022-12-22 16:13:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Storm",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Storm (Score: -0.035).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2022-12-22 16:13:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Precipitation (Score: -0.063).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2022-07-28 22:15:00"
+    },
+    {
+      "alert_type": "Extreme Precipitation Warning",
+      "event_type": "Precipitation",
+      "message": "\ud83c\udf27\ufe0f Torrential rainfall warning: 2.17 in recorded in CO (Precipitation).",
+      "severity": "High",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2022-07-12 22:15:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Precipitation (Score: -0.076).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2022-07-12 22:15:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Precipitation (Score: -0.035).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2021-08-29 23:12:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Precipitation (Score: -0.027).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2021-08-03 23:13:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Snow",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Snow (Score: -0.024).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2021-02-15 05:15:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Rain",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Rain (Score: -0.056).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2020-11-08 02:15:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Precipitation (Score: -0.024).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2020-07-27 22:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Precipitation (Score: -0.047).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2019-07-30 00:18:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Cold",
+      "message": "\ud83d\udea8 High-severity event detected: Severe Cold in CO.",
+      "severity": "Severe",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2019-07-26 08:54:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Cold",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Cold (Score: -0.115).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2019-07-26 08:54:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Cold",
+      "message": "\ud83d\udea8 High-severity event detected: Severe Cold in OK.",
+      "severity": "Severe",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-06-01 08:56:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Cold",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Cold (Score: -0.045).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-06-01 08:56:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Precipitation (Score: -0.007).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-05-18 13:56:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Cold",
+      "message": "\ud83d\udea8 High-severity event detected: Severe Cold in OK.",
+      "severity": "Severe",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-05-04 15:56:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Cold",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Cold (Score: -0.102).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-05-04 15:56:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Precipitation (Score: -0.053).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-04-23 09:56:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Precipitation (Score: -0.014).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-04-23 08:56:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Precipitation",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Precipitation (Score: -0.030).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-04-04 02:56:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Rain",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Rain (Score: -0.051).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-03-10 22:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Snow",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Snow (Score: -0.024).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2019-02-19 06:54:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Snow",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Snow (Score: -0.054).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2019-01-03 08:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Snow",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Snow (Score: -0.042).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2018-12-31 21:53:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Snow",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Snow (Score: -0.012).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2018-12-28 23:18:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Snow",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in CO for Snow (Score: -0.012).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "CO",
+      "status": "Unread",
+      "timestamp": "2018-12-28 02:54:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Rain",
+      "message": "\ud83d\udea8 High-severity event detected: Heavy Rain in OK.",
+      "severity": "Heavy",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-10-07 22:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Rain",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Rain (Score: -0.011).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-10-07 22:35:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Rain",
+      "message": "\ud83d\udea8 High-severity event detected: Heavy Rain in OK.",
+      "severity": "Heavy",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-10-07 18:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Rain",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Rain (Score: -0.020).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-10-07 18:35:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Rain",
+      "message": "\ud83d\udea8 High-severity event detected: Heavy Rain in OK.",
+      "severity": "Heavy",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-09-26 13:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Rain",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Rain (Score: -0.005).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-09-26 13:35:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Rain",
+      "message": "\ud83d\udea8 High-severity event detected: Heavy Rain in OK.",
+      "severity": "Heavy",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-09-21 14:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Rain",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Rain (Score: -0.031).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-09-21 14:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.014).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-09-18 12:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.003).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-08-28 13:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.019).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-08-20 20:55:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.004).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-08-15 11:35:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Rain",
+      "message": "\ud83d\udea8 High-severity event detected: Heavy Rain in OK.",
+      "severity": "Heavy",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-08-15 06:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Rain",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Rain (Score: -0.022).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-08-15 06:35:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Fog",
+      "message": "\ud83d\udea8 High-severity event detected: Severe Fog in OK.",
+      "severity": "Severe",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-02-28 04:20:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.010).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2018-02-28 04:20:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.006).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2017-10-09 15:35:00"
+    },
+    {
+      "alert_type": "Severe Weather Alert",
+      "event_type": "Rain",
+      "message": "\ud83d\udea8 High-severity event detected: Heavy Rain in OK.",
+      "severity": "Heavy",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2017-10-05 01:15:00"
+    },
+    {
+      "alert_type": "Extreme Precipitation Warning",
+      "event_type": "Rain",
+      "message": "\ud83c\udf27\ufe0f Torrential rainfall warning: 2.94 in recorded in OK (Rain).",
+      "severity": "High",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2017-10-05 01:15:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Rain",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Rain (Score: -0.071).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2017-10-05 01:15:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.020).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2017-10-02 14:15:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.020).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2017-10-01 14:35:00"
+    },
+    {
+      "alert_type": "ML Climate Anomaly",
+      "event_type": "Fog",
+      "message": "\ud83d\udd2e Isolation Forest detected an anomalous pattern in OK for Fog (Score: -0.019).",
+      "severity": "Warning",
+      "source": "Historical Telemetry",
+      "state": "OK",
+      "status": "Unread",
+      "timestamp": "2017-09-30 14:55:00"
+    }
+  ],
+  "critical": 13,
+  "success": true,
+  "total": 100,
+  "unread": 100
+}

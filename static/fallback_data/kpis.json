@@ -1,0 +1,475 @@
+{
+  "data": {
+    "kpis": {
+      "anomaly_percentage": 4.0,
+      "average_precipitation": 0.09,
+      "last_updated": "2026-09-15T15:59:25.702925",
+      "most_affected_state": "MN",
+      "most_common_event": "Rain",
+      "summary_id": "global_kpis",
+      "total_anomalies": 20000,
+      "total_events": 499987,
+      "total_severe_events": 109344
+    },
+    "severity_summary": [
+      {
+        "Count": 13404,
+        "Severity": "Heavy"
+      },
+      {
+        "Count": 300976,
+        "Severity": "Light"
+      },
+      {
+        "Count": 80312,
+        "Severity": "Moderate"
+      },
+      {
+        "Count": 213,
+        "Severity": "Other"
+      },
+      {
+        "Count": 95940,
+        "Severity": "Severe"
+      },
+      {
+        "Count": 9142,
+        "Severity": "UNK"
+      }
+    ],
+    "state_summary": [
+      {
+        "Anomalies": 1041,
+        "AvgDuration": 1.4601254345500734,
+        "AvgPrecip": 0.06873846770958685,
+        "SevereEvents": 8364,
+        "State": "MN",
+        "TotalEvents": 39888,
+        "TotalPrecip": 2741.84
+      },
+      {
+        "Anomalies": 928,
+        "AvgDuration": 1.5813246821878395,
+        "AvgPrecip": 0.0851099497959543,
+        "SevereEvents": 7279,
+        "State": "NY",
+        "TotalEvents": 34061,
+        "TotalPrecip": 2898.93
+      },
+      {
+        "Anomalies": 392,
+        "AvgDuration": 1.5559202258603178,
+        "AvgPrecip": 0.0665242989206218,
+        "SevereEvents": 3556,
+        "State": "MI",
+        "TotalEvents": 19363,
+        "TotalPrecip": 1288.11
+      },
+      {
+        "Anomalies": 1209,
+        "AvgDuration": 1.3895906215767342,
+        "AvgPrecip": 0.06489716951129015,
+        "SevereEvents": 3612,
+        "State": "WA",
+        "TotalEvents": 18866,
+        "TotalPrecip": 1224.35
+      },
+      {
+        "Anomalies": 750,
+        "AvgDuration": 1.5802795954788817,
+        "AvgPrecip": 0.02392136715158726,
+        "SevereEvents": 6739,
+        "State": "ND",
+        "TotalEvents": 18491,
+        "TotalPrecip": 442.33
+      },
+      {
+        "Anomalies": 769,
+        "AvgDuration": 1.0282518046458566,
+        "AvgPrecip": 0.08193367557679825,
+        "SevereEvents": 3547,
+        "State": "TX",
+        "TotalEvents": 16947,
+        "TotalPrecip": 1388.53
+      },
+      {
+        "Anomalies": 536,
+        "AvgDuration": 1.2510261767236082,
+        "AvgPrecip": 0.10376305763795012,
+        "SevereEvents": 3708,
+        "State": "MO",
+        "TotalEvents": 16274,
+        "TotalPrecip": 1688.64
+      },
+      {
+        "Anomalies": 602,
+        "AvgDuration": 1.2477897768178545,
+        "AvgPrecip": 0.12218451095340944,
+        "SevereEvents": 3300,
+        "State": "VA",
+        "TotalEvents": 16205,
+        "TotalPrecip": 1980.0
+      },
+      {
+        "Anomalies": 812,
+        "AvgDuration": 1.7111193363414174,
+        "AvgPrecip": 0.0629653130287648,
+        "SevereEvents": 2578,
+        "State": "OR",
+        "TotalEvents": 14184,
+        "TotalPrecip": 893.1
+      },
+      {
+        "Anomalies": 369,
+        "AvgDuration": 1.2114176490081903,
+        "AvgPrecip": 0.11243076267575629,
+        "SevereEvents": 2484,
+        "State": "IL",
+        "TotalEvents": 14082,
+        "TotalPrecip": 1583.25
+      },
+      {
+        "Anomalies": 319,
+        "AvgDuration": 1.150157244293752,
+        "AvgPrecip": 0.057726100095820736,
+        "SevereEvents": 2513,
+        "State": "NM",
+        "TotalEvents": 13567,
+        "TotalPrecip": 783.17
+      },
+      {
+        "Anomalies": 1856,
+        "AvgDuration": 2.3076512850899933,
+        "AvgPrecip": 0.05980519961484334,
+        "SevereEvents": 5891,
+        "State": "CA",
+        "TotalEvents": 13501,
+        "TotalPrecip": 807.43
+      },
+      {
+        "Anomalies": 618,
+        "AvgDuration": 1.1066011617846991,
+        "AvgPrecip": 0.13428105302187615,
+        "SevereEvents": 2499,
+        "State": "AL",
+        "TotalEvents": 13485,
+        "TotalPrecip": 1810.78
+      },
+      {
+        "Anomalies": 264,
+        "AvgDuration": 1.3281115485564303,
+        "AvgPrecip": 0.06483622047244095,
+        "SevereEvents": 3541,
+        "State": "IA",
+        "TotalEvents": 12700,
+        "TotalPrecip": 823.42
+      },
+      {
+        "Anomalies": 340,
+        "AvgDuration": 1.3308378957391096,
+        "AvgPrecip": 0.10348171070380069,
+        "SevereEvents": 3197,
+        "State": "MA",
+        "TotalEvents": 12603,
+        "TotalPrecip": 1304.18
+      },
+      {
+        "Anomalies": 341,
+        "AvgDuration": 1.1981226299204188,
+        "AvgPrecip": 0.0672504406345137,
+        "SevereEvents": 3377,
+        "State": "GA",
+        "TotalEvents": 12482,
+        "TotalPrecip": 839.42
+      },
+      {
+        "Anomalies": 519,
+        "AvgDuration": 1.3682931859429137,
+        "AvgPrecip": 0.08686932849364791,
+        "SevereEvents": 2721,
+        "State": "ME",
+        "TotalEvents": 12122,
+        "TotalPrecip": 1053.03
+      },
+      {
+        "Anomalies": 247,
+        "AvgDuration": 1.2529895433014568,
+        "AvgPrecip": 0.08486370542497094,
+        "SevereEvents": 2437,
+        "State": "NE",
+        "TotalEvents": 11189,
+        "TotalPrecip": 949.54
+      },
+      {
+        "Anomalies": 113,
+        "AvgDuration": 1.151859998802897,
+        "AvgPrecip": 0.030239719877895494,
+        "SevereEvents": 1929,
+        "State": "CO",
+        "TotalEvents": 11138,
+        "TotalPrecip": 336.81
+      },
+      {
+        "Anomalies": 1906,
+        "AvgDuration": 1.2030747206921233,
+        "AvgPrecip": 0.1845541966202969,
+        "SevereEvents": 1935,
+        "State": "FL",
+        "TotalEvents": 10711,
+        "TotalPrecip": 1976.76
+      },
+      {
+        "Anomalies": 171,
+        "AvgDuration": 1.5264716243914938,
+        "AvgPrecip": 0.016969638739431206,
+        "SevereEvents": 2440,
+        "State": "WY",
+        "TotalEvents": 10408,
+        "TotalPrecip": 176.62
+      },
+      {
+        "Anomalies": 185,
+        "AvgDuration": 1.6062597427903353,
+        "AvgPrecip": 0.059145557287607176,
+        "SevereEvents": 1257,
+        "State": "OH",
+        "TotalEvents": 10264,
+        "TotalPrecip": 607.07
+      },
+      {
+        "Anomalies": 162,
+        "AvgDuration": 1.1981412326739334,
+        "AvgPrecip": 0.028212555510698428,
+        "SevereEvents": 1138,
+        "State": "NV",
+        "TotalEvents": 9908,
+        "TotalPrecip": 279.53000000000003
+      },
+      {
+        "Anomalies": 279,
+        "AvgDuration": 1.7728733077389374,
+        "AvgPrecip": 0.042634875732471204,
+        "SevereEvents": 1648,
+        "State": "ID",
+        "TotalEvents": 9898,
+        "TotalPrecip": 422.0
+      },
+      {
+        "Anomalies": 428,
+        "AvgDuration": 1.511990919563597,
+        "AvgPrecip": 0.12009554787558446,
+        "SevereEvents": 2617,
+        "State": "SD",
+        "TotalEvents": 9838,
+        "TotalPrecip": 1181.5
+      },
+      {
+        "Anomalies": 297,
+        "AvgDuration": 1.1208885824405077,
+        "AvgPrecip": 0.12168982709239419,
+        "SevereEvents": 1767,
+        "State": "SC",
+        "TotalEvents": 9427,
+        "TotalPrecip": 1147.17
+      },
+      {
+        "Anomalies": 1085,
+        "AvgDuration": 1.1038632423060253,
+        "AvgPrecip": 0.23393476376246208,
+        "SevereEvents": 1608,
+        "State": "LA",
+        "TotalEvents": 9228,
+        "TotalPrecip": 2158.75
+      },
+      {
+        "Anomalies": 454,
+        "AvgDuration": 1.2545721414942022,
+        "AvgPrecip": 0.15580361074416557,
+        "SevereEvents": 2353,
+        "State": "AR",
+        "TotalEvents": 9084,
+        "TotalPrecip": 1415.32
+      },
+      {
+        "Anomalies": 186,
+        "AvgDuration": 1.5399776785714288,
+        "AvgPrecip": 0.08483928571428571,
+        "SevereEvents": 1321,
+        "State": "WI",
+        "TotalEvents": 8960,
+        "TotalPrecip": 760.16
+      },
+      {
+        "Anomalies": 299,
+        "AvgDuration": 1.1957268370607028,
+        "AvgPrecip": 0.11679484253765404,
+        "SevereEvents": 2782,
+        "State": "NC",
+        "TotalEvents": 8764,
+        "TotalPrecip": 1023.59
+      },
+      {
+        "Anomalies": 310,
+        "AvgDuration": 0.9842019935150715,
+        "AvgPrecip": 0.11521316200312237,
+        "SevereEvents": 1317,
+        "State": "OK",
+        "TotalEvents": 8327,
+        "TotalPrecip": 959.38
+      },
+      {
+        "Anomalies": 359,
+        "AvgDuration": 2.3376901693201924,
+        "AvgPrecip": 0.10231235784685368,
+        "SevereEvents": 1790,
+        "State": "RI",
+        "TotalEvents": 6595,
+        "TotalPrecip": 674.75
+      },
+      {
+        "Anomalies": 123,
+        "AvgDuration": 1.2435550213675215,
+        "AvgPrecip": 0.10671634615384615,
+        "SevereEvents": 1219,
+        "State": "WV",
+        "TotalEvents": 6240,
+        "TotalPrecip": 665.91
+      },
+      {
+        "Anomalies": 251,
+        "AvgDuration": 1.2870923068226783,
+        "AvgPrecip": 0.1497948109208072,
+        "SevereEvents": 1143,
+        "State": "KS",
+        "TotalEvents": 5897,
+        "TotalPrecip": 883.34
+      },
+      {
+        "Anomalies": 153,
+        "AvgDuration": 1.5201316399907214,
+        "AvgPrecip": 0.03637091162143354,
+        "SevereEvents": 1500,
+        "State": "UT",
+        "TotalEvents": 5748,
+        "TotalPrecip": 209.06
+      },
+      {
+        "Anomalies": 162,
+        "AvgDuration": 1.1695169596874446,
+        "AvgPrecip": 0.16492630083466525,
+        "SevereEvents": 1099,
+        "State": "TN",
+        "TotalEvents": 5631,
+        "TotalPrecip": 928.7
+      },
+      {
+        "Anomalies": 128,
+        "AvgDuration": 1.1981564613635005,
+        "AvgPrecip": 0.11419824025857425,
+        "SevereEvents": 848,
+        "State": "IN",
+        "TotalEvents": 5569,
+        "TotalPrecip": 635.97
+      },
+      {
+        "Anomalies": 374,
+        "AvgDuration": 1.0877501792815698,
+        "AvgPrecip": 0.29666536280070405,
+        "SevereEvents": 1950,
+        "State": "MS",
+        "TotalEvents": 5113,
+        "TotalPrecip": 1516.85
+      },
+      {
+        "Anomalies": 153,
+        "AvgDuration": 1.4663286944996687,
+        "AvgPrecip": 0.11357455268389662,
+        "SevereEvents": 776,
+        "State": "PA",
+        "TotalEvents": 5030,
+        "TotalPrecip": 571.28
+      },
+      {
+        "Anomalies": 100,
+        "AvgDuration": 1.0576506591337098,
+        "AvgPrecip": 0.049291767554479414,
+        "SevereEvents": 503,
+        "State": "AZ",
+        "TotalEvents": 4956,
+        "TotalPrecip": 244.29
+      },
+      {
+        "Anomalies": 137,
+        "AvgDuration": 1.425740944017563,
+        "AvgPrecip": 0.12946871569703622,
+        "SevereEvents": 834,
+        "State": "MD",
+        "TotalEvents": 4555,
+        "TotalPrecip": 589.73
+      },
+      {
+        "Anomalies": 161,
+        "AvgDuration": 1.3109932994624844,
+        "AvgPrecip": 0.14519770267285179,
+        "SevereEvents": 1149,
+        "State": "NJ",
+        "TotalEvents": 4527,
+        "TotalPrecip": 657.3100000000001
+      },
+      {
+        "Anomalies": 112,
+        "AvgDuration": 1.2954578226387887,
+        "AvgPrecip": 0.10499399182888729,
+        "SevereEvents": 1078,
+        "State": "CT",
+        "TotalEvents": 4161,
+        "TotalPrecip": 436.88
+      }
+    ],
+    "type_summary": [
+      {
+        "AvgDuration": 1.174239179932943,
+        "AvgPrecip": 0.11845027004452373,
+        "Count": 282546,
+        "Type": "Rain"
+      },
+      {
+        "AvgDuration": 1.3055959339881023,
+        "AvgPrecip": 0.0,
+        "Count": 109657,
+        "Type": "Fog"
+      },
+      {
+        "AvgDuration": 1.7205353441759528,
+        "AvgPrecip": 0.03525919875155446,
+        "Count": 82022,
+        "Type": "Snow"
+      },
+      {
+        "AvgDuration": 5.440623032492951,
+        "AvgPrecip": 0.0,
+        "Count": 12177,
+        "Type": "Cold"
+      },
+      {
+        "AvgDuration": 0.7243837963975789,
+        "AvgPrecip": 0.9406147451323562,
+        "Count": 9142,
+        "Type": "Precipitation"
+      },
+      {
+        "AvgDuration": 1.0837509850275806,
+        "AvgPrecip": 0.0,
+        "Count": 4230,
+        "Type": "Storm"
+      },
+      {
+        "AvgDuration": 0.6091549295774648,
+        "AvgPrecip": 0.0,
+        "Count": 213,
+        "Type": "Hail"
+      }
+    ]
+  },
+  "success": true
+}

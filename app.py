@@ -3,7 +3,7 @@ EarthScape Climate Agency - Flask Web Application
 Full Python Flask Backend with Live Open-Meteo API + MongoDB real data.
 Complete SRS-compliant implementation: Dashboard, Analytics, Anomalies,
 Predictions, Alerts, Data, Admin, Support pages.
-Vercel serverless deployment compatible.
+Vercel serverless deployment compatible (with static fallback if no Mongo).
 """
 from flask import Flask, render_template, jsonify, request, Response, session, redirect, url_for
 import os, sys, json, datetime, requests
@@ -29,6 +29,15 @@ def get_db_conn():
     if _db_instance is None:
         _db_instance = get_db()
     return _db_instance
+
+def get_fallback_data(filename):
+    """Vercel Fallback: Returns real ML data from static JSON if MongoDB is not connected."""
+    filepath = os.path.join(app.static_folder, "fallback_data", filename)
+    try:
+        with open(filepath, "r") as f:
+            return json.load(f)
+    except Exception as e:
+        return None
 
 def login_required(f):
     @wraps(f)
@@ -185,6 +194,8 @@ def get_anomalies_api():
     try:
         db = get_db_conn()
         if db is None:
+            fb = get_fallback_data("anomalies.json")
+            if fb: return jsonify(fb)
             return jsonify({"success": False, "error": "Database unavailable. Run ml/train_models.py to populate.", "data": []}), 503
 
         col = db["anomalies"]
@@ -253,6 +264,8 @@ def get_predictions_api():
     try:
         db = get_db_conn()
         if db is None:
+            fb = get_fallback_data("predictions.json")
+            if fb: return jsonify(fb)
             return jsonify({"success": False, "error": "Database unavailable.", "data": []}), 503
 
         col = db["predictions"]
@@ -352,6 +365,14 @@ def get_admin_stats():
         disk_data = None
 
     db = get_db_conn()
+    if db is None:
+        fb = get_fallback_data("admin-stats.json")
+        if fb: 
+            if cpu_data and fb.get('data'): fb['data']['cpu'] = cpu_data
+            if ram_data and fb.get('data'): fb['data']['ram'] = ram_data
+            if disk_data and fb.get('data'): fb['data']['disk'] = disk_data
+            return jsonify(fb)
+
     mongo_stats = []
     mongo_collections = 0
     if db is not None:
@@ -405,6 +426,8 @@ def get_analytics_trends():
     try:
         db = get_db_conn()
         if db is None:
+            fb = get_fallback_data("analytics-trends.json")
+            if fb: return jsonify(fb)
             return jsonify({"success": False, "error": "Database unavailable.", "data": []}), 503
 
         col = db["weather_events_cleaned"]
@@ -428,7 +451,10 @@ def get_alerts_api():
     try:
         db = get_db_conn()
         if db is None:
+            fb = get_fallback_data("alerts.json")
+            if fb: return jsonify(fb)
             return jsonify({"success": False, "error": "Database unavailable.", "alerts": [], "total": 0}), 503
+        
         col = db["alerts"]
         total = col.count_documents({})
         unread = col.count_documents({"status": "Unread"})
@@ -450,7 +476,10 @@ def get_kpis_api():
     try:
         db = get_db_conn()
         if db is None:
+            fb = get_fallback_data("kpis.json")
+            if fb: return jsonify(fb)
             return jsonify({"success": False, "error": "Database unavailable."}), 503
+        
         doc = db["climate_summary"].find_one({}, {"_id": 0, "kpis": 1, "state_summary": 1, "type_summary": 1, "severity_summary": 1})
         if not doc:
             return jsonify({"success": False, "error": "No summary data available."})
