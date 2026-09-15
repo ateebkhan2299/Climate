@@ -22,7 +22,7 @@
 <body>
     <header class="hud-header">
         <div class="hud-title">
-            <span>🌍</span> EARTHSCAPE <span style="font-size:14px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Predictive Forecasting | AI-driven climate trajectory</span>
+            <span>🌍</span> EARTHSCAPE <span style="font-size:15px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Predictive Forecasting | AI-driven climate trajectory</span>
         </div>
         <div class="hud-chips-container">
             <div class="hud-chip">● SYSTEM: ONLINE</div>
@@ -83,23 +83,23 @@
                     
                     <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">Algorithm</span>
-                            <span style="font-size:12px; font-family:monospace;">RandomForestRegressor</span>
+                            <span style="font-size:15px; font-weight:600;">Algorithm</span>
+                            <span style="font-size:13px; font-family:monospace;">RandomForestRegressor</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">n_estimators</span>
-                            <span style="font-size:12px; font-family:monospace;">150</span>
+                            <span style="font-size:15px; font-weight:600;">n_estimators</span>
+                            <span style="font-size:13px; font-family:monospace;">150</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">max_depth</span>
-                            <span style="font-size:12px; font-family:monospace;">15</span>
+                            <span style="font-size:15px; font-weight:600;">max_depth</span>
+                            <span style="font-size:13px; font-family:monospace;">15</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">RMSE</span>
-                            <span id="detail-rmse" style="font-size:12px; font-family:monospace;">—</span>
+                            <span style="font-size:15px; font-weight:600;">RMSE</span>
+                            <span id="detail-rmse" style="font-size:13px; font-family:monospace;">—</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">Status</span>
+                            <span style="font-size:15px; font-weight:600;">Status</span>
                             <span class="badge badge-subtle">Operational</span>
                         </div>
                     </div>
@@ -152,7 +152,7 @@
                     document.getElementById('kpi-total').textContent = '—';
                     document.getElementById('kpi-confidence').textContent = '—';
                     document.getElementById('kpi-error').textContent = '—';
-                    document.getElementById('forecast-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">${errState}</div>`;
+                    document.getElementById('forecast-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:15px;">${errState}</div>`;
                     document.getElementById('pred-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-secondary);">${errState}</td></tr>`;
                     return;
                 }
@@ -185,7 +185,7 @@
                         yaxis: { tickfont: { family: 'Inter', color: '#6B6B6B', size: 10 }, gridcolor: '#E5E5E5' }
                     }, { responsive: true, displayModeBar: false });
                 } else {
-                    document.getElementById('forecast-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">No forecast data available</div>`;
+                    document.getElementById('forecast-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:15px;">No forecast data available</div>`;
                 }
 
                 // Table

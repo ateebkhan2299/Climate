@@ -16,7 +16,7 @@
 <body>
     <header class="hud-header">
         <div class="hud-title">
-            <span>🌍</span> EARTHSCAPE <span style="font-size:14px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Climate Analytics | Historical weather event analysis</span>
+            <span>🌍</span> EARTHSCAPE <span style="font-size:15px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Climate Analytics | Historical weather event analysis</span>
         </div>
         <div class="hud-chips-container">
             <div class="hud-chip">● SYSTEM: ONLINE</div>
@@ -121,15 +121,15 @@
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(0,0,0,0)',
             margin: { l: 50, r: 20, t: 20, b: 50 },
-            font: { family: 'Inter', color: '#6B6B6B', size: 11 },
+            font: { family: 'Inter', color: '#6B6B6B', size: 13 },
             xaxis: { gridcolor: '#E5E5E5', linecolor: '#E5E5E5', zeroline: false },
             yaxis: { gridcolor: '#E5E5E5', linecolor: '#E5E5E5', zeroline: false },
-            legend: { orientation: 'h', y: -0.25, font: { family: 'Inter', size: 11 } }
+            legend: { orientation: 'h', y: -0.25, font: { family: 'Inter', size: 13 } }
         };
 
         function showEmpty(id, msg) {
             const el = document.getElementById(id);
-            if (el) el.innerHTML = `<div style="display:flex;height:100%;min-height:180px;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text-secondary);font-size:14px;">${msg}</div>`;
+            if (el) el.innerHTML = `<div style="display:flex;height:100%;min-height:180px;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text-secondary);font-size:15px;">${msg}</div>`;
         }
 
         async function loadAnalytics() {
@@ -205,7 +205,7 @@
                     marker: { color: top10.map((_, i) => MONO_COLORS[i] || '#888888') },
                     text: top10.map(e => e[1].toLocaleString()),
                     textposition: 'outside',
-                    textfont: { family: 'Inter', size: 11 }
+                    textfont: { family: 'Inter', size: 13 }
                 }], {
                     ...BASE_LAYOUT,
                     margin: { l: 120, r: 60, t: 20, b: 40 },
@@ -244,7 +244,7 @@
                     paper_bgcolor: 'rgba(0,0,0,0)',
                     plot_bgcolor: 'rgba(0,0,0,0)',
                     margin: { l: 10, r: 150, t: 20, b: 20 },
-                    legend: { font: { family: 'Inter', size: 11 }, orientation: 'v', x: 1.0 },
+                    legend: { font: { family: 'Inter', size: 13 }, orientation: 'v', x: 1.0 },
                     showlegend: true
                 }, { responsive: true, displayModeBar: false });
 

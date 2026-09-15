@@ -22,7 +22,7 @@
 <body>
     <header class="hud-header">
         <div class="hud-title">
-            <span>🌍</span> EARTHSCAPE <span style="font-size:14px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Climate Monitoring & Intelligence Dashboard</span>
+            <span>🌍</span> EARTHSCAPE <span style="font-size:15px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Climate Monitoring & Intelligence Dashboard</span>
         </div>
         <div class="hud-chips-container">
             <div class="hud-chip">● SYSTEM: ONLINE</div>
@@ -101,20 +101,20 @@
                     <p class="box-sub">Infrastructure Health</p>
                     <div id="system-status-container" style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">Hadoop Cluster</span>
-                            <span id="stat-hadoop" style="font-size:12px; font-weight:600;" class="badge badge-subtle">Loading</span>
+                            <span style="font-size:15px; font-weight:600;">Hadoop Cluster</span>
+                            <span id="stat-hadoop" style="font-size:13px; font-weight:600;" class="badge badge-subtle">Loading</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">MongoDB</span>
-                            <span id="stat-mongo" style="font-size:12px; font-weight:600;" class="badge badge-subtle">Loading</span>
+                            <span style="font-size:15px; font-weight:600;">MongoDB</span>
+                            <span id="stat-mongo" style="font-size:13px; font-weight:600;" class="badge badge-subtle">Loading</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">CPU Utilization</span>
-                            <span id="stat-cpu" style="font-size:12px; font-weight:600; color:var(--text-secondary);">Loading</span>
+                            <span style="font-size:15px; font-weight:600;">CPU Utilization</span>
+                            <span id="stat-cpu" style="font-size:13px; font-weight:600; color:var(--text-secondary);">Loading</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-                            <span style="font-size:14px; font-weight:600;">Memory Usage</span>
-                            <span id="stat-mem" style="font-size:12px; font-weight:600; color:var(--text-secondary);">Loading</span>
+                            <span style="font-size:15px; font-weight:600;">Memory Usage</span>
+                            <span id="stat-mem" style="font-size:13px; font-weight:600; color:var(--text-secondary);">Loading</span>
                         </div>
                     </div>
                 </div>
@@ -202,7 +202,7 @@
                         }
                         renderPredictionSummary(data.forecast_labels, data.forecast_actual, data.forecast_predicted);
                     } else {
-                        document.getElementById('prediction-summary-chart').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">No prediction data available.</div>';
+                        document.getElementById('prediction-summary-chart').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:15px;">No prediction data available.</div>';
                     }
                 });
 
@@ -245,7 +245,7 @@
                     if (data.success && data.trends.length > 0) {
                         renderClimateTrend(data.trends);
                     } else {
-                        document.getElementById('climate-trend-chart').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">No climate data available.</div>';
+                        document.getElementById('climate-trend-chart').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:15px;">No climate data available.</div>';
                     }
                 });
         }
@@ -309,8 +309,8 @@
                 margin: { l: 40, r: 20, t: 10, b: 40 },
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0)',
-                xaxis: { showgrid: false, tickfont: { size: 11, color: '#6B6B6B', family: 'Inter' } },
-                yaxis: { showgrid: true, gridcolor: '#E5E5E5', tickfont: { size: 11, color: '#6B6B6B', family: 'Inter' } },
+                xaxis: { showgrid: false, tickfont: { size: 13, color: '#6B6B6B', family: 'Inter' } },
+                yaxis: { showgrid: true, gridcolor: '#E5E5E5', tickfont: { size: 13, color: '#6B6B6B', family: 'Inter' } },
                 legend: { orientation: 'h', y: -0.2, font: { family: 'Inter', size:11 } }
             };
 
@@ -319,7 +319,7 @@
 
         function renderAnomalyOverview(typeDist) {
             if (!typeDist || Object.keys(typeDist).length === 0) {
-                document.getElementById('anomaly-overview-chart').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">No data available.</div>';
+                document.getElementById('anomaly-overview-chart').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:15px;">No data available.</div>';
                 return;
             }
             const labels = Object.keys(typeDist);
