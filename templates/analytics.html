@@ -85,29 +85,69 @@
     </div>
 
     <script>
-        const types = ['Rain', 'Snow', 'Fog', 'Cold', 'Storm', 'Precipitation', 'Hail'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const zValues = types.map(() => months.map(() => Math.floor(Math.random() * 5000) + 1200));
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/analytics-trends')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success || !data.trends || data.trends.length === 0) {
+                        document.getElementById('analytics-heatmap').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:1rem;">' + (data.error || 'No climate data available') + '</div>';
+                        return;
+                    }
 
-        Plotly.newPlot('analytics-heatmap', [{
-            z: zValues,
-            x: months,
-            y: types,
-            type: 'heatmap',
-            colorscale: [
-                [0, '#F7F7F7'],
-                [0.2, '#D4D4D4'],
-                [0.5, '#737373'],
-                [0.8, '#262626'],
-                [1.0, '#000000']
-            ]
-        }], {
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
-            margin: { l: 80, r: 20, t: 20, b: 40 },
-            xaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' } },
-            yaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' } }
-        }, { responsive: true });
+                    const trends = data.trends;
+                    
+                    // Extract unique types and months from the data
+                    const typeSet = new Set();
+                    const monthSet = new Set();
+                    trends.forEach(t => {
+                        if (t._id.type) typeSet.add(t._id.type);
+                        if (t._id.month) monthSet.add(t._id.month);
+                    });
+
+                    const types = Array.from(typeSet).sort();
+                    const months = Array.from(monthSet).sort((a, b) => a - b).map(m => {
+                        const date = new Date();
+                        date.setMonth(m - 1);
+                        return date.toLocaleString('default', { month: 'short' });
+                    });
+                    
+                    if (types.length === 0 || months.length === 0) {
+                        document.getElementById('analytics-heatmap').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:1rem;">No climate data available</div>';
+                        return;
+                    }
+
+                    // Build Z matrix
+                    const zValues = types.map(type => {
+                        return Array.from(monthSet).sort((a,b)=>a-b).map(month => {
+                            const record = trends.find(t => t._id.type === type && t._id.month === month);
+                            return record ? record.count : 0;
+                        });
+                    });
+
+                    Plotly.newPlot('analytics-heatmap', [{
+                        z: zValues,
+                        x: months,
+                        y: types,
+                        type: 'heatmap',
+                        colorscale: [
+                            [0, '#F7F7F7'],
+                            [0.2, '#D4D4D4'],
+                            [0.5, '#737373'],
+                            [0.8, '#262626'],
+                            [1.0, '#000000']
+                        ]
+                    }], {
+                        paper_bgcolor: 'rgba(0,0,0,0)',
+                        plot_bgcolor: 'rgba(0,0,0,0)',
+                        margin: { l: 80, r: 20, t: 20, b: 40 },
+                        xaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' } },
+                        yaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' } }
+                    }, { responsive: true });
+                })
+                .catch(err => {
+                    document.getElementById('analytics-heatmap').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:1rem;">Unable to load data. Please try again later.</div>';
+                });
+        });
     </script>
 </body>
 </html>

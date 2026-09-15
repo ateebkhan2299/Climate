@@ -156,13 +156,35 @@
                 const resp = await fetch('/api/anomalies');
                 const d = await resp.json();
                 
-                document.getElementById('kpi-total').textContent = (d.total_anomalies || 20047).toLocaleString();
-                document.getElementById('kpi-critical').textContent = (d.critical_count || 3412).toLocaleString();
-                document.getElementById('kpi-rate').textContent = (d.anomaly_rate || '4.00') + '%';
-                document.getElementById('anomaly-count-chip').textContent = `${(d.total_anomalies || 20047).toLocaleString()} ANOMALIES DETECTED`;
+                if (!d.success) {
+                    document.getElementById('kpi-total').textContent = '—';
+                    document.getElementById('kpi-critical').textContent = '—';
+                    document.getElementById('kpi-rate').textContent = '—';
+                    document.getElementById('anomaly-count-chip').textContent = 'ANOMALIES UNAVAILABLE';
+                    document.getElementById('anomaly-tbody').innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-secondary);">${d.error || 'Unable to load data. Please try again later.'}</td></tr>`;
+                    document.getElementById('severity-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">${d.error || 'No data available'}</div>`;
+                    document.getElementById('type-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">${d.error || 'No data available'}</div>`;
+                    return;
+                }
+
+                if (d.total_anomalies === 0) {
+                    document.getElementById('kpi-total').textContent = '0';
+                    document.getElementById('kpi-critical').textContent = '0';
+                    document.getElementById('kpi-rate').textContent = '0.00%';
+                    document.getElementById('anomaly-count-chip').textContent = 'NO ANOMALIES DETECTED';
+                    document.getElementById('anomaly-tbody').innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-secondary);">No anomaly results available.</td></tr>`;
+                    document.getElementById('severity-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">No anomaly results available.</div>`;
+                    document.getElementById('type-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">No anomaly results available.</div>`;
+                    return;
+                }
+
+                document.getElementById('kpi-total').textContent = d.total_anomalies.toLocaleString();
+                document.getElementById('kpi-critical').textContent = d.critical_count.toLocaleString();
+                document.getElementById('kpi-rate').textContent = d.anomaly_rate + '%';
+                document.getElementById('anomaly-count-chip').textContent = `${d.total_anomalies.toLocaleString()} ANOMALIES DETECTED`;
 
                 // Severity Bar Chart (Clean Monochrome)
-                const sc = d.severity_distribution || { 'Heavy': 7234, 'Moderate': 6890, 'Critical': 3412, 'Light': 2511 };
+                const sc = d.severity_distribution || {};
                 Plotly.newPlot('severity-chart', [{
                     type: 'bar',
                     orientation: 'h',
@@ -175,10 +197,10 @@
                     margin: { l: 70, r: 30, t: 10, b: 30 },
                     xaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' }, gridcolor: '#E5E5E5' },
                     yaxis: { tickfont: { color: '#6B6B6B', family: 'JetBrains Mono' } }
-                }, { responsive: true });
+                }, { responsive: true, displayModeBar: false });
 
                 // Type Chart (Monochrome Donut)
-                const tc = d.type_distribution || { 'Rain': 5820, 'Snow': 3410, 'Fog': 2890, 'Cold': 2340, 'Storm': 2100, 'Hail': 1800 };
+                const tc = d.type_distribution || {};
                 Plotly.newPlot('type-chart', [{
                     type: 'pie',
                     labels: Object.keys(tc).slice(0, 7),
@@ -192,7 +214,7 @@
                     plot_bgcolor: 'rgba(0,0,0,0)',
                     margin: { l: 10, r: 10, t: 10, b: 10 },
                     showlegend: false
-                }, { responsive: true });
+                }, { responsive: true, displayModeBar: false });
 
                 // Populate Rows
                 const rows = d.anomalies || [];
@@ -207,7 +229,7 @@
                             <td><span class="badge badge-subtle">${r.Severity || 'N/A'}</span></td>
                             <td>${r.Precipitation != null ? parseFloat(r.Precipitation).toFixed(3) : 'N/A'}</td>
                             <td>${r.Distance != null ? parseFloat(r.Distance).toFixed(1) : 'N/A'}</td>
-                            <td style="font-weight:700;">${r.anomaly_score != null ? parseFloat(r.anomaly_score).toFixed(4) : '-0.2000'}</td>
+                            <td style="font-weight:700;">${r.anomaly_score != null ? parseFloat(r.anomaly_score).toFixed(4) : 'N/A'}</td>
                         </tr>
                     `).join('');
                 }

@@ -172,7 +172,8 @@
     </div>
 
     <script>
-        const cpuHistory = [24, 28, 35, 42, 38, 30, 32, 29, 36, 40, 33, 32];
+        let cpuHistory = [];
+        
         function renderCPUChart() {
             Plotly.newPlot('cpu-chart', [{
                 x: Array.from({ length: cpuHistory.length }, (_, i) => i + 1),
@@ -189,31 +190,90 @@
                 margin: { l: 40, r: 10, t: 10, b: 30 },
                 xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5' },
                 yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, range: [0, 100], gridcolor: '#E5E5E5' }
-            }, { responsive: true });
+            }, { responsive: true, displayModeBar: false });
         }
 
         async function loadAdminStats() {
             try {
                 const resp = await fetch('/api/admin-stats');
                 const d = await resp.json();
-                if (d.cpu) {
-                    document.getElementById('kpi-cpu').textContent = (d.cpu.percent || 32) + '%';
-                    document.getElementById('cpu-bar').style.width = (d.cpu.percent || 32) + '%';
-                    if (d.cpu.count) document.getElementById('cpu-cores-val').textContent = d.cpu.count + ' cores';
-                    cpuHistory.push(d.cpu.percent || 32);
+                
+                if (!d.success || !d.data) {
+                    throw new Error("Stats load failed");
+                }
+                
+                const stats = d.data;
+                
+                if (stats.cpu) {
+                    document.getElementById('kpi-cpu').textContent = stats.cpu.percent + '%';
+                    document.getElementById('cpu-bar').style.width = stats.cpu.percent + '%';
+                    if (stats.cpu.count) document.getElementById('cpu-cores-val').textContent = stats.cpu.count + ' cores';
+                    cpuHistory.push(stats.cpu.percent);
                     if (cpuHistory.length > 12) cpuHistory.shift();
                     renderCPUChart();
+                } else {
+                    document.getElementById('kpi-cpu').textContent = 'Unavailable';
                 }
-                if (d.ram) {
-                    document.getElementById('kpi-ram').textContent = (d.ram.percent || 64) + '%';
-                    document.getElementById('ram-pct-val').textContent = (d.ram.percent || 64) + '%';
-                    document.getElementById('ram-bar').style.width = (d.ram.percent || 64) + '%';
+                
+                if (stats.ram) {
+                    document.getElementById('kpi-ram').textContent = stats.ram.percent + '%';
+                    document.getElementById('ram-pct-val').textContent = stats.ram.percent + '%';
+                    document.getElementById('ram-bar').style.width = stats.ram.percent + '%';
+                } else {
+                    document.getElementById('kpi-ram').textContent = 'Unavailable';
                 }
-                if (d.disk) {
-                    document.getElementById('kpi-disk').textContent = (d.disk.percent || 71) + '%';
-                    document.getElementById('disk-pct-val').textContent = (d.disk.percent || 71) + '%';
-                    document.getElementById('disk-bar').style.width = (d.disk.percent || 71) + '%';
+                
+                if (stats.disk) {
+                    document.getElementById('kpi-disk').textContent = stats.disk.percent + '%';
+                    document.getElementById('disk-pct-val').textContent = stats.disk.percent + '%';
+                    document.getElementById('disk-bar').style.width = stats.disk.percent + '%';
+                } else {
+                    document.getElementById('kpi-disk').textContent = 'Unavailable';
                 }
+                
+                // Update MongoDB Collection count
+                document.getElementById('kpi-collections').textContent = stats.mongo_collections || '0';
+                
+                // Update Mongo Table
+                const tbody = document.getElementById('mongo-tbody');
+                if (stats.mongo_stats && stats.mongo_stats.length > 0) {
+                    tbody.innerHTML = '';
+                    stats.mongo_stats.forEach(st => {
+                        tbody.innerHTML += `<tr><td>${st.name}</td><td>${st.count.toLocaleString()}</td><td>${st.size_mb} MB</td><td><span class="badge badge-subtle">ACTIVE</span></td></tr>`;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No data available</td></tr>';
+                }
+                
+                // Update Hadoop Nodes
+                const nodesContainer = document.getElementById('nodes-container');
+                if (stats.hadoop_nodes && stats.hadoop_nodes.length > 0) {
+                    nodesContainer.innerHTML = '';
+                    stats.hadoop_nodes.forEach(node => {
+                        nodesContainer.innerHTML += `<div style="padding:10px; background:var(--bg-main); border:1px solid var(--border-color); border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                            <div><b>${node.name}</b> <span style="font-size:0.75rem; color:var(--text-secondary);">(${node.role})</span></div>
+                            <span class="badge badge-subtle">${node.status}</span>
+                        </div>`;
+                    });
+                } else {
+                    nodesContainer.innerHTML = '<div style="padding:10px; text-align:center; color:var(--text-secondary); font-size:0.8rem;">HDFS is currently unavailable.</div>';
+                }
+                
+                // Update cluster chip
+                const chip = document.getElementById('cluster-status-chip');
+                if (chip) {
+                    chip.textContent = 'STATUS: ' + stats.cluster_status;
+                    if (stats.cluster_status !== 'HEALTHY') {
+                        chip.classList.remove('chip-dark');
+                        chip.style.backgroundColor = '#FEF2F2';
+                        chip.style.color = '#EF4444';
+                    } else {
+                        chip.classList.add('chip-dark');
+                        chip.style.backgroundColor = '';
+                        chip.style.color = '';
+                    }
+                }
+                
             } catch (err) {
                 console.error("Admin stats fetch error:", err);
             }

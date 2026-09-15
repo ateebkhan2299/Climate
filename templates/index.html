@@ -224,7 +224,12 @@
         function initRadarMap() {
             fetch('/api/radar-points')
                 .then(res => res.json())
-                .then(data => {
+                .then(response => {
+                    if (!response.success || !response.data || response.data.length === 0) {
+                        document.getElementById('planetary-radar-map').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">' + (response.error || 'No climate data available') + '</div>';
+                        return;
+                    }
+                    const data = response.data;
                     const lats = data.map(d => d.lat);
                     const lons = data.map(d => d.lon);
                     const texts = data.map(d => `${d.name}: ${d.temp}°C (${d.type})`);
@@ -270,26 +275,38 @@
         }
 
         function initHeatProjectionChart() {
-            const days = Array.from({ length: 14 }, (_, i) => `D+${i + 1}`);
-            const vals = [2.1, 2.4, 3.0, 3.6, 4.2, 5.0, 5.8, 6.4, 7.2, 6.8, 5.5, 4.1, 3.2, 2.6];
+            fetch('/api/predictions')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || !data.success || !data.forecast_predicted || data.forecast_predicted.length === 0) {
+                        document.getElementById('heat-projection-chart').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">Prediction model is not available. Train the model to generate predictions.</div>';
+                        return;
+                    }
+                    
+                    const days = data.forecast_labels;
+                    const vals = data.forecast_predicted;
 
-            const trace = {
-                x: days,
-                y: vals,
-                type: 'bar',
-                marker: { color: '#111111' }
-            };
+                    const trace = {
+                        x: days,
+                        y: vals,
+                        type: 'bar',
+                        marker: { color: '#111111' }
+                    };
 
-            const layout = {
-                height: 140,
-                margin: { l: 20, r: 10, t: 10, b: 25 },
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                xaxis: { showgrid: false, tickfont: { size: 8, color: '#6B6B6B', family: 'JetBrains Mono' } },
-                yaxis: { showgrid: true, gridcolor: '#E5E5E5', tickfont: { size: 8, color: '#6B6B6B', family: 'JetBrains Mono' } }
-            };
+                    const layout = {
+                        height: 140,
+                        margin: { l: 30, r: 10, t: 10, b: 25 },
+                        paper_bgcolor: 'rgba(0,0,0,0)',
+                        plot_bgcolor: 'rgba(0,0,0,0)',
+                        xaxis: { showgrid: false, tickfont: { size: 8, color: '#6B6B6B', family: 'JetBrains Mono' } },
+                        yaxis: { showgrid: true, gridcolor: '#E5E5E5', tickfont: { size: 8, color: '#6B6B6B', family: 'JetBrains Mono' } }
+                    };
 
-            Plotly.newPlot('heat-projection-chart', [trace], layout, { responsive: true, displayModeBar: false });
+                    Plotly.newPlot('heat-projection-chart', [trace], layout, { responsive: true, displayModeBar: false });
+                })
+                .catch(err => {
+                    document.getElementById('heat-projection-chart').innerHTML = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">Unable to load data. Please try again later.</div>';
+                });
         }
 
         function pollLiveTelemetry() {
@@ -331,18 +348,6 @@
                         bannerDesc.innerHTML = `Station telemetry verified normal. Wind: ${data.wind_speed} km/h • Surface Pressure: ${data.pressure} hPa.`;
                         if (banner) banner.classList.remove('has-critical');
                     }
-
-                    const prog1 = (75 + Math.floor(Math.random() * 20));
-                    const bar1 = document.getElementById('job1-bar');
-                    const st1 = document.getElementById('job1-stage');
-                    if (bar1) bar1.style.width = `${prog1}%`;
-                    if (st1) st1.innerText = `STAGE: REDUCING ${prog1}%`;
-
-                    const prog2 = (35 + Math.floor(Math.random() * 30));
-                    const bar2 = document.getElementById('job2-bar');
-                    const st2 = document.getElementById('job2-stage');
-                    if (bar2) bar2.style.width = `${prog2}%`;
-                    if (st2) st2.innerText = `STAGE: MAPPING ${prog2}%`;
 
                     const feed = document.getElementById('event-feed-container');
                     if (feed && data.station) {
@@ -388,13 +393,27 @@
             fetch('/api/trigger-compute', { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
-                    if (window.EarthScape && window.EarthScape.showToast) {
-                        window.EarthScape.showToast(`Hadoop YARN Task Dispatched: ${data.job_id}`);
+                    if (data.success) {
+                        if (window.EarthScape && window.EarthScape.showToast) {
+                            window.EarthScape.showToast(`Hadoop YARN Task Dispatched: ${data.job_id}`);
+                        } else {
+                            alert(`Hadoop YARN Task Dispatched: ${data.job_id}`);
+                        }
                     } else {
-                        alert(`Hadoop YARN Task Dispatched: ${data.job_id}`);
+                        if (window.EarthScape && window.EarthScape.showToast) {
+                            window.EarthScape.showToast(data.error, true);
+                        } else {
+                            alert(data.error);
+                        }
                     }
                 })
-                .catch(err => alert("Hadoop YARN task dispatched: #MR-9084"));
+                .catch(err => {
+                    if (window.EarthScape && window.EarthScape.showToast) {
+                        window.EarthScape.showToast("Network Error: Unable to trigger compute.", true);
+                    } else {
+                        alert("Network Error: Unable to trigger compute.");
+                    }
+                });
         }
 
         function exportData() {

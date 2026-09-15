@@ -148,58 +148,83 @@
             try {
                 const resp = await fetch('/api/predictions');
                 const d = await resp.json();
+                
+                if (!d.success) {
+                    document.getElementById('kpi-count').textContent = '—';
+                    document.getElementById('kpi-avg').textContent = '—';
+                    document.getElementById('r2-val').textContent = '—';
+                    document.getElementById('mae-val').textContent = '—';
+                    document.getElementById('rmse-val').textContent = '—';
+                    document.getElementById('forecast-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">${d.error || 'Unable to load predictions.'}</div>`;
+                    document.getElementById('scatter-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">${d.error || 'Unable to load predictions.'}</div>`;
+                    document.getElementById('feature-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">${d.error || 'Unable to load predictions.'}</div>`;
+                    document.getElementById('pred-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-secondary);">${d.error || 'Unable to load predictions.'}</td></tr>`;
+                    return;
+                }
 
-                document.getElementById('kpi-count').textContent = (d.total_predictions || 100000).toLocaleString();
-                document.getElementById('kpi-avg').textContent = (d.avg_predicted != null ? parseFloat(d.avg_predicted).toFixed(1) : '1,247.3') + ' mi';
+                document.getElementById('kpi-count').textContent = (d.total_predictions || 0).toLocaleString();
+                document.getElementById('kpi-avg').textContent = (d.avg_predicted != null ? parseFloat(d.avg_predicted).toFixed(1) : '—') + ' mi';
                 if (d.r2 != null) document.getElementById('r2-val').textContent = parseFloat(d.r2).toFixed(4);
                 if (d.mae != null) document.getElementById('mae-val').textContent = parseFloat(d.mae).toFixed(2);
                 if (d.rmse != null) document.getElementById('rmse-val').textContent = parseFloat(d.rmse).toFixed(2);
 
-                const days = d.forecast_labels || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun','Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-                const act = d.forecast_actual || [1120, 1340, 980, 1420, 1650, 1200, 1050, 1380, 1510, 990, 1280, 1440, 1310, 1190];
-                const pred = d.forecast_predicted || [1090, 1310, 1020, 1390, 1600, 1230, 1080, 1350, 1480, 1020, 1250, 1410, 1290, 1210];
+                const days = d.forecast_labels || [];
+                const act = d.forecast_actual || [];
+                const pred = d.forecast_predicted || [];
 
-                Plotly.newPlot('forecast-chart', [
-                    { x: days, y: act, name: 'Actual', type: 'scatter', mode: 'lines+markers', line: { color: '#111111', width: 2.5 }, marker: { size: 6, color: '#111111' } },
-                    { x: days, y: pred, name: 'Predicted', type: 'scatter', mode: 'lines+markers', line: { color: '#737373', width: 2, dash: 'dash' }, marker: { size: 5, color: '#737373' } }
-                ], {
-                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-                    margin: { l: 50, r: 20, t: 10, b: 35 },
-                    legend: { font: { family: 'JetBrains Mono', color: '#6B6B6B', size: 10 } },
-                    xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5' },
-                    yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Distance (mi)', font: { size: 9, color: '#6B6B6B' } } }
-                }, { responsive: true });
+                if (days.length > 0) {
+                    Plotly.newPlot('forecast-chart', [
+                        { x: days, y: act, name: 'Actual', type: 'scatter', mode: 'lines+markers', line: { color: '#111111', width: 2.5 }, marker: { size: 6, color: '#111111' } },
+                        { x: days, y: pred, name: 'Predicted', type: 'scatter', mode: 'lines+markers', line: { color: '#737373', width: 2, dash: 'dash' }, marker: { size: 5, color: '#737373' } }
+                    ], {
+                        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                        margin: { l: 50, r: 20, t: 10, b: 35 },
+                        legend: { font: { family: 'JetBrains Mono', color: '#6B6B6B', size: 10 } },
+                        xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5' },
+                        yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Distance (mi)', font: { size: 9, color: '#6B6B6B' } } }
+                    }, { responsive: true, displayModeBar: false });
+                } else {
+                    document.getElementById('forecast-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">No forecast data available</div>`;
+                }
 
                 // Scatter Plot
-                Plotly.newPlot('scatter-chart', [
-                    { x: act, y: pred, type: 'scatter', mode: 'markers', marker: { color: '#111111', size: 7, opacity: 0.8 } }
-                ], {
-                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-                    margin: { l: 45, r: 15, t: 10, b: 35 },
-                    xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Actual', font: { size: 9, color: '#6B6B6B' } } },
-                    yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Predicted', font: { size: 9, color: '#6B6B6B' } } }
-                }, { responsive: true });
+                if (d.scatter_actual && d.scatter_actual.length > 0) {
+                    Plotly.newPlot('scatter-chart', [
+                        { x: d.scatter_actual, y: d.scatter_predicted, type: 'scatter', mode: 'markers', marker: { color: '#111111', size: 7, opacity: 0.8 } }
+                    ], {
+                        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                        margin: { l: 45, r: 15, t: 10, b: 35 },
+                        xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Actual', font: { size: 9, color: '#6B6B6B' } } },
+                        yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5', title: { text: 'Predicted', font: { size: 9, color: '#6B6B6B' } } }
+                    }, { responsive: true, displayModeBar: false });
+                } else {
+                     document.getElementById('scatter-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">No calibration data available</div>`;
+                }
 
                 // Feature Importances
-                const feats = d.feature_names || ['Distance(mi)', 'Duration(h)', 'Precipitation', 'WindSpeed', 'Visibility', 'Temperature'];
-                const imps = d.feature_importances || [0.31, 0.24, 0.18, 0.13, 0.08, 0.06];
-                Plotly.newPlot('feature-chart', [{
-                    type: 'bar', orientation: 'h',
-                    x: imps, y: feats,
-                    marker: { color: '#262626' }
-                }], {
-                    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-                    margin: { l: 95, r: 15, t: 10, b: 30 },
-                    xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5' },
-                    yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 } }
-                }, { responsive: true });
+                const feats = d.feature_names || [];
+                const imps = d.feature_importances || [];
+                if (feats.length > 0) {
+                    Plotly.newPlot('feature-chart', [{
+                        type: 'bar', orientation: 'h',
+                        x: imps, y: feats,
+                        marker: { color: '#262626' }
+                    }], {
+                        paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+                        margin: { l: 95, r: 15, t: 10, b: 30 },
+                        xaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 }, gridcolor: '#E5E5E5' },
+                        yaxis: { tickfont: { family: 'JetBrains Mono', color: '#6B6B6B', size: 9 } }
+                    }, { responsive: true, displayModeBar: false });
+                } else {
+                     document.getElementById('feature-chart').innerHTML = `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:0.8rem;">No feature data available</div>`;
+                }
 
                 // Table
                 const rows = d.predictions || [];
                 const tbody = document.getElementById('pred-tbody');
                 if (rows.length > 0) {
                     tbody.innerHTML = rows.map((r, i) => {
-                        const err = (r.predicted != null && r.actual != null) ? (parseFloat(r.predicted) - parseFloat(r.actual)).toFixed(1) : '0.0';
+                        const err = (r.predicted != null && r.actual != null) ? (parseFloat(r.predicted) - parseFloat(r.actual)).toFixed(1) : '—';
                         return `
                             <tr>
                                 <td style="font-weight:700;">${i+1}</td>
@@ -208,10 +233,12 @@
                                 <td>${r.actual != null ? parseFloat(r.actual).toFixed(1) : 'N/A'}</td>
                                 <td>${r.predicted != null ? parseFloat(r.predicted).toFixed(1) : 'N/A'}</td>
                                 <td>${err}</td>
-                                <td>${r.timestamp ? r.timestamp.replace('T', ' ').slice(0, 16) : '2022-12-15'}</td>
+                                <td>${r.timestamp ? r.timestamp.replace('T', ' ').slice(0, 16) : 'N/A'}</td>
                             </tr>
                         `;
                     }).join('');
+                } else {
+                     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-secondary);">No predictions found.</td></tr>';
                 }
             } catch (err) {
                 console.error("Predictions error:", err);
