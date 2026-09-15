@@ -4,32 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EARTHSCAPE // ALERTS</title>
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Shared Theme -->
     <link rel="stylesheet" href="/static/css/theme.css">
     <script src="/static/js/animations.js" defer></script>
 </head>
 <body>
-        <header class="hud-header">
+    <header class="hud-header">
         <div class="hud-title">
-            <span>🌐</span> EARTHSCAPE <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:600; margin-left:10px;">Climate Monitoring & Intelligence Dashboard</span>
+            <span>🌍</span> EARTHSCAPE <span style="font-size:14px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">System Alerts | Real-time notifications and warnings</span>
         </div>
         <div class="hud-chips-container">
-            <div class="hud-chip"><span class="pulse-dot"></span> LIVE OPEN-METEO API</div>
             <div class="hud-chip">● SYSTEM: ONLINE</div>
             <div class="hud-chip" id="live-utc-clock">UTC</div>
-            <div class="hud-chip chip-dark">👤 ANALYST</div>
+            <div class="hud-chip chip-dark">👤 USER</div>
             <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="window.toggleTheme()">🌙 DARK</button>
         </div>
     </header>
+
     <div class="app-layout">
-                <aside class="nav-rail">
-            <div class="rail-header">
-                <span class="rail-label" style="font-family: var(--font-sans);">EARTHSCAPE</span>
-            </div>
+        <aside class="nav-rail">
+            <div class="rail-header"><span class="rail-label">EARTHSCAPE</span></div>
             <nav class="rail-menu">
                 <a href="/" class="nav-item">Dashboard</a>
                 <a href="/analytics" class="nav-item">Analytics</a>
@@ -42,15 +38,108 @@
                 <a href="/logout" class="nav-item">Logout</a>
             </nav>
         </aside>
+
         <main class="main-viewport">
-            <section class="cyber-card">
-                <h2 class="box-title">Alerts</h2>
-                <p class="box-sub">Alert configuration is not currently available.</p>
-                <div style="padding:40px; text-align:center; color:var(--text-secondary); border:1px dashed var(--border-color); border-radius:var(--radius-md);">
-                    Alert configuration is not currently available.
+            <div class="kpi-grid">
+                <div class="cyber-card">
+                    <div class="card-header-row"><span class="card-label">TOTAL ALERTS</span></div>
+                    <div class="card-value" id="kpi-total">Loading</div>
                 </div>
-            </section>
+                <div class="cyber-card">
+                    <div class="card-header-row"><span class="card-label">UNREAD</span></div>
+                    <div class="card-value" id="kpi-unread">Loading</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-header-row"><span class="card-label">CRITICAL</span></div>
+                    <div class="card-value" id="kpi-critical" style="color:var(--accent-critical);">Loading</div>
+                </div>
+            </div>
+
+            <div class="cyber-card">
+                <h2 class="box-title">System Alert Log</h2>
+                <p class="box-sub">Chronological list of automated system and weather alerts</p>
+                
+                <div style="max-height:500px; overflow-y:auto; margin-top:16px;">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>Date/Time (UTC)</th>
+                                <th>Severity</th>
+                                <th>Source</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-tbody">
+                            <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-secondary);">Loading alerts from database...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </main>
     </div>
+
+    <script>
+        function updateClock() {
+            const el = document.getElementById('live-utc-clock');
+            if (el) el.innerText = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        async function loadAlerts() {
+            try {
+                const res = await fetch('/api/alerts');
+                const d = await res.json();
+                
+                if (!d.success) {
+                    const err = d.error || 'Failed to load alerts.';
+                    document.getElementById('kpi-total').textContent = '—';
+                    document.getElementById('kpi-unread').textContent = '—';
+                    document.getElementById('kpi-critical').textContent = '—';
+                    document.getElementById('alerts-tbody').innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-secondary);">${err}</td></tr>`;
+                    return;
+                }
+
+                document.getElementById('kpi-total').textContent = d.total || 0;
+                document.getElementById('kpi-unread').textContent = d.unread || 0;
+                document.getElementById('kpi-critical').textContent = d.critical || 0;
+
+                const tbody = document.getElementById('alerts-tbody');
+                const alerts = d.alerts || [];
+
+                if (alerts.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-secondary);">No alerts generated by the system yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = alerts.map(a => {
+                    let sevBadge = `<span class="badge badge-subtle">${a.severity || 'Info'}</span>`;
+                    if (a.severity && (a.severity.toLowerCase() === 'critical' || a.severity.toLowerCase() === 'severe')) {
+                        sevBadge = `<span class="badge" style="background:var(--accent-critical-bg); color:var(--accent-critical); border:1px solid var(--accent-critical-border);">${a.severity}</span>`;
+                    } else if (a.severity && a.severity.toLowerCase() === 'high') {
+                        sevBadge = `<span class="badge" style="background:var(--accent-warning-bg); color:var(--accent-warning); border:1px solid var(--accent-warning-border);">${a.severity}</span>`;
+                    }
+                    
+                    const dt = a.timestamp ? a.timestamp.replace('T', ' ').slice(0, 19) : 'N/A';
+                    return `
+                        <tr>
+                            <td style="white-space:nowrap;">${dt}</td>
+                            <td>${sevBadge}</td>
+                            <td style="font-weight:600;">${a.source || 'System'}</td>
+                            <td>${a.message || '—'}</td>
+                            <td>${a.status || 'Unread'}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('alerts-tbody').innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-secondary);">Unable to connect to database.</td></tr>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAlerts);
+    </script>
 </body>
 </html>

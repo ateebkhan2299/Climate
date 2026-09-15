@@ -257,7 +257,7 @@
                     if (!data || !data.success) return;
                     
                     const event = data.data;
-                    document.getElementById('kpi-sensors').textContent = '14,820'; // Base logic for live API
+                    document.getElementById('kpi-sensors').textContent = (data.station_count || 0).toLocaleString();
 
                     // Update Recent Data Table
                     const tbody = document.getElementById('recent-data-body');

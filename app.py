@@ -1,8 +1,9 @@
 """
-EarthScape Climate Agency - Flask Web Application & Surveillance HQ
+EarthScape Climate Agency - Flask Web Application
 Full Python Flask Backend with Live Open-Meteo API + MongoDB real data.
-Unique content on every page: Command Center, Geospatial, Anomaly Detection, Predictions, Admin.
-Exporting top-level app and handler for Vercel/Render deployment.
+Complete SRS-compliant implementation: Dashboard, Analytics, Anomalies,
+Predictions, Alerts, Data, Admin, Support pages.
+Vercel serverless deployment compatible.
 """
 from flask import Flask, render_template, jsonify, request, Response, session, redirect, url_for
 import os, sys, json, datetime, requests
@@ -15,6 +16,7 @@ from database.mongodb import get_db
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = os.environ.get("SECRET_KEY", "earthscape_super_secret_cyber_key")
+app.permanent_session_lifetime = datetime.timedelta(hours=8)  # Session timeout 8 hours
 handler = app   # Vercel requires top-level "handler"
 
 # Lazy DB connection — do NOT connect at module import time (causes Vercel timeout)
@@ -55,6 +57,7 @@ def login():
                     if isinstance(stored_hash, str):
                         stored_hash = stored_hash.encode()
                     if bcrypt.checkpw(password.encode(), stored_hash):
+                        session.permanent = True
                         session["username"] = username
                         session["role"] = user_doc.get("role","ANALYST")
                         return redirect(url_for("index"))
@@ -63,6 +66,7 @@ def login():
         # Fallback: demo credentials
         demo = {"admin":"admin123","analyst":"analyst123"}
         if username in demo and demo[username] == password:
+            session.permanent = True
             session["username"] = username
             session["role"] = "ADMIN" if username=="admin" else "ANALYST"
             return redirect(url_for("index"))
@@ -75,7 +79,7 @@ def logout():
     return redirect(url_for("login"))
 
 # =========================================================
-# PAGE ROUTES (unique template per route)
+# PAGE ROUTES
 # =========================================================
 @app.route("/")
 def index():
@@ -93,27 +97,24 @@ def anomalies_view():
 def predictions_view():
     return render_template("predictions.html")
 
-@app.route('/admin')
+@app.route("/admin")
 @login_required
 def admin():
-    if session.get('role') != 'ADMIN':
-        return redirect(url_for('index'))
-    return render_template('admin.html')
+    if session.get("role") != "ADMIN":
+        return redirect(url_for("index"))
+    return render_template("admin.html")
 
-@app.route('/data')
-@login_required
+@app.route("/data")
 def data_page():
-    return render_template('data.html')
+    return render_template("data.html")
 
-@app.route('/alerts')
-@login_required
+@app.route("/alerts")
 def alerts_page():
-    return render_template('alerts.html')
+    return render_template("alerts.html")
 
-@app.route('/support')
-@login_required
+@app.route("/support")
 def support_page():
-    return render_template('support.html')
+    return render_template("support.html")
 
 # =========================================================
 # REAL-TIME APIS
@@ -130,6 +131,7 @@ def get_live_telemetry():
             return jsonify({"success": False, "error": "No climate data available", "data": []}), 503
         return jsonify({
             "success": True,
+            "station_count": len(GLOBAL_STATIONS),
             "data": {
                 "station": event.get("StationName"),
                 "region": event.get("Region"),
@@ -152,30 +154,30 @@ def get_live_telemetry():
 
 @app.route("/api/radar-points")
 def get_radar_points():
+    """Return all global station coordinates for geospatial map."""
     try:
         db = get_db_conn()
-        if db is None:
-            return jsonify({"success": False, "error": "Database unavailable.", "data": []}), 503
-
-        col = db["live_telemetry_stream"]
+        col = db["live_telemetry_stream"] if db is not None else None
         points = []
         for s in GLOBAL_STATIONS:
-            event = col.find_one({"StationName": s["name"]}, sort=[("StartTime(UTC)", -1)])
-            if event:
-                points.append({
-                    "name": s["name"], "region": s["region"],
-                    "lat": s["lat"], "lon": s["lon"],
-                    "temp": event.get("Temperature_C", "—"),
-                    "type": event.get("Type", "Unknown"),
-                    "severity": event.get("Severity", "Unknown")
-                })
-
-        if not points:
-            return jsonify({"success": True, "message": "No climate data available", "data": []})
-
-        return jsonify({"success": True, "data": points})
+            point = {
+                "name": s["name"], "region": s["region"],
+                "lat": s["lat"], "lon": s["lon"],
+                "temp": "—", "type": "Unknown", "severity": "Normal"
+            }
+            if col is not None:
+                try:
+                    event = col.find_one({"StationName": s["name"]}, sort=[("StartTime(UTC)", -1)])
+                    if event:
+                        point["temp"] = event.get("Temperature_C", "—")
+                        point["type"] = event.get("Type", "Unknown")
+                        point["severity"] = event.get("Severity", "Normal")
+                except Exception:
+                    pass
+            points.append(point)
+        return jsonify({"success": True, "data": points, "total": len(points)})
     except Exception as e:
-        return jsonify({"success": False, "error": "Unable to load data. Please try again later.", "data": []}), 500
+        return jsonify({"success": False, "error": "Unable to load data.", "data": []}), 500
 
 @app.route("/api/anomalies")
 def get_anomalies_api():
@@ -183,7 +185,7 @@ def get_anomalies_api():
     try:
         db = get_db_conn()
         if db is None:
-            return jsonify({"success": False, "error": "Database unavailable.", "data": []}), 503
+            return jsonify({"success": False, "error": "Database unavailable. Run ml/train_models.py to populate.", "data": []}), 503
 
         col = db["anomalies"]
         total = col.count_documents({})
@@ -191,7 +193,7 @@ def get_anomalies_api():
         if total == 0:
             return jsonify({
                 "success": True,
-                "message": "No anomaly results available.",
+                "message": "No anomaly results. Run ml/train_models.py to generate.",
                 "total_records": 0,
                 "total_anomalies": 0,
                 "critical_count": 0,
@@ -203,27 +205,34 @@ def get_anomalies_api():
 
         total_records = db["weather_events_cleaned"].count_documents({})
         critical_count = col.count_documents({"Severity": {"$in": ["Critical","Severe","Heavy"]}})
-        anomaly_rate = round((total / max(total_records,1)) * 100, 2)
+        anomaly_rate = round((total / max(total_records, 1)) * 100, 2)
 
-        sev_agg = list(col.aggregate([{"$group":{"_id":"$Severity","count":{"$sum":1}}},{"$sort":{"count":-1}},{"$limit":6}]))
-        severity_distribution = {d["_id"]:d["count"] for d in sev_agg if d["_id"]}
+        sev_agg = list(col.aggregate([
+            {"$group": {"_id": "$Severity", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}, {"$limit": 6}
+        ]))
+        severity_distribution = {d["_id"]: d["count"] for d in sev_agg if d["_id"]}
 
-        type_agg = list(col.aggregate([{"$group":{"_id":"$Type","count":{"$sum":1}}},{"$sort":{"count":-1}},{"$limit":8}]))
-        type_distribution = {d["_id"]:d["count"] for d in type_agg if d["_id"]}
+        type_agg = list(col.aggregate([
+            {"$group": {"_id": "$Type", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}, {"$limit": 8}
+        ]))
+        type_distribution = {d["_id"]: d["count"] for d in type_agg if d["_id"]}
 
-        records = list(col.find({},{"_id":0,"StartTime(UTC)":1,"State":1,"Type":1,"Severity":1,"Precipitation(in)":1,"Distance(mi)":1,"anomaly_score":1}).sort("StartTime(UTC)",-1).limit(50))
-        anomalies_out = []
-        for r in records:
-            anomalies_out.append({
-                "StartTime": r.get("StartTime(UTC)",""),
-                "State": r.get("State",""),
-                "Type": r.get("Type",""),
-                "Severity": r.get("Severity",""),
-                "Precipitation": r.get("Precipitation(in)"),
-                "Distance": r.get("Distance(mi)"),
-                "Duration": r.get("Duration(h)"),
-                "anomaly_score": r.get("anomaly_score", -0.2)
-            })
+        records = list(col.find(
+            {}, {"_id": 0, "StartTime(UTC)": 1, "State": 1, "Type": 1,
+                 "Severity": 1, "Precipitation(in)": 1, "Distance(mi)": 1, "anomaly_score": 1}
+        ).sort("StartTime(UTC)", -1).limit(50))
+
+        anomalies_out = [{
+            "StartTime": r.get("StartTime(UTC)", ""),
+            "State": r.get("State", ""),
+            "Type": r.get("Type", ""),
+            "Severity": r.get("Severity", ""),
+            "Precipitation": r.get("Precipitation(in)"),
+            "Distance": r.get("Distance(mi)"),
+            "anomaly_score": r.get("anomaly_score", -0.2)
+        } for r in records]
 
         return jsonify({
             "success": True,
@@ -251,51 +260,78 @@ def get_predictions_api():
         if total == 0:
             return jsonify({
                 "success": False,
-                "error": "Prediction model is not available. Train the model to generate predictions.",
-                "total_predictions": 0,
-                "predictions": []
+                "error": "No prediction data. Run ml/train_models.py to generate predictions.",
+                "total_predictions": 0, "predictions": []
             })
 
-        summary = db["climate_summary"].find_one({"type":"model_metrics"}) or {}
+        # Try new schema first: {metrics: {...}, series: [{Year, Month, EventCount, PredictedCount}, ...]}
+        doc = col.find_one({"series": {"$exists": True}})
+        if doc:
+            metrics = doc.get("metrics", {})
+            series = doc.get("series", [])
+            r2 = metrics.get("R2", 0)
+            mae = metrics.get("MAE", 0)
+            rmse = metrics.get("RMSE", 0)
+
+            actuals = [s.get("EventCount", 0) for s in series]
+            preds = [s.get("PredictedCount", 0) for s in series]
+            labels = [f"{s.get('Year','')}-{str(s.get('Month','')).zfill(2)}" for s in series]
+
+            pred_out = [{
+                "State": "Monthly",
+                "Type": "Event Frequency",
+                "actual": s.get("EventCount"),
+                "predicted": s.get("PredictedCount"),
+                "timestamp": f"{s.get('Year','')}-{str(s.get('Month','')).zfill(2)}-01"
+            } for s in series[-30:]]
+
+            avg_predicted = sum(preds) / len(preds) if preds else 0
+
+            return jsonify({
+                "success": True,
+                "total_predictions": len(series),
+                "avg_predicted": avg_predicted,
+                "r2": r2, "mae": mae, "rmse": rmse,
+                "forecast_labels": labels[-14:],
+                "forecast_actual": actuals[-14:],
+                "forecast_predicted": preds[-14:],
+                "scatter_actual": actuals[:40],
+                "scatter_predicted": preds[:40],
+                "feature_names": ["Month", "TimeIndex", "AvgPrecip", "AvgDuration", "AvgSeverity", "Lag_1"],
+                "feature_importances": [],
+                "predictions": pred_out
+            })
+
+        # Fallback: old schema with actual/predicted fields per document
+        records = list(col.find({}, {"_id": 0, "State": 1, "Type": 1, "actual": 1, "predicted": 1, "timestamp": 1}).sort("timestamp", -1).limit(30))
+        if not records:
+            return jsonify({"success": False, "error": "No prediction records found.", "total_predictions": 0, "predictions": []})
+
+        summary = db["climate_summary"].find_one({"type": "model_metrics"}) or {}
         r2 = summary.get("r2", 0)
         mae = summary.get("mae", 0)
         rmse = summary.get("rmse", 0)
-
-        records = list(col.find({},{"_id":0,"State":1,"Type":1,"actual":1,"predicted":1,"timestamp":1}).sort("timestamp",-1).limit(30))
-        pred_out = []
-        actuals, preds = [], []
-        for r in records:
-            act = r.get("actual")
-            pred = r.get("predicted")
-            if act is not None: actuals.append(float(act))
-            if pred is not None: preds.append(float(pred))
-            pred_out.append({"State":r.get("State",""),"Type":r.get("Type",""),"actual":act,"predicted":pred,"timestamp":r.get("timestamp","")})
-
-        avg_predicted = sum(preds)/len(preds) if preds else 0
-
-        fa = actuals[:14] if len(actuals)>=14 else actuals
-        fp = preds[:14] if len(preds)>=14 else preds
-        days = [f"D+{i+1}" for i in range(max(len(fa), len(fp)))]
-
-        features = ["Distance(mi)","Duration(h)","Precipitation","WindSpeed","Visibility","Temperature"]
-        importances = summary.get("feature_importances", [0, 0, 0, 0, 0, 0])
+        actuals = [float(r["actual"]) for r in records if r.get("actual") is not None]
+        preds = [float(r["predicted"]) for r in records if r.get("predicted") is not None]
+        avg_predicted = sum(preds) / len(preds) if preds else 0
+        labels = [f"D+{i+1}" for i in range(min(14, len(actuals)))]
 
         return jsonify({
             "success": True,
             "total_predictions": total,
             "avg_predicted": avg_predicted,
             "r2": r2, "mae": mae, "rmse": rmse,
-            "forecast_labels": days,
-            "forecast_actual": fa,
-            "forecast_predicted": fp,
+            "forecast_labels": labels,
+            "forecast_actual": actuals[:14],
+            "forecast_predicted": preds[:14],
             "scatter_actual": actuals[:40],
             "scatter_predicted": preds[:40],
-            "feature_names": features,
-            "feature_importances": importances,
-            "predictions": pred_out
+            "feature_names": [],
+            "feature_importances": [],
+            "predictions": records
         })
     except Exception as e:
-        return jsonify({"success": False, "error": "Unable to load data. Please try again later.", "predictions": [], "total_predictions": 0}), 500
+        return jsonify({"success": False, "error": str(e), "predictions": [], "total_predictions": 0}), 500
 
 @app.route("/api/admin-stats")
 def get_admin_stats():
@@ -323,7 +359,12 @@ def get_admin_stats():
             col_names = db.list_collection_names()
             for cname in col_names[:10]:
                 cnt = db[cname].count_documents({})
-                mongo_stats.append({"name": cname, "count": cnt, "avg_obj_size": 512, "size_mb": round(cnt*512/1048576,1), "indexes": 2})
+                mongo_stats.append({
+                    "name": cname, "count": cnt,
+                    "avg_obj_size": 512,
+                    "size_mb": round(cnt * 512 / 1048576, 1),
+                    "indexes": 2
+                })
             mongo_collections = len(col_names)
         except Exception:
             pass
@@ -336,10 +377,14 @@ def get_admin_stats():
         jps_out = subprocess.check_output(["jps"], text=True, timeout=3)
         if "NameNode" in jps_out or "DataNode" in jps_out:
             cluster_status = "HEALTHY"
-            if "NameNode" in jps_out: hadoop_nodes.append({"name":"NameNode","role":"Master","status":"RUNNING"})
-            if "DataNode" in jps_out: hadoop_nodes.append({"name":"DataNode","role":"Worker","status":"RUNNING"})
-            if "ResourceManager" in jps_out: hadoop_nodes.append({"name":"ResourceManager","role":"Master","status":"RUNNING"})
-            if "NodeManager" in jps_out: hadoop_nodes.append({"name":"NodeManager","role":"Worker","status":"RUNNING"})
+            if "NameNode" in jps_out:
+                hadoop_nodes.append({"name": "NameNode", "role": "Master", "status": "RUNNING"})
+            if "DataNode" in jps_out:
+                hadoop_nodes.append({"name": "DataNode", "role": "Worker", "status": "RUNNING"})
+            if "ResourceManager" in jps_out:
+                hadoop_nodes.append({"name": "ResourceManager", "role": "Master", "status": "RUNNING"})
+            if "NodeManager" in jps_out:
+                hadoop_nodes.append({"name": "NodeManager", "role": "Worker", "status": "RUNNING"})
     except Exception:
         pass
 
@@ -377,16 +422,87 @@ def get_analytics_trends():
     except Exception as e:
         return jsonify({"success": False, "error": "Unable to load data. Please try again later.", "trends": [], "total": 0}), 500
 
+@app.route("/api/alerts")
+def get_alerts_api():
+    """Real alerts from MongoDB alerts collection."""
+    try:
+        db = get_db_conn()
+        if db is None:
+            return jsonify({"success": False, "error": "Database unavailable.", "alerts": [], "total": 0}), 503
+        col = db["alerts"]
+        total = col.count_documents({})
+        unread = col.count_documents({"status": "Unread"})
+        critical = col.count_documents({"severity": {"$in": ["Severe", "High", "Critical"]}})
+        records = list(col.find({}, {"_id": 0}).sort("timestamp", -1).limit(50))
+        return jsonify({
+            "success": True,
+            "total": total,
+            "unread": unread,
+            "critical": critical,
+            "alerts": records
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": "Unable to load alerts.", "alerts": [], "total": 0}), 500
+
+@app.route("/api/kpis")
+def get_kpis_api():
+    """Global KPI summary from MongoDB climate_summary collection."""
+    try:
+        db = get_db_conn()
+        if db is None:
+            return jsonify({"success": False, "error": "Database unavailable."}), 503
+        doc = db["climate_summary"].find_one({}, {"_id": 0, "kpis": 1, "state_summary": 1, "type_summary": 1, "severity_summary": 1})
+        if not doc:
+            return jsonify({"success": False, "error": "No summary data available."})
+        return jsonify({"success": True, "data": doc})
+    except Exception as e:
+        return jsonify({"success": False, "error": "Unable to load KPIs."}), 500
+
+@app.route("/api/feedback", methods=["POST"])
+def submit_feedback():
+    """Save user feedback to MongoDB."""
+    try:
+        data = request.get_json()
+        if not data or not data.get('message'):
+            return jsonify({"success": False, "error": "Message is required."}), 400
+        db = get_db_conn()
+        if db is not None:
+            db['feedback'].insert_one({
+                "name": data.get('name', 'Anonymous'),
+                "email": data.get('email', ''),
+                "category": data.get('category', 'General'),
+                "message": data.get('message', ''),
+                "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "status": "New"
+            })
+        return jsonify({"success": True, "message": "Feedback saved."})
+    except Exception as e:
+        return jsonify({"success": False, "error": "Unable to save feedback."}), 500
+
 @app.route("/api/trigger-compute", methods=["POST"])
 def trigger_compute():
-    return jsonify({"success": False, "error": "HDFS is currently unavailable. Serverless execution environment cannot launch local MapReduce."}), 503
+    return jsonify({
+        "success": False,
+        "error": "HDFS is currently unavailable. Serverless execution environment cannot launch local MapReduce."
+    }), 503
 
 @app.route("/api/export-geojson")
 def export_geojson():
-    features = [{"type":"Feature","geometry":{"type":"Point","coordinates":[s["lon"],s["lat"]]},"properties":{"station":s["name"],"region":s["region"]}} for s in GLOBAL_STATIONS]
-    geojson_data = {"type":"FeatureCollection","timestamp":datetime.datetime.now(datetime.timezone.utc).isoformat(),"features":features}
-    return Response(json.dumps(geojson_data,indent=2), mimetype="application/json",
-        headers={"Content-disposition":"attachment; filename=earthscape_telemetry.geojson"})
+    features = [{
+        "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [s["lon"], s["lat"]]},
+        "properties": {"station": s["name"], "region": s["region"]}
+    } for s in GLOBAL_STATIONS]
+    geojson_data = {
+        "type": "FeatureCollection",
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "features": features
+    }
+    return Response(
+        json.dumps(geojson_data, indent=2),
+        mimetype="application/json",
+        headers={"Content-Disposition": "attachment; filename=earthscape_telemetry.geojson"}
+    )
 
 if __name__ == "__main__":
     print("EarthScape Flask Server starting on http://localhost:5000 ...")

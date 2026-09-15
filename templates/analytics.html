@@ -4,25 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EARTHSCAPE // CLIMATE ANALYTICS</title>
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <!-- GSAP (GreenSock) + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    
-    <!-- Shared Monochrome Theme & GSAP Animation Engine -->
     <link rel="stylesheet" href="/static/css/theme.css">
     <script src="/static/js/animations.js" defer></script>
 </head>
 <body>
     <header class="hud-header">
         <div class="hud-title">
-            <span>🌍</span> EARTHSCAPE <span style="font-size:14px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Climate Analytics | Analyze historical and environmental data</span>
+            <span>🌍</span> EARTHSCAPE <span style="font-size:14px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Climate Analytics | Historical weather event analysis</span>
         </div>
         <div class="hud-chips-container">
             <div class="hud-chip">● SYSTEM: ONLINE</div>
@@ -34,9 +28,7 @@
 
     <div class="app-layout">
         <aside class="nav-rail">
-            <div class="rail-header">
-                <span class="rail-label">EARTHSCAPE</span>
-            </div>
+            <div class="rail-header"><span class="rail-label">EARTHSCAPE</span></div>
             <nav class="rail-menu">
                 <a href="/" class="nav-item">Dashboard</a>
                 <a href="/analytics" class="nav-item active">Analytics</a>
@@ -51,141 +43,289 @@
         </aside>
 
         <main class="main-viewport">
-            
-            <!-- Filters -->
-            <section class="cyber-card" style="padding:16px 20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="display:flex; gap:16px; align-items:center;">
-                        <span style="font-size:14px; font-weight:600;">Filters:</span>
-                        <select disabled class="btn btn-outline" style="padding:6px 10px;">
-                            <option>Date: All Time</option>
-                        </select>
-                        <select disabled class="btn btn-outline" style="padding:6px 10px;">
-                            <option>Region: Global</option>
-                        </select>
-                        <select disabled class="btn btn-outline" style="padding:6px 10px;">
-                            <option>Sensor: All</option>
-                        </select>
-                        <select disabled class="btn btn-outline" style="padding:6px 10px;">
-                            <option>Metric: Default</option>
-                        </select>
-                    </div>
-                    <span style="font-size:12px; color:var(--text-secondary);">Filtering is currently disabled</span>
+
+            <!-- KPI Row -->
+            <div class="kpi-grid" id="analytics-kpis">
+                <div class="cyber-card">
+                    <div class="card-header-row"><span class="card-label">TOTAL RECORDS</span></div>
+                    <div class="card-value" id="kpi-total-records">—</div>
+                    <div class="card-subtext">weather events</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-header-row"><span class="card-label">EVENT TYPES</span></div>
+                    <div class="card-value" id="kpi-event-types">—</div>
+                    <div class="card-subtext">distinct categories</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-header-row"><span class="card-label">PEAK MONTH</span></div>
+                    <div class="card-value" id="kpi-peak-month" style="font-size:22px;">—</div>
+                    <div class="card-subtext">highest event count</div>
+                </div>
+                <div class="cyber-card">
+                    <div class="card-header-row"><span class="card-label">TOP EVENT</span></div>
+                    <div class="card-value" id="kpi-top-event" style="font-size:16px; letter-spacing:0;">—</div>
+                    <div class="card-subtext">most frequent type</div>
+                </div>
+            </div>
+
+            <!-- Row 1: Heatmap + Regional Bar -->
+            <section style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+                <div class="cyber-card">
+                    <h2 class="box-title">Event Matrix Heatmap</h2>
+                    <p class="box-sub">Monthly frequency across atmospheric event types</p>
+                    <div id="analytics-heatmap" style="height:320px; margin-top:15px;"></div>
+                </div>
+                <div class="cyber-card">
+                    <h2 class="box-title">Top Event Types</h2>
+                    <p class="box-sub">Total event count by weather category</p>
+                    <div id="regional-chart" style="height:320px; margin-top:15px;"></div>
                 </div>
             </section>
 
-            <!-- Charts -->
-            <section class="split-row" style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <!-- Row 2: Monthly Line + Donut -->
+            <section style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
                 <div class="cyber-card">
-                    <h2 class="box-title">Event Matrix</h2>
-                    <p class="box-sub">Monthly frequency analysis across primary atmospheric event types</p>
-                    <div id="analytics-heatmap" style="height: 320px; margin-top: 15px;"></div>
+                    <h2 class="box-title">Monthly Event Frequency</h2>
+                    <p class="box-sub">Top 3 weather event types by month</p>
+                    <div id="temp-humidity-chart" style="height:280px; margin-top:15px;"></div>
                 </div>
-
                 <div class="cyber-card">
-                    <h2 class="box-title">Regional Comparison</h2>
-                    <p class="box-sub">Event distributions</p>
-                    <div id="regional-chart" style="height: 320px; margin-top: 15px; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">
-                        Loading climate data...
-                    </div>
+                    <h2 class="box-title">Event Distribution</h2>
+                    <p class="box-sub">Proportional breakdown of weather event types</p>
+                    <div id="correlation-chart" style="height:280px; margin-top:15px;"></div>
                 </div>
             </section>
 
-            <section class="split-row" style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
-                <div class="cyber-card">
-                    <h2 class="box-title">Temperature & Humidity Trends</h2>
-                    <p class="box-sub">Historical variance</p>
-                    <div id="temp-humidity-chart" style="height: 280px; margin-top: 15px; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">
-                        Loading climate data...
-                    </div>
-                </div>
-                
-                <div class="cyber-card">
-                    <h2 class="box-title">Correlation Analysis</h2>
-                    <p class="box-sub">Temperature vs Humidity distribution</p>
-                    <div id="correlation-chart" style="height: 280px; margin-top: 15px; display:flex; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">
-                        Loading climate data...
-                    </div>
-                </div>
+            <!-- Row 3: Geospatial Station Map -->
+            <section class="cyber-card">
+                <h2 class="box-title">Live Station Map</h2>
+                <p class="box-sub">Real-time Open-Meteo monitoring stations — actual geographic coordinates</p>
+                <div id="geo-station-map" style="height:380px; margin-top:15px;"></div>
             </section>
 
         </main>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            fetch('/api/analytics-trends')
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success || !data.trends || data.trends.length === 0) {
-                        const noData = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">No climate data available.</div>';
-                        document.getElementById('analytics-heatmap').innerHTML = noData;
-                        document.getElementById('regional-chart').innerHTML = noData;
-                        document.getElementById('temp-humidity-chart').innerHTML = noData;
-                        document.getElementById('correlation-chart').innerHTML = noData;
-                        return;
+        // Clock
+        function updateClock() {
+            const el = document.getElementById('live-utc-clock');
+            if (el) el.innerText = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        const MONO_COLORS = ['#111111', '#333333', '#555555', '#777777', '#999999', '#BBBBBB', '#CCCCCC', '#444444', '#888888', '#666666'];
+
+        const BASE_LAYOUT = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            margin: { l: 50, r: 20, t: 20, b: 50 },
+            font: { family: 'Inter', color: '#6B6B6B', size: 11 },
+            xaxis: { gridcolor: '#E5E5E5', linecolor: '#E5E5E5', zeroline: false },
+            yaxis: { gridcolor: '#E5E5E5', linecolor: '#E5E5E5', zeroline: false },
+            legend: { orientation: 'h', y: -0.25, font: { family: 'Inter', size: 11 } }
+        };
+
+        function showEmpty(id, msg) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = `<div style="display:flex;height:100%;min-height:180px;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text-secondary);font-size:14px;">${msg}</div>`;
+        }
+
+        async function loadAnalytics() {
+            try {
+                const res = await fetch('/api/analytics-trends');
+                const data = await res.json();
+
+                if (!data.success || !data.trends || data.trends.length === 0) {
+                    const msg = data.error || 'No climate data available. Run ml/train_models.py to populate the database.';
+                    ['analytics-heatmap', 'regional-chart', 'temp-humidity-chart', 'correlation-chart'].forEach(id => showEmpty(id, msg));
+                    document.querySelectorAll('#analytics-kpis .card-value').forEach(el => el.textContent = '—');
+                    return;
+                }
+
+                const trends = data.trends;
+
+                // --- Build type/month aggregations ---
+                const typeSet = new Set();
+                const monthNums = new Set();
+                const typeAgg = {};
+                const monthAgg = {};
+
+                trends.forEach(t => {
+                    const type = t._id && t._id.type ? t._id.type : null;
+                    const month = t._id && t._id.month ? t._id.month : null;
+                    if (type) {
+                        typeSet.add(type);
+                        typeAgg[type] = (typeAgg[type] || 0) + t.count;
                     }
-
-                    const trends = data.trends;
-                    
-                    const typeSet = new Set();
-                    const monthSet = new Set();
-                    trends.forEach(t => {
-                        if (t._id.type) typeSet.add(t._id.type);
-                        if (t._id.month) monthSet.add(t._id.month);
-                    });
-
-                    const types = Array.from(typeSet).sort();
-                    const months = Array.from(monthSet).sort((a, b) => a - b).map(m => {
-                        const date = new Date();
-                        date.setMonth(m - 1);
-                        return date.toLocaleString('default', { month: 'short' });
-                    });
-                    
-                    if (types.length === 0 || months.length === 0) {
-                        return; // handeled by empty state above
+                    if (month) {
+                        monthNums.add(month);
+                        monthAgg[month] = (monthAgg[month] || 0) + t.count;
                     }
-
-                    const zValues = types.map(type => {
-                        return Array.from(monthSet).sort((a,b)=>a-b).map(month => {
-                            const record = trends.find(t => t._id.type === type && t._id.month === month);
-                            return record ? record.count : 0;
-                        });
-                    });
-
-                    Plotly.newPlot('analytics-heatmap', [{
-                        z: zValues,
-                        x: months,
-                        y: types,
-                        type: 'heatmap',
-                        colorscale: [
-                            [0, '#F7F7F7'],
-                            [0.2, '#D4D4D4'],
-                            [0.5, '#737373'],
-                            [0.8, '#262626'],
-                            [1.0, '#000000']
-                        ]
-                    }], {
-                        paper_bgcolor: 'rgba(0,0,0,0)',
-                        plot_bgcolor: 'rgba(0,0,0,0)',
-                        margin: { l: 80, r: 20, t: 20, b: 40 },
-                        xaxis: { tickfont: { color: '#6B6B6B', family: 'Inter' } },
-                        yaxis: { tickfont: { color: '#6B6B6B', family: 'Inter' } }
-                    }, { responsive: true, displayModeBar: false });
-
-                    // Mock the others gracefully since the API only returns counts for heatmap
-                    const emptyState = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">No climate data available.</div>';
-                    document.getElementById('regional-chart').innerHTML = emptyState;
-                    document.getElementById('temp-humidity-chart').innerHTML = emptyState;
-                    document.getElementById('correlation-chart').innerHTML = emptyState;
-                })
-                .catch(err => {
-                    const errState = '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:var(--text-secondary); font-size:14px;">Unable to load climate data.</div>';
-                    document.getElementById('analytics-heatmap').innerHTML = errState;
-                    document.getElementById('regional-chart').innerHTML = errState;
-                    document.getElementById('temp-humidity-chart').innerHTML = errState;
-                    document.getElementById('correlation-chart').innerHTML = errState;
                 });
+
+                const types = Array.from(typeSet).sort();
+                const sortedMonths = Array.from(monthNums).sort((a, b) => a - b);
+                const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                const monthLabels = sortedMonths.map(m => MONTH_NAMES[m - 1] || `M${m}`);
+
+                const sortedTypes = Object.entries(typeAgg).sort((a, b) => b[1] - a[1]);
+                const peakMonth = sortedMonths.reduce((best, m) => monthAgg[m] > (monthAgg[best] || 0) ? m : best, sortedMonths[0]);
+
+                // --- Update KPIs ---
+                document.getElementById('kpi-total-records').textContent = (data.total || 0).toLocaleString();
+                document.getElementById('kpi-event-types').textContent = types.length;
+                document.getElementById('kpi-peak-month').textContent = MONTH_NAMES[(peakMonth || 1) - 1] || '—';
+                document.getElementById('kpi-top-event').textContent = sortedTypes.length > 0 ? sortedTypes[0][0] : '—';
+
+                // --- CHART 1: Heatmap ---
+                const zValues = types.map(type =>
+                    sortedMonths.map(month => {
+                        const rec = trends.find(t => t._id.type === type && t._id.month === month);
+                        return rec ? rec.count : 0;
+                    })
+                );
+                Plotly.newPlot('analytics-heatmap', [{
+                    z: zValues, x: monthLabels, y: types, type: 'heatmap',
+                    colorscale: [[0,'#F7F7F7'],[0.25,'#D4D4D4'],[0.5,'#737373'],[0.75,'#262626'],[1,'#000000']],
+                    showscale: true,
+                    colorbar: { thickness: 10, len: 0.8 }
+                }], {
+                    ...BASE_LAYOUT,
+                    margin: { l: 120, r: 20, t: 20, b: 40 }
+                }, { responsive: true, displayModeBar: false });
+
+                // --- CHART 2: Top Event Types (Horizontal Bar) ---
+                const top10 = sortedTypes.slice(0, 10);
+                Plotly.newPlot('regional-chart', [{
+                    type: 'bar', orientation: 'h',
+                    y: top10.map(e => e[0]),
+                    x: top10.map(e => e[1]),
+                    marker: { color: top10.map((_, i) => MONO_COLORS[i] || '#888888') },
+                    text: top10.map(e => e[1].toLocaleString()),
+                    textposition: 'outside',
+                    textfont: { family: 'Inter', size: 11 }
+                }], {
+                    ...BASE_LAYOUT,
+                    margin: { l: 120, r: 60, t: 20, b: 40 },
+                    xaxis: { gridcolor: '#E5E5E5', zeroline: false },
+                    yaxis: { automargin: true, tickfont: { family: 'Inter', size: 10 } }
+                }, { responsive: true, displayModeBar: false });
+
+                // --- CHART 3: Monthly Line (Top 3 types) ---
+                const top3Types = sortedTypes.slice(0, 3).map(e => e[0]);
+                const lineColors = ['#111111', '#666666', '#AAAAAA'];
+                const lineTraces = top3Types.map((type, i) => ({
+                    x: monthLabels,
+                    y: sortedMonths.map(m => {
+                        const rec = trends.find(t => t._id.type === type && t._id.month === m);
+                        return rec ? rec.count : 0;
+                    }),
+                    type: 'scatter', mode: 'lines+markers', name: type,
+                    line: { color: lineColors[i], width: 2, shape: 'spline' },
+                    marker: { size: 5, color: lineColors[i] }
+                }));
+                Plotly.newPlot('temp-humidity-chart', lineTraces, {
+                    ...BASE_LAYOUT
+                }, { responsive: true, displayModeBar: false });
+
+                // --- CHART 4: Donut Distribution ---
+                const top6 = sortedTypes.slice(0, 6);
+                Plotly.newPlot('correlation-chart', [{
+                    type: 'pie',
+                    labels: top6.map(e => e[0]),
+                    values: top6.map(e => e[1]),
+                    hole: 0.45,
+                    marker: { colors: MONO_COLORS.slice(0, top6.length) },
+                    textfont: { family: 'Inter', size: 10 },
+                    hovertemplate: '<b>%{label}</b><br>Count: %{value:,}<br>%{percent}<extra></extra>'
+                }], {
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    margin: { l: 10, r: 150, t: 20, b: 20 },
+                    legend: { font: { family: 'Inter', size: 11 }, orientation: 'v', x: 1.0 },
+                    showlegend: true
+                }, { responsive: true, displayModeBar: false });
+
+            } catch (err) {
+                console.error('Analytics load error:', err);
+                ['analytics-heatmap', 'regional-chart', 'temp-humidity-chart', 'correlation-chart'].forEach(id =>
+                    showEmpty(id, 'Unable to load climate data. Please check your connection.')
+                );
+            }
+        }
+
+        async function loadStationMap() {
+            try {
+                const res = await fetch('/api/radar-points');
+                const data = await res.json();
+
+                if (!data.success || !data.data || data.data.length === 0) {
+                    showEmpty('geo-station-map', 'No station data available.');
+                    return;
+                }
+
+                const stations = data.data;
+                const lats = stations.map(s => s.lat);
+                const lons = stations.map(s => s.lon);
+                const names = stations.map(s => s.name);
+                const regions = stations.map(s => s.region);
+                const temps = stations.map(s => s.temp);
+                const types = stations.map(s => s.type || 'Unknown');
+
+                const texts = stations.map(s =>
+                    `<b>${s.name}</b><br>Region: ${s.region}<br>Temp: ${s.temp}°C<br>Type: ${s.type || 'N/A'}`
+                );
+
+                Plotly.newPlot('geo-station-map', [{
+                    type: 'scattergeo',
+                    lat: lats,
+                    lon: lons,
+                    mode: 'markers+text',
+                    marker: {
+                        size: 10,
+                        color: '#111111',
+                        symbol: 'circle',
+                        line: { color: '#ffffff', width: 1.5 }
+                    },
+                    text: names,
+                    textposition: 'top center',
+                    textfont: { family: 'Inter', size: 9, color: '#111111' },
+                    hovertext: texts,
+                    hoverinfo: 'text',
+                    name: 'Stations'
+                }], {
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    geo: {
+                        showframe: false,
+                        showcoastlines: true,
+                        coastlinecolor: '#CCCCCC',
+                        showland: true,
+                        landcolor: '#F7F7F7',
+                        showocean: true,
+                        oceancolor: '#FAFAFA',
+                        showlakes: true,
+                        lakecolor: '#EFEFEF',
+                        showcountries: true,
+                        countrycolor: '#E0E0E0',
+                        showrivers: false,
+                        bgcolor: 'rgba(0,0,0,0)',
+                        projection: { type: 'natural earth' }
+                    },
+                    margin: { l: 0, r: 0, t: 0, b: 0 },
+                    font: { family: 'Inter' }
+                }, { responsive: true, displayModeBar: false });
+
+            } catch (err) {
+                console.error('Station map error:', err);
+                showEmpty('geo-station-map', 'Unable to load station map.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAnalytics();
+            loadStationMap();
         });
     </script>
 </body>

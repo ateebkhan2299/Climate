@@ -4,32 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EARTHSCAPE // DATA</title>
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Shared Theme -->
     <link rel="stylesheet" href="/static/css/theme.css">
     <script src="/static/js/animations.js" defer></script>
 </head>
 <body>
-        <header class="hud-header">
+    <header class="hud-header">
         <div class="hud-title">
-            <span>🌐</span> EARTHSCAPE <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:600; margin-left:10px;">Climate Monitoring & Intelligence Dashboard</span>
+            <span>🌍</span> EARTHSCAPE <span style="font-size:14px; color:var(--text-secondary); font-weight:500; margin-left:12px; letter-spacing:0px;">Data Catalog | System datasets and ingestion status</span>
         </div>
         <div class="hud-chips-container">
-            <div class="hud-chip"><span class="pulse-dot"></span> LIVE OPEN-METEO API</div>
             <div class="hud-chip">● SYSTEM: ONLINE</div>
             <div class="hud-chip" id="live-utc-clock">UTC</div>
-            <div class="hud-chip chip-dark">👤 ANALYST</div>
+            <div class="hud-chip chip-dark">👤 USER</div>
             <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="window.toggleTheme()">🌙 DARK</button>
         </div>
     </header>
+
     <div class="app-layout">
-                <aside class="nav-rail">
-            <div class="rail-header">
-                <span class="rail-label" style="font-family: var(--font-sans);">EARTHSCAPE</span>
-            </div>
+        <aside class="nav-rail">
+            <div class="rail-header"><span class="rail-label">EARTHSCAPE</span></div>
             <nav class="rail-menu">
                 <a href="/" class="nav-item">Dashboard</a>
                 <a href="/analytics" class="nav-item">Analytics</a>
@@ -42,15 +38,77 @@
                 <a href="/logout" class="nav-item">Logout</a>
             </nav>
         </aside>
+
         <main class="main-viewport">
+            
             <section class="cyber-card">
-                <h2 class="box-title">Data Management</h2>
-                <p class="box-sub">Data functionality is not currently configured.</p>
-                <div style="padding:40px; text-align:center; color:var(--text-secondary); border:1px dashed var(--border-color); border-radius:var(--radius-md);">
-                    No data source configured.
+                <h2 class="box-title">System Datasets</h2>
+                <p class="box-sub">Overview of active MongoDB collections and local sources</p>
+                
+                <div style="margin-top:16px;">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>Collection / Source</th>
+                                <th>Description</th>
+                                <th>Record Count</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="datasets-tbody">
+                            <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-secondary);">Loading dataset statistics...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
+
         </main>
     </div>
+
+    <script>
+        function updateClock() {
+            const el = document.getElementById('live-utc-clock');
+            if (el) el.innerText = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        async function loadDataStats() {
+            try {
+                const res = await fetch('/api/admin-stats');
+                const d = await res.json();
+                
+                const tbody = document.getElementById('datasets-tbody');
+
+                if (!d.success || !d.data || !d.data.mongo_stats) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-secondary);">Unable to load data statistics.</td></tr>`;
+                    return;
+                }
+
+                const collections = d.data.mongo_stats;
+                if (collections.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-secondary);">No data collections found in database.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = collections.map(col => {
+                    return `
+                        <tr>
+                            <td style="font-weight:600; font-family:monospace;">${col.name}</td>
+                            <td style="color:var(--text-secondary);">System data collection</td>
+                            <td style="font-family:monospace;">${col.count.toLocaleString()}</td>
+                            <td><span class="badge badge-subtle">Online</span></td>
+                        </tr>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('datasets-tbody').innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-secondary);">Connection error.</td></tr>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadDataStats);
+    </script>
 </body>
 </html>
