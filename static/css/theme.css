@@ -29,8 +29,12 @@
     --accent-critical: #EF4444;
     --accent-critical-bg: #FEF2F2;
     --accent-critical-border: #FCA5A5;
+    --accent-warning: #F59E0B;
+    --accent-warning-bg: #FFFBEB;
+    --accent-warning-border: #FCD34D;
     --accent-success: #10B981;
     --accent-success-bg: #ECFDF5;
+    --accent-success-border: #6EE7B7;
     
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 2px 12px rgba(0, 0, 0, 0.06);
