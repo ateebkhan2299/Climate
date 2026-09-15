@@ -647,7 +647,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .split-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.split-row-2-1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
     gap: 24px;
 }
 
@@ -730,8 +736,8 @@ h1, h2, h3, h4, h5, h6 {
         display: none;
     }
     
-    .split-row {
-        grid-template-columns: 1fr; /* Stack strictly vertically */
+    .split-row, .split-row-2-1 {
+        grid-template-columns: 1fr !important; /* Stack strictly vertically */
     }
     .kpi-grid {
         grid-template-columns: 1fr; /* Stack cards */
