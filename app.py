@@ -11,6 +11,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from utils.open_meteo import GLOBAL_STATIONS, fetch_live_weather_from_open_meteo, ingest_open_meteo_live_event
 from database.mongodb import get_db
+from functools import wraps
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "earthscape_super_secret_cyber_key"
@@ -18,6 +19,14 @@ handler = app   # Vercel requires top-level "handler"
 
 db = get_db()
 _station_index = 0
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "username" not in session:
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # =========================================================
 # AUTH ROUTES
